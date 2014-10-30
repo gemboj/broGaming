@@ -209,6 +209,8 @@ var chatI = (function(){
         
         addRoom: function(id, name){
             $(this.roomsListId).append('<li>' + name + '</li>');
+			var li = $(this.roomsListId + "li:contains('" + name + "')")[0];
+			jQuery.data(li, {id: id});
         }
     };
 	
