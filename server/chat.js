@@ -29,12 +29,16 @@ var chat = (function(){
 		var index = chat.rooms.indexOf(room);
 		if((index != -1) && (chat.rooms.length > 1)){
 			chat.rooms.splice(index, 1);
+			return 0;
+		}
+		else{
+			return -1;
 		}
 	};
 	
 	chat.findRoom = function(id){
 		for(var i = 0; i < chat.rooms.length; i++){
-			room = chat.rooms[i];
+			var room = chat.rooms[i];
 			var roomId = room.getId();
 
 			if(roomId === id){
@@ -45,6 +49,9 @@ var chat = (function(){
 		return -1;
 	};	
 
+	chat.getRooms = function(){
+		return this.rooms;
+	}
 	
 	chat.User = function(nick){
 		this._nick = nick;
@@ -79,7 +86,7 @@ var chat = (function(){
 			return this._name;
 		},
 		
-		setName: function(name){
+		setCurrentRoom: function(name){
 			this._name = name;
 		},
 		
@@ -137,13 +144,14 @@ chatServer.getDefaultRoomName = function(){
 
 chatServer.newRoom = function(name){
 	var index = chatServer.availableRooms.shift();
-	chatServer.rooms.push(new chatServer.Room(index, name));
+	var room = new chatServer.Room(index, name);
+	chatServer.rooms.push(room);
 	
 	if(chatServer.availableRooms.length === 0){
 		chatServer.availableRooms.push(++index);
 	};
 	
-	return index;
+	return room;
 };
 
 chatServer.newUser = function(nick, socket){
@@ -234,11 +242,6 @@ chatServer.User.prototype.joinRoom = function(room){
 	
 	room.addUser(this);
 	this.addRoom(room);
-	
-	//io.sockets.in(room.getId()).emit("addUser", this.getNick());
-	this.getSocket().join(room.getId(), (function(){
-		//io.sockets.in(room.getId()).emit("chatMsg", {nick: "Server", msg: this.getNick() + " connected to " + roomName + "."});
-	}).bind(this));	
 };
 
 chatServer.User.prototype.leaveRoom = function(room){
@@ -249,10 +252,6 @@ chatServer.User.prototype.leaveRoom = function(room){
 		room.delUser(this);
 		
 		var roomName = room.getName();
-		
-		//io.sockets.in(roomName).emit("chatMsg", {nick: "Server", msg: this.getNick() + " disconnected from " + roomName + "."});
-		//io.sockets.in(roomName).emit("delUser", this.getNick());
-		this.getSocket().leave(roomName);
 		
 		if(room.userCount <= 0){
 			chatServer.delRoom(room);
@@ -309,6 +308,8 @@ chatClient.getCurrentRoom = function(){
 };
 
 chatClient.deserializeRooms = function(rooms){
+	if(rooms)
+
 	var tempArr = [];
 	for(var i = 0; i < rooms.length; i++){
 		var room = rooms[i];
@@ -321,4 +322,19 @@ chatClient.deserializeRooms = function(rooms){
 	};
 	return tempArr;
 };
+
+chatClient.Room = function(id, name){
+	chatClient.uber.Room.call(this, id, name);
+}
+
+chatClient.Room.prototype = Object.create(chat.Room.prototype);
+chatClient.Room.prototype.constructor = chatClient.Room;
+
+chatClient.Room.prototype.setLI = function(li){
+	this.li = li;
+}
+
+chatClient.Room.prototype.getLI = function(){
+	return this.li;
+}
 // client -->

@@ -102,10 +102,10 @@ var io = (function(){
 			if(temp != 1){
 				return next(new Error(temp));
 			}
-			
-			var defaultRoom = chat.getDefaultRoomName();
-			socket._user = chat.newUser(nick, socket);			
-			//socket.emit("chatMsg", {nick: "Server", msg: "c"});
+
+			socket._user = chat.newUser(nick, socket);
+			socketHandler.joinRoom(socket._user, chat.rooms[0]);
+
 			return next();
 		}
 		next(new Error('Undefined nick'));
@@ -113,9 +113,6 @@ var io = (function(){
 	
 	
 	io.sockets.on('connection', function(socket) {
-		//chat.joinRoom(chat.getDefaultRoomName(), socket._user);
-		socketHandler.joinRoom(socket._user, chat.rooms[0]);
-		
         socket.on("broadcastRoom", function(data){
             io.sockets.in(data.roomId).emit(data.event, data);
         });
@@ -131,26 +128,22 @@ var io = (function(){
 		});
 		
 		socket.on("createRoom", function(roomName, cb){
-			var index = chat.newRoom(roomName);
-			cb(index);
+			var room = chat.newRoom(roomName);
+			socketHandler.joinRoom(socket._user, room);
+			cb(room.getId());
 		});
-		
-		/*socket.on("getUserList", function(roomName, cb){		
-			cb(chat.getUserNickList(roomName));
-			return;
-		});*/
+
+		socket.on('joinRoom', function(roomId){
+			var room = chat.findRoom(roomId);
+			socketHandler.joinRoom(socket._user, room);
+		});
 	
 		socket.on('chatMsg', function(data) {		
 			io.sockets.in(data.roomId).emit("chatMsg", data);
 		});
-		
-		socket.on('changeRoom', function(roomName, cb){
-			var temp = chat.changeRoom(roomName, socket._user);
-			if(temp){
-				socket.emit("chatMsg", {nick: "Server", msg: temp});
-				return;
-			};
-			cb(roomName);
+
+		socket.on('leaveRoom', function(roomId){
+			socketHandler.leaveRoom(socket._user, roomId);
 		});
 		
 		socket.on('changeNick', function(newNick, cb){
@@ -188,11 +181,15 @@ var io = (function(){
 
 var socketHandler = {
 	joinRoom: function(user, room){
-		user.joinRoom(room);
 		io.sockets.in(room.getId()).emit("addUser", {nick: user.getNick(), roomId: room.getId()});
+		user.joinRoom(room);
+
+		user.getSocket().join(room.getId());
 	},
 	
 	leaveRoom: function(user, room){
+		user.getSocket().leave(room.getId());
+
 		user.leaveRoom(room);
 		io.sockets.in(room.getId()).emit("delUser", {nick: user.getNick(), roomId: room.getId()});
 	},

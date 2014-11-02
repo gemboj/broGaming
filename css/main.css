@@ -4,17 +4,17 @@
 }
 
 body { 
-	font: 20px Helvetica, Arial; 
+	font: 20px Helvetica, Arial;
 }
 
-button, .navigation a, #chatRoom li span{
+button, .navigation a, .information span{
 	background: #80b030;
 	border: none;
 	transition: background linear 0.15s;
 	color: #ffffff;
 }
 
-button:hover, .navigation a:hover, #chatRoom li span:hover{
+button:hover, .navigation a:hover, .information span:hover{
 	background: #90d040;
 	color: #ffffff;
 }
@@ -22,6 +22,10 @@ button:hover, .navigation a:hover, #chatRoom li span:hover{
 .container{
 	width: 100%;
 	height: 100%;
+}
+
+.flexFull{
+	flex: 1 1 auto;
 }
 
 .flexContainerV{
@@ -70,12 +74,17 @@ button:hover, .navigation a:hover, #chatRoom li span:hover{
 	font-size: 23px;
 }
 
+.information{
+	flex: 0 0 200px;
+	overflow: auto;
+}
+
 #chatRoom{
 	color: white;
 	list-style-type: none;
 	overflow: auto;
 
-	flex: 0 0 200px;
+	flex: 1 0 auto;
 	background: #303030;	
 }
 
@@ -87,7 +96,7 @@ button:hover, .navigation a:hover, #chatRoom li span:hover{
 	margin: 5px 5px;
 }
 
-#chatRoom li span{
+#chatRoom > li > span{
 	height: 30px;	
 	min-width: 100%;
 	display: inline-block;
@@ -98,6 +107,15 @@ button:hover, .navigation a:hover, #chatRoom li span:hover{
 #roomsList {
     background: #505050;
     display: none;
+}
+
+#notifications{
+	flex: 0 0 auto;
+}
+
+#roomsList > li > span{
+	padding: 1px 3px;
+	margin: 3px 3px 5px 0px;
 }
 
 .navigation{

@@ -7,37 +7,45 @@ function socketHandlerC(socket, nick){
 	
 	handler._events = {
 		error: function(err){
-			chatI.log.append("Server", err);
+			chatInterface.log.append("Server", err);
 		},
 		
 		connect: function(){			
-			chatI.onConnect(nick);			
-			
-			handler.getRooms(chatClient.getNick(), function(rooms){
+			chatApp.onConnect(nick);
+
+			handler.emit("getRooms", null, function(rooms){
 				var drooms = chatClient.deserializeRooms(rooms);
-				chatClient.addRooms(drooms);				
-				chatClient.setCurrentRoom(drooms[0]);
-				chatI.room.addUsersRoom(chatClient.getCurrentRoom());
-				chatI.room.setName(chatClient.getCurrentRoom().getName());
+				chatClient.addRooms(drooms);
+				chatInterface.room.addRooms(drooms);
+				chatApp.setCurrentRoom(drooms[0]);
 			});
-			
-			
 		},
 		//data.nick, data.msg
 		chatMsg: function(data){
-			chatI.log.append(data.nick, data.msg);
+			chatInterface.log.append(data.nick, data.msg);
 		},
 		//nick, roomId
 		delUser: function(data){
-			var room = chat.findRoom(data.roomId);
+			var room = chatClient.findRoom(data.roomId),
+				user = chatClient.findUser(data.nick);
+			chatApp.delUser(room, user);
+			/*var room = chat.findRoom(data.roomId);
 			if(room != -1){
 				room.delUser(data.nick);
-				chatI.room.delUser(data.nick);
-			}
+				chatInterface.room.delUser(data.nick);
+			}*/
 		},
 		//nick, roomId
 		addUser: function(data){
-			var room = chat.findRoom(data.roomId);
+			var room = chatClient.findRoom(data.roomId),
+				user = chatClient.findUser(data.nick);
+
+			if(user == -1){
+				user = new chatClient.User(data.nick);
+			}
+
+			chatApp.addUser(room, user);
+			/*var room = chat.findRoom(data.roomId);
 			if(room != -1){
 				var user = chatClient.findUser(data.nick);
 				if(user == -1){
@@ -45,13 +53,14 @@ function socketHandlerC(socket, nick){
 				}
 				
 				room.addUser(user);
-				chatI.room.addUser(user);				
-			}
+				chatInterface.room.addUser(user);
+			}*/
 		},
 		//data.oldNick, data.newNick
 		changeNick: function(data){
-			chatClient.setNick(data.newNick);
-			chat.room.changeNick(data.oldNick, data.newNick);
+			chatApp.changeNick(data.oldNick, data.newNick);
+			/*chatClient.setNick(data.newNick);
+			chat.room.changeNick(data.oldNick, data.newNick);*/
 		}
 	};
 	
@@ -62,14 +71,14 @@ function socketHandlerC(socket, nick){
 			};
 		});
 	};*/
-	
-	handler.getRooms = function(nick, cb){
+
+	/*handler.getRooms = function(nick, cb){
 		handler._socket.emit("getRooms", null, function(rooms){
 			if(cb){
 				cb(rooms)
 			};
 		});
-	};
+	};*/
 		
 	handler.emit = function(evt, arg, cb){
 		handler._socket.emit(evt, arg, cb);
@@ -86,7 +95,108 @@ function socketHandlerC(socket, nick){
 	socketHandler = handler;
 }
 
-var chatI = (function(){
+
+var chatApp = {
+	onConnect: function(nick){
+		var that = chatInterface;
+		$(that.connectBId).fadeToggle("slow", function(){
+			$(that.changeNickBId).fadeToggle("slow");
+		});
+
+		$(that.nickIId).on("keyup", function(){
+			socketHandler.emit("validateNick", that.getNickI(), function(valid){
+				if(valid){
+					$(that.nickIId).css("color", "black");
+				}
+				else{
+					$(that.nickIId).css("color", "red");
+				};
+			});
+		});
+
+		$(that.createRoomBId).on("click", function(){
+			var roomName = that.getRoomNameI();
+			socketHandler.emit("createRoom", roomName, function(index){
+				var room = new chatClient.Room(index, roomName);
+				chatApp.joinRoom(room);
+				$(chatInterface.room.roomsListId).fadeIn();
+			});
+		});
+
+		/*$(that.changeNickBId).on("click", function(){
+			var newNick = that.getNickI();
+			socketHandler.emit("changeNick", newNick, function(){
+				chat.setNick(newNick);
+			});
+		});*/
+
+		//$(that.msgFId).attr("action", "javascript:chat.sendMsg();");
+		$(that.msgFId).on("submit", function(){
+			socketHandler.emit("chatMsg", {nick: that.getNickI(), msg: that.getMsgI(), roomId: chatClient.getCurrentRoom().getId()});
+			that.clearMsgI();
+		});
+
+		$(that.room.listBId).on("click", function(){
+			//$(that.roomsList.roomsListId).slideToggle();
+			$(that.room.roomsListId).fadeToggle();
+		});
+	},
+
+	setCurrentRoom: function(room) {
+		chatClient.setCurrentRoom(room);
+		chatInterface.room.setCurrentRoom(room);
+		chatInterface.room.clearUserList();
+		chatInterface.room.addUsersRoom(room);
+	},
+
+	joinRoom: function(room){
+		//socketHandler.emit("joinRoom", room.getId());
+		chatClient.addRoom(room);
+		chatInterface.room.addRoom(room);
+	},
+
+	joinRooms: function(rooms){
+		for(var i = 0; i < rooms.length; i++){
+			chatApp.joinRoom(rooms[i]);
+		}
+	},
+
+	leaveRoom: function(room){
+		if(!chatClient.delRoom(room)) {
+			if (room === chatClient.getCurrentRoom()) {
+				if (chatClient.getRooms().length === 0) {
+					chatApp.setCurrentRoom(new chatClient.Room(-1, "not in room"));
+				}
+				else {
+					chatApp.setCurrentRoom(chatClient.getRooms()[0]);
+				}
+			}
+			room.getLI().remove();
+		}
+	},
+
+	delUser: function(room, user){
+		room.delUser(user);
+		if(chatClient.getCurrentRoom() === room){
+			chatInterface.room.delUser(user);
+		}
+	},
+
+	addUser: function(room, user){
+		room.addUser(user);
+		if(chatClient.getCurrentRoom() === room){
+			chatInterface.room.addUser(user);
+		}
+	},
+
+	changeNick: function(oldNick, newNick){
+		var user = chatClient.findUser(oldNick);
+		user.setNick(newNick);
+		chatInterface.room.changeNick(oldNick, newNick);
+	}
+}
+
+var chatInterface = (function(){
 	var chatI = {
 		msgIId: "#inputMsg",//I - input
 		nickIId: "#inputNick",
@@ -110,56 +220,6 @@ var chatI = (function(){
 		
 		getNickI: function(){
 			return $(this.nickIId).val().trim();
-		},
-		
-		onConnect: function(nick){
-			var that = this;
-			$(this.connectBId).fadeToggle("slow", function(){
-				$(that.changeNickBId).fadeToggle("slow");
-			});
-			
-			$(this.nickIId).on("keyup", function(){
-				socketHandler.emit("validateNick", that.getNickI(), function(valid){
-					if(valid){
-						$(that.nickIId).css("color", "black");
-						
-					}
-					else{
-						$(that.nickIId).css("color", "red");
-					};
-				});
-			});
-			
-			$(this.createRoomBId).on("click", function(){
-				var roomName = that.getRoomNameI();
-				socketHandler.emit("createRoom", roomName, function(index){
-					var room = new chatClient.Room(index, roomName);
-					chatClient.addRoom(room);
-					//chatClient.setCurrentRoom(room);
-					that.roomsList.addRoom(index, roomName);
-				});
-			});
-			
-			$(this.changeNickBId).on("click", function(){
-				var newNick = that.getNickI();
-				socketHandler.emit("changeNick", newNick, function(){			
-					chat.setNick(newNick);
-				});
-			});
-			
-			
-			
-			//$(this.msgFId).attr("action", "javascript:chat.sendMsg();");
-			$(this.msgFId).on("submit", function(){
-				socketHandler.emit("chatMsg", {nick: that.getNickI(), msg: that.getMsgI(), roomId: chatClient.getCurrentRoom().getId()});
-				that.clearMsgI();
-			});
-			
-			$(this.room.listBId).on("click", function(){
-				//$(that.roomsList.roomsListId).slideToggle();
-				$(that.roomsList.roomsListId).fadeToggle();				
-			});
-
 		}
 	};
 	
@@ -167,7 +227,8 @@ var chatI = (function(){
 		id: "#chatRoom",
 		nameId: "#roomName",
 		listBId: "#chooseRoom",
-		
+		roomsListId: "#roomsList",
+
 		addUsers: function(users){	
 			for(var i = 0; i < users.length; i++){
 				var nick = users[i].getNick();
@@ -185,8 +246,8 @@ var chatI = (function(){
 			$(this.id).append('<li id="' + nick + '"><span>' + nick + '</span></li>');
 		},
 		
-		delUser: function(nick){
-			$(this.id + " #" + nick).remove();
+		delUser: function(user){
+			$(this.id + " #" + user.getNick()).remove();
 		},
 		
 		
@@ -195,28 +256,57 @@ var chatI = (function(){
 			$(this.id + " [id='" + oldNick + "']").attr("id", newNick);
 		},
 		
-		clearList: function(){
-			$(this.id + " li").remove();
+		clearUserList: function(){
+			$(this.id + "> li").remove();
 		},
 		
-		setName: function(roomName){
-			$(this.nameId).text(roomName);
+		setCurrentRoom: function(room){
+			$(this.nameId).text(room.getName());
+		},
+
+		clearRoomList: function(){
+			$(this.roomsListId + "> li").remove();
+		},
+
+		addRoom: function(room){
+			var id = room.getId(), name = room.getName();
+			var roomI = $(document.createElement('li'));
+
+			room.setLI(roomI);
+
+			roomI.text(name);
+			roomI.data({id: id});
+
+			roomI.on('click', function(){
+				chatApp.setCurrentRoom(room);
+			});
+
+			var close = $(document.createElement('span'));
+			close.text("x");
+
+			close.on('click', function(){
+				chatApp.leaveRoom(room);
+			})
+
+			roomI.prepend(close);
+
+			$(this.roomsListId).append(roomI);
+		},
+
+		addRooms: function(rooms){
+			for(var i = 0; i < rooms.length; i++){
+				this.addRoom(rooms[i]);
+			}
+		},
+
+		delRoom: function(room){
+			room.getLI().remove();
 		}
 	};
-    
-    chatI.roomsList = {
-        roomsListId: "#roomsList",
-        
-        addRoom: function(id, name){
-            $(this.roomsListId).append('<li>' + name + '</li>');
-			var li = $(this.roomsListId + "li:contains('" + name + "')")[0];
-			jQuery.data(li, {id: id});
-        }
-    };
 	
 	chatI.log = {
 		id: ".chatLog",
-		
+
 		append: function(nick, msg){
 			$(this.id).append(nick + ": " + msg + "\n");	
 		}
@@ -350,7 +440,7 @@ $("document").ready(function(){
 	//tabs
 	$(".tabs .navigation a").on('click', tabs.changeTabCb);
 	$("#connect").on("click", function(){
-		var nick = chatI.getNickI();
+		var nick = chatInterface.getNickI();
 		chatClient.setUser(nick);
 		
 		var socket = io.connect(IPADDRESS, { 'force new connection': true, query:  "nick="+ nick});
@@ -363,6 +453,5 @@ $("document").ready(function(){
     
     $.ajaxSetup({ 
         cache: true 
-    }); 
-	//webGLStart();
+    });
 });

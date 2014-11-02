@@ -1,7 +1,7 @@
 <DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="./css/main.css">
+<link rel="stylesheet" type="text/css" href="./css/mainDark.css">
 <script type="text/javascript" src="utils/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="utils/socket.io.js"></script>
 <script type="text/javascript" src="index.js"></script>
@@ -32,15 +32,30 @@
 				<textarea readonly class="chatLog"></textarea>
 				
 			</div>
-			<ul id="chatRoom">
-				<div id="roomHeader" class="flexContainerH">
-					<button id="chooseRoom">VV</button>
-                    <h3 id="roomName">Not</h3>                    
-                </div>
-                <ul id="roomsList">
-                </ul>
-			</ul>
-		
+			<div class="information flexContainerV">
+				<ul id="chatRoom">
+					<div id="roomHeader" class="flexContainerH">
+						<button id="chooseRoom">VV</button>
+						<h3 id="roomName">Not</h3>
+					</div>
+					<ul id="roomsList">
+					</ul>
+				</ul>
+				<ul id="notifications">
+					<div>
+						party 1
+						<div class="flexContainerH">
+							<span class="flexFull">tak</span><span class="flexFull">nie</span>
+						</div>
+					</div>
+					<div>
+						party 2
+						<div class="flexContainerH">
+							<span class="flexFull">tak</span><span class="flexFull">nie</span>
+						</div>
+					</div>
+				</ul>
+			</div>
 		</div>
 	
 		<form action="javascript: ;" id="messageForm"><!--prevent form from submitting before connection-->
