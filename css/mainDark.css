@@ -181,6 +181,14 @@ button:hover, .navigation a:hover, .information span:hover{
     height: 30px;
 }
 
+.playerCtxMenu{
+	top: 100px;
+	left: 100px;
+	position: fixed;
+	width: 100px;
+	height: 100px;
+}
+
 
 .canvas{
 	flex: 1 1 100%;

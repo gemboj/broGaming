@@ -213,7 +213,7 @@ chatServer.User.prototype.serializeRooms = function(){
 	var temp = [];
 	
 	for(var i = 0; i < rooms.length; i++){
-		temp.push(rooms[i].serialize());
+		temp.push(rooms[i].serialize(this));
 	};
 	return temp;
 }
@@ -250,9 +250,7 @@ chatServer.User.prototype.leaveRoom = function(room){
 	if(index != -1){
 		this.delRoom(room);
 		room.delUser(this);
-		
-		var roomName = room.getName();
-		
+
 		if(room.userCount <= 0){
 			chatServer.delRoom(room);
 		};
@@ -266,11 +264,13 @@ chatServer.Room = function(id, name){
 chatServer.Room.prototype = Object.create(chat.Room.prototype);
 chatServer.Room.prototype.constructor = chatServer.Room;
 
-chatServer.Room.prototype.serialize = function(){
+chatServer.Room.prototype.serialize = function(user){
 	var tmp = {};
 	tmp.id = this.getId();
 	tmp.name = this.getName();
 	tmp.userList = this.getUserNickList();
+	var index = tmp.userList.indexOf(user.getNick());
+	tmp.userList.splice(index, 1);
 	return tmp;
 }
 
@@ -307,8 +307,11 @@ chatClient.getCurrentRoom = function(){
 	return chatClient._currentRoom;
 };
 
-chatClient.deserializeRooms = function(rooms){
-	if(rooms)
+chatClient.deserializeRooms = function(_rooms){
+	var rooms = _rooms;
+	if(Object.prototype.toString.call(_rooms) != '[object Array]'){
+		rooms = [_rooms];
+	}
 
 	var tempArr = [];
 	for(var i = 0; i < rooms.length; i++){

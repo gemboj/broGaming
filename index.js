@@ -116,9 +116,9 @@ var chatApp = {
 
 		$(that.createRoomBId).on("click", function(){
 			var roomName = that.getRoomNameI();
-			socketHandler.emit("createRoom", roomName, function(index){
-				var room = new chatClient.Room(index, roomName);
-				chatApp.joinRoom(room);
+			socketHandler.emit("createRoom", roomName, function(room){
+				var rooms = chatClient.deserializeRooms(room);
+				chatApp.addRooms(rooms);
 				$(chatInterface.room.roomsListId).fadeIn();
 			});
 		});
@@ -149,19 +149,19 @@ var chatApp = {
 		chatInterface.room.addUsersRoom(room);
 	},
 
-	joinRoom: function(room){
+	addRoom: function(room){
 		//socketHandler.emit("joinRoom", room.getId());
 		chatClient.addRoom(room);
 		chatInterface.room.addRoom(room);
 	},
 
-	joinRooms: function(rooms){
+	addRooms: function(rooms){
 		for(var i = 0; i < rooms.length; i++){
-			chatApp.joinRoom(rooms[i]);
+			chatApp.addRoom(rooms[i]);
 		}
 	},
 
-	leaveRoom: function(room){
+	delRoom: function(room){
 		if(!chatClient.delRoom(room)) {
 			if (room === chatClient.getCurrentRoom()) {
 				if (chatClient.getRooms().length === 0) {
@@ -231,8 +231,9 @@ var chatInterface = (function(){
 
 		addUsers: function(users){	
 			for(var i = 0; i < users.length; i++){
-				var nick = users[i].getNick();
-				$(this.id).append('<li id="' + nick + '"><span>' + nick + '</span></li>');
+				this.addUser(users[i]);
+				//var nick = users[i].getNick();
+				//$(this.id).append('<li id="' + nick + '"><span>' + nick + '</span></li>');
 			};
 		},
 		
@@ -243,11 +244,20 @@ var chatInterface = (function(){
 		
 		addUser: function(user){
 			var nick = user.getNick();
-			$(this.id).append('<li id="' + nick + '"><span>' + nick + '</span></li>');
+			//$(this.id).append('<li id="' + nick + '"><span>' + nick + '</span></li>');
+			var li = $(document.createElement('li'));
+
+			var nickSpan = $(document.createElement('span'));
+			nickSpan.text(nick);
+
+			li.append(nickSpan);
+			$(this.id).append(li);
 		},
 		
 		delUser: function(user){
-			$(this.id + " #" + user.getNick()).remove();
+			$(this.id + " > li").filter(function(){
+				return $(this).text === user.getNick();
+			});
 		},
 		
 		
@@ -285,7 +295,7 @@ var chatInterface = (function(){
 			close.text("x");
 
 			close.on('click', function(){
-				chatApp.leaveRoom(room);
+				chatApp.delRoom(room);
 			})
 
 			roomI.prepend(close);
@@ -311,7 +321,15 @@ var chatInterface = (function(){
 			$(this.id).append(nick + ": " + msg + "\n");	
 		}
 	};
-	
+
+	chatI.playerCtxMenu = {
+		id: ".playerCtxMenu",
+
+		createMenu: function(){
+
+		}
+	}
+
 	return chatI;
 })();
 

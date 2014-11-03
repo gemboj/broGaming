@@ -130,7 +130,7 @@ var io = (function(){
 		socket.on("createRoom", function(roomName, cb){
 			var room = chat.newRoom(roomName);
 			socketHandler.joinRoom(socket._user, room);
-			cb(room.getId());
+			cb(room.serialize(socket._user));
 		});
 
 		socket.on('joinRoom', function(roomId){
@@ -142,8 +142,8 @@ var io = (function(){
 			io.sockets.in(data.roomId).emit("chatMsg", data);
 		});
 
-		socket.on('leaveRoom', function(roomId){
-			socketHandler.leaveRoom(socket._user, roomId);
+		socket.on('delRoom', function(roomId){
+			socketHandler.delRoom(socket._user, roomId);
 		});
 		
 		socket.on('changeNick', function(newNick, cb){
