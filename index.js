@@ -251,15 +251,22 @@ var chatInterface = (function(){
 			nickSpan.text(nick);
 
 			li.append(nickSpan);
+
+			li.click(function(evt){
+				var x = evt.clientX;
+				var y = evt.clientY;
+
+				chatInterface.playerCtxMenu.createMenu(x, y, nick);
+			});
+
 			$(this.id).append(li);
 		},
 		
 		delUser: function(user){
 			$(this.id + " > li").filter(function(){
-				return $(this).text === user.getNick();
-			});
+				return ($(this).text() === user.getNick());
+			}).remove();
 		},
-		
 		
 		changeNick: function(oldNick, newNick){
 			$(this.id + " [id='" + oldNick + "'] span").text(newNick);
@@ -324,9 +331,29 @@ var chatInterface = (function(){
 
 	chatI.playerCtxMenu = {
 		id: ".playerCtxMenu",
+		width: 100,
 
-		createMenu: function(){
+		createMenu: function(x, y, nick){
+			var ul = $(document.createElement('ul'));
+			ul.attr("class", "playerCtxMenu");
 
+			ul.css("top", y + "px");
+			ul.css("left", (x - this.width) + "px");
+
+			var rooms = chatClient.getRooms();
+			for(var i = 0; i < rooms.length; i++){
+				var li = $(document.createElement('ul'));
+				li.text(rooms[i].getName());
+				var i2 = i;
+				li.click(function(){
+					//socketHandler.emit("inviteRoom", {roomId: rooms[i2].getId(), roomName: rooms[i2].getName()});//////////////////////////////////////closures
+					ul.remove();
+				});
+
+				ul.append(li);
+			}
+
+			$("body").append(ul);
 		}
 	}
 
