@@ -157,6 +157,11 @@ var io = (function(){
 			
 			cb();
 		});
+
+		socket.on("inviteRoom", function(data){
+			var user = chat.findUser(data.inviteReceiver);
+			user.getSocket().emit("inviteRoom", data);
+		})
 		
 		socket.on("validateNick", function(nick, cb){
 			if(chat.validUserNick(nick) === 1){

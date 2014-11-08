@@ -29,11 +29,6 @@ function socketHandlerC(socket, nick){
 			var room = chatClient.findRoom(data.roomId),
 				user = chatClient.findUser(data.nick);
 			chatApp.delUser(room, user);
-			/*var room = chat.findRoom(data.roomId);
-			if(room != -1){
-				room.delUser(data.nick);
-				chatInterface.room.delUser(data.nick);
-			}*/
 		},
 		//nick, roomId
 		addUser: function(data){
@@ -45,40 +40,26 @@ function socketHandlerC(socket, nick){
 			}
 
 			chatApp.addUser(room, user);
-			/*var room = chat.findRoom(data.roomId);
-			if(room != -1){
-				var user = chatClient.findUser(data.nick);
-				if(user == -1){
-					user = new chatClient.User(data.nick);					
-				}
-				
-				room.addUser(user);
-				chatInterface.room.addUser(user);
-			}*/
 		},
 		//data.oldNick, data.newNick
 		changeNick: function(data){
 			chatApp.changeNick(data.oldNick, data.newNick);
 			/*chatClient.setNick(data.newNick);
 			chat.room.changeNick(data.oldNick, data.newNick);*/
+		},
+
+		inviteRoom: function(data){
+			chatClient.notifications.createNotif({
+				info: "Invite to room: " + data.roomName,
+				yesFunction: function(){
+					this.emit("joinRoom", data.roomId);
+				},
+				noFunction: function(){
+
+				}
+			});
 		}
 	};
-	
-	/*handler.getUserList = function(roomName, cb){
-		handler._socket.emit("getUserList", roomName, function(userList){	
-			if(cb){
-				cb(userList)
-			};
-		});
-	};*/
-
-	/*handler.getRooms = function(nick, cb){
-		handler._socket.emit("getRooms", null, function(rooms){
-			if(cb){
-				cb(rooms)
-			};
-		});
-	};*/
 		
 	handler.emit = function(evt, arg, cb){
 		handler._socket.emit(evt, arg, cb);
@@ -345,7 +326,7 @@ var chatInterface = (function(){
 				var li = $(document.createElement('ul'));
 				li.text(rooms[i].getName());
 
-				li.click(this.inviteRoomFun(i, ul, rooms[j].getId(), rooms[j].getName(), nick));
+				li.click(this.inviteRoomFun(ul, rooms[i].getId(), rooms[i].getName(), nick));
 
 				ul.append(li);
 			}
@@ -353,13 +334,51 @@ var chatInterface = (function(){
 			$("body").append(ul);
 		},
 
-		inviteRoomFun: function(j, ul, roomId, roomName, nick){
+		inviteRoomFun: function(ul, roomId, roomName, nick){
 			return function(){
 				socketHandler.emit("inviteRoom", {roomId: roomId, roomName:roomName , inviteReceiver: nick});
 				ul.remove();
 			}
 		}
+	};
+
+	chatI.notifications = {
+		createNotif: function(input){
+			var notif = $(document.createElement('div'));
+			notif.text("input.text");
+
+			var temp = $(document.createElement('div'));
+			var yes = $(document.createElement('span'));
+			var no = $(document.createElement('span'));
+
+			temp.attr("class", "flexContainerH");
+			yes.attr("class", "flexFull");
+			no.attr("class", "flexFull");
+
+			yes.text("yes");
+			no.text("no");
+
+			yes.click(function(){
+				input.yesFunction();
+
+				notif.remove();
+			});
+			no.click(function(){
+				input.noFunction();
+
+				notif.remove();
+			});
+
+			temp.append(yes);
+			temp.append(no);
+
+			notif.append(temp);
+
+			$("#notifications").append(notif);
+		}
 	}
+
+
 
 	return chatI;
 })();
