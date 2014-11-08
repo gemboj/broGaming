@@ -344,16 +344,20 @@ var chatInterface = (function(){
 			for(var i = 0; i < rooms.length; i++){
 				var li = $(document.createElement('ul'));
 				li.text(rooms[i].getName());
-				var i2 = i;
-				li.click(function(){
-					//socketHandler.emit("inviteRoom", {roomId: rooms[i2].getId(), roomName: rooms[i2].getName()});//////////////////////////////////////closures
-					ul.remove();
-				});
+
+				li.click(this.inviteRoomFun(i, ul, rooms[j].getId(), rooms[j].getName(), nick));
 
 				ul.append(li);
 			}
 
 			$("body").append(ul);
+		},
+
+		inviteRoomFun: function(j, ul, roomId, roomName, nick){
+			return function(){
+				socketHandler.emit("inviteRoom", {roomId: roomId, roomName:roomName , inviteReceiver: nick});
+				ul.remove();
+			}
 		}
 	}
 

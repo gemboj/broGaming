@@ -165,6 +165,8 @@ var io = (function(){
 			}
 			cb(0);
 		});
+
+
 		
 		socket.on('disconnect', function(data) {
 			var user = chat.findUserS(socket);
