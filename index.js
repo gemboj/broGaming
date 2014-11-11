@@ -49,10 +49,14 @@ function socketHandlerC(socket, nick){
 		},
 
 		inviteRoom: function(data){
-			chatClient.notifications.createNotif({
+			chatInterface.notifications.createNotif({
 				info: "Invite to room: " + data.roomName,
 				yesFunction: function(){
-					this.emit("joinRoom", data.roomId);
+					handler.emit("joinRoom", data.roomId, function(room){
+						var droom = chatClient.deserializeRooms(room);
+						chatApp.addRooms(droom);
+						$(chatInterface.room.roomsListId).fadeIn();
+					});
 				},
 				noFunction: function(){
 
@@ -78,6 +82,8 @@ function socketHandlerC(socket, nick){
 
 
 var chatApp = {
+	appId: 0,
+	ctxMenu: null,
 	onConnect: function(nick){
 		var that = chatInterface;
 		$(that.connectBId).fadeToggle("slow", function(){
@@ -104,12 +110,17 @@ var chatApp = {
 			});
 		});
 
-		/*$(that.changeNickBId).on("click", function(){
+		$(that.changeNickBId).on("click", function(){
 			var newNick = that.getNickI();
-			socketHandler.emit("changeNick", newNick, function(){
-				chat.setNick(newNick);
+			socketHandler.emit("changeNick", newNick, function(data){
+				if(typeof data == "string"){
+					chatInterface.log.append("Server", info);
+					return;
+				}
+				chatApp.changeNick(data.oldNick, data.newNick);
+				//chatInterface.room.setNick(newNick);
 			});
-		});*/
+		});
 
 		//$(that.msgFId).attr("action", "javascript:chat.sendMsg();");
 		$(that.msgFId).on("submit", function(){
@@ -121,6 +132,23 @@ var chatApp = {
 			//$(that.roomsList.roomsListId).slideToggle();
 			$(that.room.roomsListId).fadeToggle();
 		});
+
+		$("#appsCon > *").on("click", function(evt){
+			tabs.addTab(new Tab($(this).attr("id") + chatApp.appId));
+			chatApp.appId++;
+		});
+
+		$(window).click(function(){
+			chatApp.setCtxMenu(null);
+		});
+	},
+
+	setCtxMenu: function(menu){
+		var m = this.ctxMenu;
+		if(m){
+			m.remove();
+		}
+		this.ctxMenu = menu;
 	},
 
 	setCurrentRoom: function(room) {
@@ -153,6 +181,7 @@ var chatApp = {
 				}
 			}
 			room.getLI().remove();
+			socketHandler.emit("leaveRoom", room.getId());
 		}
 	},
 
@@ -172,8 +201,10 @@ var chatApp = {
 
 	changeNick: function(oldNick, newNick){
 		var user = chatClient.findUser(oldNick);
-		user.setNick(newNick);
-		chatInterface.room.changeNick(oldNick, newNick);
+		if(user != -1) {
+			user.setNick(newNick);
+			chatInterface.room.changeNick(oldNick, newNick);
+		}
 	}
 }
 
@@ -238,6 +269,7 @@ var chatInterface = (function(){
 				var y = evt.clientY;
 
 				chatInterface.playerCtxMenu.createMenu(x, y, nick);
+				evt.stopPropagation();
 			});
 
 			$(this.id).append(li);
@@ -250,8 +282,9 @@ var chatInterface = (function(){
 		},
 		
 		changeNick: function(oldNick, newNick){
-			$(this.id + " [id='" + oldNick + "'] span").text(newNick);
-			$(this.id + " [id='" + oldNick + "']").attr("id", newNick);
+			$(this.id + " > li > span").filter(function(){
+				return ($(this).text() === oldNick);
+			}).text(newNick);
 		},
 		
 		clearUserList: function(){
@@ -332,12 +365,14 @@ var chatInterface = (function(){
 			}
 
 			$("body").append(ul);
+			chatApp.setCtxMenu(ul);
 		},
 
 		inviteRoomFun: function(ul, roomId, roomName, nick){
 			return function(){
 				socketHandler.emit("inviteRoom", {roomId: roomId, roomName:roomName , inviteReceiver: nick});
-				ul.remove();
+				//ul.remove();
+				//chatApp.ctxMenu = null;
 			}
 		}
 	};
@@ -345,7 +380,7 @@ var chatInterface = (function(){
 	chatI.notifications = {
 		createNotif: function(input){
 			var notif = $(document.createElement('div'));
-			notif.text("input.text");
+			notif.text(input.info);
 
 			var temp = $(document.createElement('div'));
 			var yes = $(document.createElement('span'));
@@ -513,10 +548,6 @@ $("document").ready(function(){
 		
 		var socket = io.connect(IPADDRESS, { 'force new connection': true, query:  "nick="+ nick});
 		socketHandlerC(socket, nick);//socket handler constructor
-	});
-	
-	$("#appsCon > *").on("click", function(evt){
-		tabs.addTab(new Tab($(this).attr("id")));
 	});
     
     $.ajaxSetup({ 

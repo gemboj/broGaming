@@ -133,10 +133,16 @@ var io = (function(){
 			cb(room.serialize(socket._user));
 		});
 
-		socket.on('joinRoom', function(roomId){
+		socket.on('joinRoom', function(roomId, cb){
 			var room = chat.findRoom(roomId);
 			socketHandler.joinRoom(socket._user, room);
+			cb(room.serialize(socket._user));
 		});
+
+		socket.on('leaveRoom', function(roomId){
+			var room = chat.findRoom(roomId);
+			socketHandler.leaveRoom(socket._user, room);
+		})
 	
 		socket.on('chatMsg', function(data) {		
 			io.sockets.in(data.roomId).emit("chatMsg", data);
@@ -147,7 +153,8 @@ var io = (function(){
 		});
 		
 		socket.on('changeNick', function(newNick, cb){
-			var temp = chat.validUserNick(newNick);
+			socketHandler.changeNick(socket._user, newNick, cb);
+			/*var temp = chat.validUserNick(newNick);
 			if(temp != 1){
 				socket.emit("chatMsg", {nick: "Server", msg: temp});
 				return;
@@ -155,7 +162,7 @@ var io = (function(){
 			
 			chat.changeNick(socket._user, newNick);		
 			
-			cb();
+			cb();*/
 		});
 
 		socket.on("inviteRoom", function(data){
@@ -202,10 +209,30 @@ var socketHandler = {
 	},
 	
 	leaveAllRooms: function(user){
-		var rooms = user.getRooms();
-		for(var i = 0; i < user.getRooms().length;i ++){
+		var rooms = user.getRooms();	//rooms is a reference, so it reflects all changes made by leaveRoom fnction
+		/*for(var i = 0; i < rooms.length; i++){
+			i=0;
 			this.leaveRoom(user, rooms[i]);
+		};*/
+		while(rooms.length != 0){
+			this.leaveRoom(user, rooms[0]);
+		}
+	},
+
+	changeNick: function(user, newNick, cb){
+		var temp = chat.validUserNick(newNick);
+		if(temp != 1){
+			cb(temp);
+			return;
 		};
+		var rooms = user.getRooms();
+		for(var i = 0; i < rooms.length; i++){
+			var room = rooms[i];
+			io.sockets.in(room.getId()).emit("changeNick", {oldNick: user.getNick(), newNick: newNick});
+		}
+		user.setNick(newNick);
+
+		cb({oldNick: user.getNick(), newNick: newNick});
 	}
 };
 
