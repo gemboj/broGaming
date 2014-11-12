@@ -134,7 +134,7 @@ var chatApp = {
 		});
 
 		$("#appsCon > *").on("click", function(evt){
-			tabs.addTab(new Tab($(this).attr("id") + chatApp.appId));
+			tabs.addTab(new Tab($(this).attr("id"), chatApp.appId));
 			chatApp.appId++;
 		});
 
@@ -441,13 +441,17 @@ var tabs = function(){
 		
 		var name = tab.getName();
 		$(tabs.getConId()).append(tab.getConHtml());
-		$(tab.getConId()).load("./apps/" + name + "/" + name + ".html");
-		
+		//$(tab.getConId()).load("./apps/" + name + "/" + name + ".html");
+		$(tab.getConId()).load("./apps/lobby/lobby.html", function(){
+			tabs.changeTab(tab);
+			new Lobby(tab, this);
+			//$.getScript("http://localhost:4000/apps/lobby/lobby.js");
+		});
 		tabs.changeTab(tab);
 		
-        $.getScript("http://localhost:4000/apps/" + name + "/" + name + ".js", function(data, status, jqxhr){
+        /*$.getScript("http://localhost:4000/apps/" + name + "/" + name + ".js", function(data, status, jqxhr){
 			var a = 5;
-		});
+		});*/
 	};
 	
 	/*tabs.delTab = function(tabId){
@@ -489,20 +493,25 @@ var tabs = function(){
 	return tabs;
 }();
 
-function Tab(name){
+function Tab(name, id){
 	this._name = name;
+	this._id = id;
 	this._header = this.makeHeader(name);
 	
-	this._navId = "#" + name + "Nav";
-	this._conId = "#" + name + "Con";
+	this._navId = "#" + name + id + "Nav";
+	this._conId = "#" + name + id + "Con";
 	
-	this._navHtml = '<li id="' + name + 'Nav"><a href=' + this._conId + '>' + this._header + '</a></li>';
-	this._conHtml = '<div id="' + name + 'Con" class="tab"></div>';
+	this._navHtml = '<li id="' + name + id + 'Nav"><a href=' + this._conId + '>' + this._header + '</a></li>';
+	this._conHtml = '<div id="' + name + id + 'Con" class="tab"></div>';
 };
 
 Tab.prototype = {
 	getName: function(){
 		return this._name;
+	},
+
+	getId: function(){
+		return this._id;
 	},
 	
 	getNavId: function(){
@@ -536,6 +545,24 @@ Tab.prototype = {
 		return name;
 	}
 };
+
+function Lobby(tab, jQElem){
+	//this._appName = tab.getName();
+	//this._appId = appId;
+	$(jQElem).find("#start").click(function(){
+		alert("Starting " + tab.getName() + tab.getId());
+	})
+}
+
+Lobby.prototype = {
+	getAppName: function(){
+		return this._appName;
+	},
+
+	getAppId: function(){
+		return this._appId;
+	}
+}
   
   
 $("document").ready(function(){
