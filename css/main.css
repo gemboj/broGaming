@@ -7,14 +7,14 @@ body {
 	font: 20px Helvetica, Arial;
 }
 
-button, .navigation a, .information span{
+button, .navigation a, .information span, .playerCtxMenu li{
 	background: #80b030;
 	border: none;
 	transition: background linear 0.15s;
 	color: #ffffff;
 }
 
-button:hover, .navigation a:hover, .information span:hover{
+button:hover, .navigation a:hover, .information span:hover, .playerCtxMenu li:hover{
 	background: #90d040;
 	color: #ffffff;
 }
@@ -52,7 +52,7 @@ button:hover, .navigation a:hover, .information span:hover{
 	resize: none;
 	flex: 0 0 250px;
 	//box-shadow: 0 0 15px #000000 inset;
-	background: #f0f0f0;
+	background: #606060;
 }
 
 #messageForm { 
@@ -121,7 +121,7 @@ button:hover, .navigation a:hover, .information span:hover{
 .navigation{
 	flex: 1 0 auto;
 	list-style: none;
-	background: #505050;
+	background: #202020;
 }
 
 .navigation li{
@@ -146,6 +146,10 @@ button:hover, .navigation a:hover, .information span:hover{
 	flex: 1 0;
 	flex-direction: row;
 	flex-wrap: wrap;
+}
+
+.content{
+	background: #505050;
 }
 
 .content > .selected{
@@ -178,6 +182,15 @@ button:hover, .navigation a:hover, .information span:hover{
     height: 30px;
 }
 
+.playerCtxMenu{
+	position: fixed;
+	overflow: auto;
+	background: #006600;
+}
+
+.playerCtxMenu > ul{
+	display: none;
+}
 
 .canvas{
 	flex: 1 1 100%;

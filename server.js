@@ -104,7 +104,7 @@ var io = (function(){
 			}
 
 			socket._user = chat.newUser(nick, socket);
-			socketHandler.joinRoom(socket._user, chat.rooms[0]);
+			chatHandler.joinRoom({socketUser: socket._user, room: chat.rooms[0]});
 
 			return next();
 		}
@@ -114,77 +114,30 @@ var io = (function(){
 	
 	io.sockets.on('connection', function(socket) {
         socket.on("broadcastRoom", function(data){
-            io.sockets.in(data.roomId).emit(data.event, data);
+            io.sockets.in(data.roomId).emit(data.action, data);
         });
-        
-		socket.on("getRooms", function(nick, cb){
-			if(nick){
-				cb(chat.findUser(nick).serializeRooms());
-				return;
-			};
-			
-			cb(socket._user.serializeRooms());
-			return;
-		});
-		
-		socket.on("createRoom", function(roomName, cb){
-			var room = chat.newRoom(roomName);
-			socketHandler.joinRoom(socket._user, room);
-			cb(room.serialize(socket._user));
-		});
 
-		socket.on('joinRoom', function(roomId, cb){
-			var room = chat.findRoom(roomId);
-			socketHandler.joinRoom(socket._user, room);
-			cb(room.serialize(socket._user));
-		});
-
-		socket.on('leaveRoom', function(roomId){
-			var room = chat.findRoom(roomId);
-			socketHandler.leaveRoom(socket._user, room);
-		})
-	
-		socket.on('chatMsg', function(data) {		
-			io.sockets.in(data.roomId).emit("chatMsg", data);
-		});
-
-		socket.on('delRoom', function(roomId){
-			socketHandler.delRoom(socket._user, roomId);
-		});
-		
-		socket.on('changeNick', function(newNick, cb){
-			socketHandler.changeNick(socket._user, newNick, cb);
-			/*var temp = chat.validUserNick(newNick);
-			if(temp != 1){
-				socket.emit("chatMsg", {nick: "Server", msg: temp});
-				return;
-			};			
-			
-			chat.changeNick(socket._user, newNick);		
-			
-			cb();*/
-		});
-
-		socket.on("inviteRoom", function(data){
-			var user = chat.findUser(data.inviteReceiver);
-			user.getSocket().emit("inviteRoom", data);
-		})
-		
-		socket.on("validateNick", function(nick, cb){
-			if(chat.validUserNick(nick) === 1){
-				cb(1);
-				return;
+		socket.on("privateMessage", function(data){
+			var user = chat.findUser(data.receiver);
+			if(user != -1){
+				user.getSocket().emit(data.messageContent, data);
 			}
-			cb(0);
+			else{
+				socket.emit("chatMsg", {nick: "Server", msg: "User " + data.receiver + " does not exist. MessageContent: " + data.messageContent});
+			}
+
 		});
 
-
+		socket.on("chat", function(data, cb){
+			data.socketUser = socket._user;
+			chatHandler[data.action](data, cb);
+		});
 		
 		socket.on('disconnect', function(data) {
 			var user = chat.findUserS(socket);
 			
 			if(user){
-				socketHandler.leaveAllRooms(user);
+				chatHandler.leaveAllRooms(user);
 			}
 		});
 		
@@ -193,19 +146,63 @@ var io = (function(){
 	return io;
 })();
 
-var socketHandler = {
-	joinRoom: function(user, room){
-		io.sockets.in(room.getId()).emit("addUser", {nick: user.getNick(), roomId: room.getId()});
-		user.joinRoom(room);
+var chatHandler = {
+	createRoom: function(data, cb){
+		var room = chat.newRoom(data.roomName, data.socketUser, data.appName);
+		data.room = room;
+		chatHandler.joinRoom(data);
+		cb(room.serialize(data.socketUser));
+	},
 
-		user.getSocket().join(room.getId());
+	validateNick: function(data, cb){
+		if(chat.validUserNick(data.nick) === 1){
+			cb(1);
+			return;
+		}
+		cb(0);
+	},
+
+	inviteRoom: function(data, cb){//roomId, roomName, nick, appName
+		var user = chat.findUser(data.inviteReceiver);
+		var room = chat.findRoom(data.roomId);
+
+		if(room.hasUser(user)){
+			data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "User " + user.getNick() + " already in room: " + room.getName()});
+		}
+		else{
+			delete data.socketUser;
+			user.getSocket().emit("inviteRoom", data);
+		}
+	},
+
+	joinRoom: function(data, cb){
+		var room = data.room ? data.room : chat.findRoom(data.roomId);
+		var user = data.socketUser;
+
+		if(room.hasUser(user)){
+			data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Already in room: " + room.getName()});
+		}
+		else if(!room.isLocked()){
+			io.sockets.in(room.getId()).emit("addUser", {nick: user.getNick(), roomId: room.getId()});
+			user.joinRoom(room);
+
+			user.getSocket().join(room.getId());
+			if(cb) {
+				cb(room.serialize(data.socketUser));
+			}
+		}
+		else{
+			data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Room is locked."});
+		}
 	},
 	
-	leaveRoom: function(user, room){
-		user.getSocket().leave(room.getId());
+	leaveRoom: function(data, cb){
+		var room = data.room ? data.room : chat.findRoom(data.roomId);
 
-		user.leaveRoom(room);
-		io.sockets.in(room.getId()).emit("delUser", {nick: user.getNick(), roomId: room.getId()});
+		data.socketUser.getSocket().leave(data.roomId);
+		data.socketUser.leaveRoom(room);
+
+		io.sockets.in(room.getId()).emit("userDisconnected", {nick: data.socketUser.getNick(), roomId: room.getId()});
 	},
 	
 	leaveAllRooms: function(user){
@@ -215,24 +212,80 @@ var socketHandler = {
 			this.leaveRoom(user, rooms[i]);
 		};*/
 		while(rooms.length != 0){
-			this.leaveRoom(user, rooms[0]);
+			this.leaveRoom({socketUser: user, room: rooms[0]});
 		}
 	},
 
-	changeNick: function(user, newNick, cb){
-		var temp = chat.validUserNick(newNick);
+	getRooms: function(data, cb){
+		cb(data.socketUser.serializeRooms());
+	},
+
+	changeNick: function(data, cb){//user, newNick, cb){
+		var temp = chat.validUserNick(data.newNick);
 		if(temp != 1){
 			cb(temp);
 			return;
 		};
-		var rooms = user.getRooms();
+		var rooms = data.socketUser.getRooms();
 		for(var i = 0; i < rooms.length; i++){
 			var room = rooms[i];
-			io.sockets.in(room.getId()).emit("changeNick", {oldNick: user.getNick(), newNick: newNick});
+			io.sockets.in(room.getId()).emit("changeNick", {oldNick: data.socketUser.getNick(), newNick: data.newNick});
 		}
-		user.setNick(newNick);
+		data.socketUser.setNick(data.newNick);
 
-		cb({oldNick: user.getNick(), newNick: newNick});
+		cb({oldNick: data.socketUser.getNick(), newNick: data.newNick});
+	},
+
+	chatMsg: function(data, cb){
+		io.sockets.in(data.roomId).emit("chatMsg", {nick: data.nick, msg: data.msg});
+	},
+
+	lockRoom: function(data, cb){//roomId
+		var room = chat.findRoom(data.roomId);
+		if(room != -1){
+			if(data.socketUser == room.getHost()){
+				if(!room.isLocked()){
+					room.lock();
+					io.sockets.in(data.roomId).emit("chatMsg", {nick: "Server", msg: "Room locked."});
+					if(cb){
+						cb();
+					}
+				}
+				else{
+					data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Room already locked."});
+				}
+			}
+			else{
+				data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Only room host can lock room."});
+			}
+		}
+		else{
+			data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Room not found."});
+		}
+	},
+
+	unlockRoom: function(data, cb){//roomId
+		var room = chat.findRoom(data.roomId);
+		if(room != -1){
+			if(data.socketUser == room.getHost()){
+				if(room.isLocked()){
+					room.unlock();
+					io.sockets.in(data.roomId).emit("chatMsg", {nick: "Server", msg: "Room unlocked."});
+					if(cb){
+						cb();
+					}
+				}
+				else{
+					data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Room already unlocked."});
+				}
+			}
+			else{
+				data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Only room host can unlock room."});
+			}
+		}
+		else{
+			data.socketUser.getSocket().emit("chatMsg", {nick: "Server", msg: "Room not found."});
+		}
 	}
 };
 
