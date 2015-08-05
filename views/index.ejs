@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>BroGaming</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src='/javascripts/angular.js'></script>
+    <script src='/javascripts/mvc/chat.js'></script>
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <body ng-app="broGaming" ng-controller="chatModel">
+    <h1>Welcome to BroGaming</h1>
+    <form ng-submit="sendMessage()">
+      Message: <input type="text" name="message" ng-model="message" /><br>
+      <input type="submit" value="Send" />
+    </form>
   </body>
 </html>
