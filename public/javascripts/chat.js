@@ -5,18 +5,12 @@ if(window.chat !== undefined){
 }
 var chat = {};
 
-chat.useCase = function(dep1){
-    this.dep1 = dep1;
+chat.UseCase = function(output){
+    this.output = output;
 
-    this.do = function(){
-        console.log('sdfsdfsdf');
-    }
-}
-chat.useCase2 = function(dep1){
-    this.dep1 = dep1;
-
-    this.do = function(){
-
+    this.do = function(data){
+        //this.output(data);
+        return 'blabla';
     }
 }
 window.chat = chat;

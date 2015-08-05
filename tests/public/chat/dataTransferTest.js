@@ -1,11 +1,18 @@
-describe("dataTransferTest", function () {
+describe("Data transfer simply transfers data to useCase output", function () {
     beforeEach(function () {
-        this.useCase = new UseCase(function(data){return data});
+
+        this.a = function(data){
+            return data
+        }
+
+        spyOn(this, 'a');
+
+        this.useCase = new UseCase(this.a);
+
+        this.useCase.do('some data');
     });
 
-    it("should store added observers", function () {
-
-
-        expect(this.useCase.do('blabla')).toBe('blabla');
+    it("should call output function with given parameter", function () {
+        expect(this.a).toHaveBeenCalledWith('some data');
     });
 });
