@@ -1,7 +1,8 @@
-function useCase(dep1){
-    this.dep1 = dep1;
+function UseCase(output){
+    this.output = output;
 
-    this.do = function(){
-        console.log('sdfsdfsdf');
+    this.do = function(data){
+        //this.output(data);
+        return 'sdfsdf';
     }
 }
