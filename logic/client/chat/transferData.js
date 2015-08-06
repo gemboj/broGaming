@@ -1,4 +1,4 @@
-function DataTransfer(output){
+function TransferData(output){
     this.output = output;
 
     this.do = function(data){

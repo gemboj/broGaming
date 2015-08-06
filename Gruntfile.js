@@ -1,10 +1,10 @@
 var grunt = require('grunt');
 
-grunt.registerTask('default', 'default task description', ['concatTestable', 'copyResources']);
+grunt.registerTask('default', 'default task description', ['concatLogicRequireJs']);
 
-grunt.registerTask('concatTestable', 'merges javascript logic files into one library with a proper namespace', function(){
+grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into one requireJs library', function(){
     var resourcePath = './logic/',
-        outputPath = './resources/';
+        outputPath = './development/';
 
     var output = {};
     grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
@@ -24,16 +24,13 @@ grunt.registerTask('concatTestable', 'merges javascript logic files into one lib
     });
 
     for(subDir in output){
-        output[subDir].content = "(function(window){\n\n"
-            + "if(window." + output[subDir].libName + " !== undefined){\n"
-            + "\tthrow('windows." + output[subDir].libName + " is already defined!');\n"
-            + "}\n"
+        output[subDir].content = "define('" + output[subDir].libName + "', function (){\n"
             + "var " + output[subDir].libName + " = {};\n"
 
             + output[subDir].content
 
-            + "\nwindow." + output[subDir].libName + " = " + output[subDir].libName + ";\n\n"
-            + '})(window);\n';
+            + "\n\nreturn " + output[subDir].libName + ";\n"
+            + "});";
 
         //console.log(output[subDir].path);
         grunt.file.write(output[subDir].path, output[subDir].content);
@@ -41,10 +38,10 @@ grunt.registerTask('concatTestable', 'merges javascript logic files into one lib
 });
 
 grunt.registerTask('copyResources', 'copies all resources to main directory', function(){
-    var resourcePublicPath = './resources/public',
-        resourcePrivatePath = './resources/private',
-        outputPublicPath = './public/',
-        outputPrivatePath = './private/';
+    var resourcePublicPath = './development/client',
+        resourceServerPath = './development/server',
+        outputPublicPath = './production/client/',
+        outputServerPath = './production/server/';
 
     grunt.file.recurse(resourcePublicPath, function (abspath, rootdir, subdir, filename) {
         var fileContent = grunt.file.read(abspath);
@@ -52,9 +49,9 @@ grunt.registerTask('copyResources', 'copies all resources to main directory', fu
         grunt.file.write(outputPublicPath + subdir + '/' + filename, fileContent);
     });
 
-    grunt.file.recurse(resourcePrivatePath, function (abspath, rootdir, subdir, filename) {
+    grunt.file.recurse(resourceServerPath, function (abspath, rootdir, subdir, filename) {
         var fileContent = grunt.file.read(abspath);
 
-        grunt.file.write(outputPrivatePath + subdir + '/' + filename, fileContent);
+        grunt.file.write(outputServerPath + subdir + '/' + filename, fileContent);
     });
 });

@@ -1,4 +1,4 @@
-describe("Data transfer simply transfers data to useCase output", function () {
+describe("Transfers data to useCase output", function () {
     beforeEach(function () {
 
         this.a = function(data){
@@ -7,7 +7,7 @@ describe("Data transfer simply transfers data to useCase output", function () {
 
         spyOn(this, 'a');
 
-        this.useCase = new UseCase(this.a);
+        this.useCase = new TransferData(this.a);
 
         this.useCase.do('some data');
     });

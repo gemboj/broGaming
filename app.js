@@ -11,16 +11,24 @@ var users = require('./routes/users');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+// uncomment after placing your favicon in /client
+//app.use(favicon(__dirname + '/client/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+if(app.get('env') === 'development'){
+    app.use(express.static(path.join(__dirname, 'development/client')));
+    app.set('views', path.join(__dirname, 'development/client/views'));
+}
+else{
+    throw 'lack of production setup';
+}
+
 
 app.use('/', routes);
 app.use('/users', users);
