@@ -1,7 +1,7 @@
-function UseCase(output){
+function DataTransfer(output){
     this.output = output;
 
     this.do = function(data){
         this.output(data);
     }
-}
+};

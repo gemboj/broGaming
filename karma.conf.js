@@ -13,8 +13,8 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'resources/public/javascripts/chat/dataTransfer.js',
-            'tests/public/chat/dataTransferTest.js'
+            'logic/**/*.js',
+            'logicTests/**/*.js'
         ],
 
         // list of files to exclude

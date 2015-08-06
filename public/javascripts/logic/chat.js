@@ -5,14 +5,13 @@ if(window.chat !== undefined){
 }
 var chat = {};
 
-chat.UseCase = function(output){
+chat.DataTransfer = function(output){
     this.output = output;
 
     this.do = function(data){
-        //this.output(data);
-        return 'blabla';
+        this.output(data);
     }
-}
+};
 window.chat = chat;
 
 })(window);
