@@ -1,7 +1,9 @@
 function TransferData(output){
-    this.output = output;
+    var that = this;
+
+    that.output = output;
 
     this.do = function(data){
-        this.output(data);
+        that.output(data);
     }
 };

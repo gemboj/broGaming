@@ -1,4 +1,4 @@
-define('chat', function (){
+define(function (){
 var chat = {};
 
 chat.EmptyUC = function(output){

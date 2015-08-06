@@ -1,11 +1,13 @@
-define('chat', function (){
+define(function (){
 var chat = {};
 
 chat.TransferData = function(output){
-    this.output = output;
+    var that = this;
+
+    that.output = output;
 
     this.do = function(data){
-        this.output(data);
+        that.output(data);
     }
 };
 

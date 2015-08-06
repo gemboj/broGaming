@@ -1,4 +1,4 @@
-(function(angular){
+define(['angular'], function (angular){
     var chatController = {},
         scope = null;
 
@@ -17,8 +17,6 @@
         $scope.sendMessage = chatController.sendMessage;
     };
 
-    chatController.registerOnSendMessage(function(message){alert(message)});
-
     angular.module('broGaming', [])
         .factory('chatController', [function(){
             return chatController;
@@ -29,5 +27,5 @@
             chatController.init($scope);
         }]);
 
-    window.MVC !== undefined ? window.MVC.chat = chatController : window.MVC = {chat: chatController};
-})(angular);
+    return chatController;
+});

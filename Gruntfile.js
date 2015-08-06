@@ -24,7 +24,7 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
     });
 
     for(subDir in output){
-        output[subDir].content = "define('" + output[subDir].libName + "', function (){\n"
+        output[subDir].content = "define(function (){\n"
             + "var " + output[subDir].libName + " = {};\n"
 
             + output[subDir].content
