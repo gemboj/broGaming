@@ -18,7 +18,7 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
 
         output[subdir] = (output[subdir] === undefined ? {} : output[subdir]);
 
-        output[subdir].path = outputPath + pathDir + 'javascripts/logic/' + libName + '.js';
+        output[subdir].path = outputPath + pathDir + libName + '.js';
         output[subdir].content = (output[subdir].content === undefined ? '' : output[subdir].content) + '\n' + newFileContent;
         output[subdir].libName = libName;
     });
@@ -74,4 +74,13 @@ function wrapNodeJsModule(content, libName){
         + content
 
         + "\n\nmodule.exports = " + libName + ";";
+/*
+    return "define(function (){\n"
+        + "var " + libName + " = {};\n"
+
+        + content
+
+        + "\n\nreturn " + libName + ";\n"
+        + "});";
+*/
 }

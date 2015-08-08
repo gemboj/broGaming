@@ -8,6 +8,18 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+require('./development/server/javascripts/requireMain');
+/*
+var requirejs = require('requirejs');
+requirejs.config({
+    nodeRequire: require,
+    baseUrl: 'development/server/javascripts',
+    paths: {
+        requireMain: 'requireMain',
+    }
+});
+*/
+
 var app = express();
 
 // view engine setup
@@ -24,6 +36,10 @@ app.use(cookieParser());
 if(app.get('env') === 'development'){
     app.use(express.static(path.join(__dirname, 'development/client')));
     app.set('views', path.join(__dirname, 'development/client/views'));
+
+    /*requirejs(['requireMain'], function(requireMain){
+        //only need to load module
+    });*/
 }
 else{
     throw 'lack of production setup';
