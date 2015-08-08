@@ -24,16 +24,18 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
     });
 
     for(subDir in output){
-        output[subDir].content = "define(function (){\n"
-            + "var " + output[subDir].libName + " = {};\n"
+        var wrappedContent = '';
 
-            + output[subDir].content
+        if(output[subDir].path.indexOf('client') > -1){
+            wrappedContent = wrapRequireJsModule(output[subDir].content, output[subDir].libName);
+        }
+        else{
+            wrappedContent = wrapNodeJsModule(output[subDir].content, output[subDir].libName);
+        }
 
-            + "\n\nreturn " + output[subDir].libName + ";\n"
-            + "});";
 
         //console.log(output[subDir].path);
-        grunt.file.write(output[subDir].path, output[subDir].content);
+        grunt.file.write(output[subDir].path, wrappedContent);
     }
 });
 
@@ -55,3 +57,21 @@ grunt.registerTask('copyResources', 'copies all resources to main directory', fu
         grunt.file.write(outputServerPath + subdir + '/' + filename, fileContent);
     });
 });
+
+function wrapRequireJsModule(content, libName){
+    return "define(function (){\n"
+        + "var " + libName + " = {};\n"
+
+        + content
+
+        + "\n\nreturn " + libName + ";\n"
+        + "});";
+}
+
+function wrapNodeJsModule(content, libName){
+    return "var " + libName + " = {};\n"
+
+        + content
+
+        + "\n\nmodule.exports = " + libName + ";";
+}
