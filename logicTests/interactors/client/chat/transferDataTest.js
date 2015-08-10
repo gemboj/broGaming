@@ -1,4 +1,4 @@
-describe("Transfers data to useCase output", function () {
+xdescribe("Transfers data to useCase output", function () {
     beforeEach(function () {
 
         this.a = function(data){
@@ -12,7 +12,7 @@ describe("Transfers data to useCase output", function () {
         this.useCase.do('some data');
     });
 
-    it("should call output function with given parameter", function () {
+    it("should call output function with given argument", function () {
         expect(this.a).toHaveBeenCalledWith('some data');
     });
 });

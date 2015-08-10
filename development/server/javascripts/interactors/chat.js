@@ -1,5 +1,6 @@
 var chat = {};
 
+
 chat.EmptyUC = function(output){
     var that = this;
 

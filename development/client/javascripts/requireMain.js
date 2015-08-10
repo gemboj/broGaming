@@ -1,10 +1,10 @@
 require.config({
     paths: {
         angular: 'vendors/angular',
-        chat: 'logic/chat',
-        chatController: 'mvc/chatController',
+        chat: 'interactors/chat',
+        controllers: 'plugins/controllers',
         io: 'vendors/socket.io',
-        dataChannel: 'dataChannel/dataChannel'
+        dataChannel: 'plugins/dataChannel'
     },
     shim: {
         angular: {
@@ -16,8 +16,17 @@ require.config({
     }
 });
 
-require(['chat', 'chatController', 'dataChannel'], function (chat, chatController, dataChannel) {
+require(['chat', 'controllers', 'dataChannel', 'angular'], function (chat, controllers, dataChannel, angular) {
+    createAngularController(angular, 'chatController', function($scope){
+        var chatController = new controllers.chatController($scope);
+        chatController.registerOnSendMessage(function(message){console.log(message)});
+    });
 
-    var transferData = new chat.TransferData(dataChannel.send);
-    chatController.registerOnSendMessage(dataChannel.send);
 });
+
+function createAngularController(angular, name, cb){
+    angular.module('broGaming', [])
+        .controller(name, ['$scope', function ($scope) {
+            cb($scope);
+        }]);
+}

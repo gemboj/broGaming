@@ -1,4 +1,4 @@
-define(function (){
+define([], function (){
 var chat = {};
 
 chat.TransferData = function(output){

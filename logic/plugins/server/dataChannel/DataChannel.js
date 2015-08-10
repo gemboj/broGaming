@@ -1,6 +1,11 @@
 function DataChannel(socketio){
+    EventListener.call(this);
     var that = this;
     that.socket = socketio;
+
+    that.showMessage = that.createEvent('showMessage', function(cb){
+        cb('fgvfvnvbn message');
+    });
 
     that.connect = function(data) {
         alert('connecting: ' + data);
@@ -14,3 +19,5 @@ function DataChannel(socketio){
         alert('receiving: ' + data);
     };
 }
+
+DataChannel.prototype = Object.create(EventListener);

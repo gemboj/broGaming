@@ -1,4 +1,4 @@
-define(function (){
+define([], function (){
 var dataChannel = {};
 
 dataChannel.DataChannel = function(socketio){
@@ -16,7 +16,7 @@ dataChannel.DataChannel = function(socketio){
     that.receive = function(data) {
         alert('receiving: ' + data);
     };
-};
+}
 
 return dataChannel;
 });

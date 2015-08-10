@@ -1,8 +1,14 @@
 var dataChannel = {};
+var plugins = require("./../plugins");
 
 dataChannel.DataChannel = function(socketio){
+    plugins.EventListener.call(this);
     var that = this;
     that.socket = socketio;
+
+    that.showMessage = that.createEvent('showMessage', function(cb){
+        cb('fgvfvnvbn message');
+    });
 
     that.connect = function(data) {
         alert('connecting: ' + data);
@@ -16,5 +22,7 @@ dataChannel.DataChannel = function(socketio){
         alert('receiving: ' + data);
     };
 }
+
+dataChannel.DataChannel.prototype = Object.create(plugins.EventListener);
 
 module.exports = dataChannel;
