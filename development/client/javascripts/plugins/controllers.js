@@ -1,20 +1,44 @@
 define(["/../plugins"], function (plugins){
 var controllers = {};
 
-controllers.chatController = function(scope){
+controllers.ChatController = function(scope){
     plugins.EventListener.call(this);
     var that = this;
 
-    that.scope = scope;
+    var scope = scope;
 
-    that.scope.message = '';
 
-    that.scope.sendMessage = that.createEvent('sendMessage', function(cb){
-        cb(that.scope.message);
+    scope.message = 'fgfghfgh';
+    scope.login = 'fvnvn';
+    scope.error = '';
+
+    scope.sendMessage = that.createEvent('sendMessage', function(cb){
+        cb(scope.message);
     });
+
+    scope.connect = that.createEvent('connect', function(cb){
+        cb({username: scope.message, password: 'password'});
+
+    });
+
+    that.showLogin = function(username){
+        scope.login = username;
+        applyChanges()
+    }
+
+    that.showError = function(error){
+        scope.error = error;
+        applyChanges()
+    }
+
+    var applyChanges = function(){
+        if(!scope.$$phase) {
+            scope.$apply();
+        }
+    }
 }
 
-controllers.chatController.prototype = Object.create(plugins.EventListener);
+controllers.ChatController.prototype = Object.create(plugins.EventListener);
 
 return controllers;
 });

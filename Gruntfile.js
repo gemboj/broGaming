@@ -4,10 +4,11 @@ grunt.registerTask('default', 'default task description', ['concatLogicRequireJs
 
 grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into one requireJs library', function(){
     var resourcePath = './logic/',
-        outputPath = './development/';
+        outputPath = './development/',
+        dependencyPath = './dependencies/';
 
     var output = {};
-    var tree = {parent: null, name: 'treeRoot', content: ''};
+    //var tree = {parent: null, name: 'treeRoot', content: ''};
     grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
         var fileContent = grunt.file.read(abspath),
             libName = /(\w+)\/$/.exec(subdir + '/')[1];
@@ -32,7 +33,7 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
 
             //console.log(pathDir + '/');
 
-            var mystr = pathDir + '/';
+            /*var mystr = pathDir + '/';
             var regex = /(\w+)\//g;
             var result;
 
@@ -47,18 +48,19 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
                 else {
                     treeNode = treeNode[result[1]];
                 }
-            }
+            }*/
+
             //console.log(regex.exec()[1]);
             //console.log(regex.exec(subdir + '/')[1]);
             /*for(var i = 1; i < result.length; ++i){
              console.log(result[i]);
              }*/
 
-            var dependencies = [],
+            /*var dependencies = [],
                 dependenciesRegEx = /Object.create\((\w+)\)/g;
             while ((result = dependenciesRegEx.exec(fileContent)) !== null) {
                 dependencies.push(result[1]);
-            }
+            }*/
 
             var className = /function\s+(\w+)\(/.exec(fileContent)[1];
             var newFileContent = fileContent.replace(/(function)\s+(\w+)\(/, "$2 = $1(");
@@ -68,23 +70,33 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
             output[index] = (output[index] === undefined ? {} : output[index]);
 
             output[index].path = outputPath + platform + 'javascripts/' + pathDir + '.js';
+            output[index].dependenciesPath = dependencyPath + subdir + '.json';
             output[index].content = (output[index].content === undefined ? '' : output[index].content) + '\n' + newFileContent;
             output[index].libName = libName;
-            output[index].dependencies = dependencies;
-            output[index].node = treeNode;
+            //output[index].dependencies = dependencies;
+            //output[index].node = treeNode;
 
-            treeNode.content += fileContent;
+            //treeNode.content += fileContent;
         }
     });
     //console.log(tree);
     for(subDir in output){
         var wrappedContent = '';
-        var resolvedDependencies = resolveDependencies(output[subDir].dependencies, output[subDir].node);
-        for(var i = 0; i < resolvedDependencies.classes.length; ++i){
+
+        var dependenciesJSON = null;
+        try {
+            dependenciesJSON = grunt.file.readJSON(output[subDir].dependenciesPath);
+        }
+        catch(e){
+
+        }
+
+        var resolvedDependencies = resolveDependencies(dependenciesJSON, output[subDir]);
+        /*for(var i = 0; i < resolvedDependencies.classes.length; ++i){
             var className = resolvedDependencies.classes[i],
                 libName = resolvedDependencies.args[i];
             output[subDir].content = output[subDir].content.replace(new RegExp(className, 'g'), libName + '.' + className);
-        }
+        }*/
 
         if(output[subDir].path.indexOf('client') > -1){
             wrappedContent = wrapRequireJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
@@ -156,7 +168,7 @@ grunt.registerTask('copyResources', 'copies all resources to main directory', fu
         grunt.file.write(outputServerPath + subdir + '/' + filename, fileContent);
     });
 });
-
+/*
 function resolveDependencies(dependencies, treeNode){
     var resolvedDependencies = {paths: [], args: [], classes: []};
     for(var i = 0; i < dependencies.length; ++i) {
@@ -178,6 +190,22 @@ function resolveDependencies(dependencies, treeNode){
         resolvedDependencies.paths.push('"' + dependencyPath + '"');
         resolvedDependencies.args.push(dependencyName);
         resolvedDependencies.classes.push(dependencies[i]);
+    }
+
+    return resolvedDependencies;
+}*/
+
+function resolveDependencies(dependenciesJSON, output){
+    var resolvedDependencies = {paths: [], args: []};
+
+    if(dependenciesJSON !== null){
+        var dependencies = dependenciesJSON.dependencies;
+        for(var i = 0; i < dependencies.length; ++i){
+            resolvedDependencies.paths.push('"' + dependencies[i].path + '"');
+            resolvedDependencies.args.push(dependencies[i].module);
+            //moduleContent = moduleContent.replace(dependencies[i].class, dependencies[i].module + '.' + dependencies[i].class);
+            output.content = output.content.replace(new RegExp(dependencies[i].class, 'g'), dependencies[i].module + '.' + dependencies[i].class);
+        }
     }
 
     return resolvedDependencies;

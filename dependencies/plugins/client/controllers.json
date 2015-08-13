@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : "/../plugins",
+      "module" : "plugins",
+      "class" : "EventListener"
+    }
+  ]
+}

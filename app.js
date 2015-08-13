@@ -8,18 +8,6 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-require('./development/server/javascripts/requireMain');
-/*
-var requirejs = require('requirejs');
-requirejs.config({
-    nodeRequire: require,
-    baseUrl: 'development/server/javascripts',
-    paths: {
-        requireMain: 'requireMain',
-    }
-});
-*/
-
 var app = express();
 
 // view engine setup

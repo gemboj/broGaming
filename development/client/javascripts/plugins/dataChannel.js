@@ -1,22 +1,64 @@
-define([], function (){
+define(["/../plugins"], function (plugins){
 var dataChannel = {};
 
-dataChannel.DataChannel = function(socketio){
+dataChannel.DataChannel = function(socketio, address){
+    plugins.EventListener.call(this);
     var that = this;
-    that.socket = socketio;
+    var socketio = socketio;
+    var socket = null;
+    var address = address;
 
-    that.connect = function(data) {
-        alert('connecting: ' + data);
+    var chatEventNames = [
+        'receiveMessage'
+    ];
+    that.chat = {
+        send: function(data, cb){
+            send('chat', data, cb)
+        }
     };
 
-    that.send = function(data) {
-        alert('sending: ' + data);
+    for(var i = 0; i < chatEventNames.length; ++i){
+        that.chat[chatEventNames[i]] = that.createEvent(chatEventNames[i], function(cb, data){
+                cb(data);
+            },
+            that.chat
+        );
+    }
+
+    that.connect = function(credentials){
+        socket = socketio.connect(address, { 'force new connection': true, query:  'username=' + credentials.username + '&password=' + credentials.password});
+
+        socket.on('connect', function(){
+            connected(credentials.username);
+        });
+
+        socket.on('error', error);
+
+        socket.on('chat', function(data){
+            that.chat[data.type](data);
+        });
     };
 
-    that.receive = function(data) {
-        alert('receiving: ' + data);
+    send = function(type, data, cb){
+        error('Not connecter');
     };
+
+    connected = that.createEvent('connected', function(cb, username){
+        cb(username);
+    });
+
+    that.registerOnConnected(function(){
+        send = function(type, data, cb){
+            socket.emit(type, data, cb);
+        }
+    });
+
+    error = that.createEvent('error', function(cb, message){
+        cb(message);
+    });
 }
+
+dataChannel.DataChannel.prototype = Object.create(plugins.EventListener);
 
 return dataChannel;
 });

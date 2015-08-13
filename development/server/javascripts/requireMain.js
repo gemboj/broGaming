@@ -1,11 +1,12 @@
-var chat = require('./interactors/chat');
-var dataChannel = require('./plugins/dataChannel');
 
+module.exports = function(server){
+    var chat = require('./interactors/chat');
+    var dataChannel = require('./plugins/dataChannel');
+    var socketio = require('socket.io')().listen(server);
 
-var newDataChannel = new dataChannel.DataChannel({});
-newDataChannel.registerOnShowMessage(function(message){
-    console.log(message);
-});
-newDataChannel.showMessage();
-
-console.log('requireMain');
+    var newDataChannel = new dataChannel.DataChannel(socketio);
+    /*newDataChannel.registerOnShowMessage(function(message){
+        console.log(message);
+    });*/
+//newDataChannel.showMessage();
+};

@@ -1,23 +1,23 @@
 function DataChannel(socketio){
     EventListener.call(this);
     var that = this;
-    that.socket = socketio;
+    that.socketio = socketio;
 
-    that.showMessage = that.createEvent('showMessage', function(cb){
-        cb('fgvfvnvbn message');
+    that.chat = {};
+
+    socketio.use(function(socket, next){//authorization
+        var username = socket.handshake.query.username,
+            password = socket.handshake.query.password;
+
+        if (username){
+            return next();
+        }
+        next(new Error('Undefined nick'));
     });
 
-    that.connect = function(data) {
-        alert('connecting: ' + data);
-    };
+    socketio.sockets.on('connection', function(socket) {
 
-    that.send = function(data) {
-        alert('sending: ' + data);
-    };
-
-    that.receive = function(data) {
-        alert('receiving: ' + data);
-    };
+    })
 }
 
 DataChannel.prototype = Object.create(EventListener);
