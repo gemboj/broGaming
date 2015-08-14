@@ -14,7 +14,7 @@ function ChatController(scope){
     });
 
     scope.connect = that.createEvent('connect', function(cb){
-        cb({username: scope.message, password: 'password'});
+        cb({username: scope.message, password: 'a'});
 
     });
 

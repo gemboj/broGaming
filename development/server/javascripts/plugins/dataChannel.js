@@ -1,5 +1,5 @@
 var dataChannel = {};
-var plugins = require("./...../plugins");
+var plugins = require("./../plugins");
 
 dataChannel.DataChannel = function(socketio){
     plugins.EventListener.call(this);
@@ -8,14 +8,24 @@ dataChannel.DataChannel = function(socketio){
 
     that.chat = {};
 
-    socketio.use(function(socket, next){//authorization
+    socketio.use(function(socket, next){
         var username = socket.handshake.query.username,
             password = socket.handshake.query.password;
 
-        if (username){
-            return next();
+        try {
+            newConnection({
+                username: username, password: password, successCb: function () {
+                    next();
+                }
+            });
         }
-        next(new Error('Undefined nick'));
+        catch(e){
+            next(new Error(e));
+        }
+    });
+
+    var newConnection = that.createEvent('newConnection', function(cb, data){
+        cb(data);
     });
 
     socketio.sockets.on('connection', function(socket) {
