@@ -7,15 +7,16 @@ plugins.EventListener = function(){
     that.createEvent = function(name, cb, context){
         var eventCallbacks = [];
         var event = function(){
-            var args = [function(){
-                var cbArguments = [];
-                for(arg in arguments){
-                    cbArguments.push(arguments[arg]);
-                }
+            var args = [function(forListener){
+                /*var cbArguments = [];
+                 for(arg in arguments){
+                 cbArguments.push(arguments[arg]);
+                 }*/
                 for(var i = 0; i < eventCallbacks.length; ++i) {
-                    eventCallbacks[i].apply(this, cbArguments);
+                    forListener(eventCallbacks[i]);
                 }
             }];
+
             for(arg in arguments){
                 args.push(arguments[arg]);
             }

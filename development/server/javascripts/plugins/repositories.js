@@ -7,17 +7,19 @@ repositories.UserRepository = function(orm){
     that.orm = orm;
 
     that.findUsersByUsername = function(input){
-        orm.connect("mysql://root:@localhost/broGaming", function (err, db) {
-            if(err) throw err;
+        return new Promise(function (resolve, reject){
+            orm.connect("mysql://root:@localhost/broGaming", function (err, db) {
+                if(err) return reject(err);
 
-            var User = loadUser(db);
+                var User = loadUser(db);
 
-            User.find({ username: input.username }, function (err, users) {
-                if(err) throw err;
+                User.find({ username: input.username }, function (err, users) {
+                    if(err) return reject(err);
 
-                input.successCb(users);
+                    resolve(users);
+                });
             });
-        });
+        })
     };
 
     var loadUser = function(db){

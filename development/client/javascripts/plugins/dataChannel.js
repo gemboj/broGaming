@@ -18,11 +18,11 @@ dataChannel.DataChannel = function(socketio, address){
     };
 
     for(var i = 0; i < chatEventNames.length; ++i){
-        that.chat[chatEventNames[i]] = that.createEvent(chatEventNames[i], function(cb, data){
-                cb(data);
-            },
-            that.chat
-        );
+        that.chat[chatEventNames[i]] = that.createEvent(chatEventNames[i], function (action, data) {
+            action(function (listener) {
+                listener(data);
+            });
+        });
     }
 
     that.connect = function(credentials){
@@ -39,12 +39,14 @@ dataChannel.DataChannel = function(socketio, address){
         });
     };
 
-    send = function(type, data, cb){
+    var send = function(type, data, cb){
         error('Not connecter');
     };
 
-    connected = that.createEvent('connected', function(cb, username){
-        cb(username);
+    var connected = that.createEvent('connected', function (action, username) {
+        action(function (listener) {
+            listener(username);
+        });
     });
 
     that.registerOnConnected(function(){
@@ -53,8 +55,10 @@ dataChannel.DataChannel = function(socketio, address){
         }
     });
 
-    error = that.createEvent('error', function(cb, message){
-        cb(message);
+    var error = that.createEvent('error', function (action, message) {
+        action(function (listener) {
+            listener(message);
+        });
     });
 }
 

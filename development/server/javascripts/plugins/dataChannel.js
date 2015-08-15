@@ -12,20 +12,24 @@ dataChannel.DataChannel = function(socketio){
         var username = socket.handshake.query.username,
             password = socket.handshake.query.password;
 
-        try {
+
             newConnection({
                 username: username, password: password, successCb: function () {
                     next();
+                }, failCb: function(err){
+                    next(new Error(err));
                 }
             });
-        }
-        catch(e){
-            next(new Error(e));
-        }
     });
 
-    var newConnection = that.createEvent('newConnection', function(cb, data){
-        cb(data);
+    var newConnection = that.createEvent('newConnection', function (action, data) {
+        action(function (listener) {
+            listener(data).then(function(){
+                data.successCb();
+            }).catch(function(err){
+                data.failCb(err);
+            });
+        });
     });
 
     socketio.sockets.on('connection', function(socket) {

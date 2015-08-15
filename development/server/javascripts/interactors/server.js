@@ -1,21 +1,23 @@
 var server = {};
 
 
-server.Authenticate = function(findUsersByUsername){
+server.Authenticate = function(findUsersByUsername) {
     var that = this;
     that.findUsersByUsername = findUsersByUsername;
 
     that.wrongUserT = 'Wrong username or password';
 
-    that.do = function(input) {
-        that.findUsersByUsername({username: input.username, successCb: function(users){
-            if (users.length === 1 && users[0].password === input.password) {
-                input.successCb();
-            }
-            else {
+    that.do = function (input) {
+        return that.findUsersByUsername(input)
+            .then(function (users) {
+                if (users.length === 1 && users[0].password === input.password) {
+                    return;
+                }
                 throw that.wrongUserT;
-            }
-        }});
+            })
+            .catch(function (e) {
+                throw e;
+            })
     }
 }
 

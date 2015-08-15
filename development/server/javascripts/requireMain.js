@@ -20,7 +20,7 @@ module.exports = function(server){
     });*/
 //newDataChannel.showMessage();
 
-    /*function get() {
+    function get() {
         return new Promise(function(resolve, reject) {
             // Do the usual XHR stuff
            setTimeout(function(){resolve()}, 2000);
@@ -29,5 +29,5 @@ module.exports = function(server){
 
     get().then(function(){
         console.log('success');
-    })*/
+    })
 };

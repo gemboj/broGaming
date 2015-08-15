@@ -9,13 +9,16 @@ function ChatController(scope){
     scope.login = 'fvnvn';
     scope.error = '';
 
-    scope.sendMessage = that.createEvent('sendMessage', function(cb){
-        cb(scope.message);
+    scope.sendMessage = that.createEvent('sendMessage', function(action){
+        action(function(listener){
+            listener(scope.message);
+        });
     });
 
-    scope.connect = that.createEvent('connect', function(cb){
-        cb({username: scope.message, password: 'a'});
-
+    scope.connect = that.createEvent('connect', function (action) {
+        action(function (listener) {
+            listener({username: scope.message, password: 'a'});
+        });
     });
 
     that.showLogin = function(username){
