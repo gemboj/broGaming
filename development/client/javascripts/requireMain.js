@@ -4,7 +4,7 @@ require.config({
         //chat: 'interactors/chat',
         controllers: 'plugins/controllers',
         io: 'vendors/socket.io',
-        dataChannel: 'plugins/DataChannel',
+        dataChannel: 'plugins/dataChannel',
         dataChannelChatEvents: 'interactors/chat/dataChannelEvents',
         guiChatEvents: 'interactors/chat/guiEvents'
     },
@@ -18,15 +18,19 @@ require.config({
     }
 });
 
-require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel', 'angular', 'io'], function (dataChannelChatEvents, guiChatEvents, controllers, DataChannel, angular, io) {
-    var dataChannel = new DataChannel.DataChannel(io);
-
+require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel', 'angular', 'io'], function (dataChannelChatEvents, guiChatEvents, controllers, dataChannels, angular, io) {
+    var dataChannel = new dataChannels.DataChannel(io);
+    var chatChannel = new dataChannels.ChatChannel(dataChannel);
     createAngularController(angular, 'chatController', function($scope){
         var chatController = new controllers.ChatController($scope);
 
 
-        registerGuiChatEvents(dataChannel, chatController, guiChatEvents);
-        registerDataChannelChatEvents(dataChannel, chatController, dataChannelChatEvents);
+        chatController.registerOnSendMessage(chatChannel.send);
+        chatController.registerOnConnect(dataChannel.connect);
+
+        //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
+        dataChannel.registerOnConnected(chatController.showLogin);
+        dataChannel.registerOnError(chatController.showError);
     });
 });
 
@@ -46,12 +50,17 @@ function createAngularController(angular, name, cb){
     });
 }
 
-function registerGuiChatEvents(dataChannel, chatController, events){
+function registerChatEvents(chatChannel, chatController){
     chatController.registerOnSendMessage(dataChannel.chat.send);
     chatController.registerOnConnect(dataChannel.connect);
 }
 
-function registerDataChannelChatEvents(dataChannel, chatController, events){
+function registerGuiChatEvents(dataChannel, chatController){
+    chatController.registerOnSendMessage(dataChannel.chat.send);
+    chatController.registerOnConnect(dataChannel.connect);
+}
+
+function registerDataChannelChatEvents(dataChannel, chatController){
     //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
     dataChannel.registerOnConnected(chatController.showLogin);
     dataChannel.registerOnError(chatController.showError);

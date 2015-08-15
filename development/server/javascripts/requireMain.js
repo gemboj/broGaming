@@ -1,7 +1,7 @@
 
 module.exports = function(server){
     var chat = require('./interactors/chat');
-    var serverInteracots = require('./interactors/server');
+    var serverInteractors = require('./interactors/server');
 
     var dataChannel = require('./plugins/dataChannel');
     var socketio = require('socket.io')().listen(server);
@@ -9,25 +9,19 @@ module.exports = function(server){
     var orm = require("orm");
 
 
-    var newDataChannel = new dataChannel.DataChannel(socketio);
-    var userRepo = new repositories.UserRepository(orm);
-    var authenticate = new serverInteracots.Authenticate(userRepo.findUsersByUsername);
+    var repo = new repositories.OrmRepository(orm);
 
-    newDataChannel.registerOnNewConnection(authenticate.do);
+    repo.connect("mysql://root:@localhost/broGaming")
+        .then(function () {
+            var userRepo = new repositories.UsersRepository(repo);
+            var newDataChannel = new dataChannel.DataChannel(socketio);
+            var authenticate = new serverInteractors.Authenticate(userRepo.findUsersByUsername);
 
-    /*newDataChannel.registerOnShowMessage(function(message){
-        console.log(message);
-    });*/
-//newDataChannel.showMessage();
+            newDataChannel.registerOnNewConnection(authenticate.do);
 
-    function get() {
-        return new Promise(function(resolve, reject) {
-            // Do the usual XHR stuff
-           setTimeout(function(){resolve()}, 2000);
+            console.log('Done');
+        })
+        .catch(function(err){
+            console.error(err);
         });
-    }
-
-    get().then(function(){
-        console.log('success');
-    })
 };

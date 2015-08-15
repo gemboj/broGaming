@@ -1,32 +1,55 @@
 var repositories = {};
 
 
-repositories.UserRepository = function(orm){
+repositories.OrmRepository = function(orm){
     var that = this;
-
     that.orm = orm;
 
-    that.findUsersByUsername = function(input){
-        return new Promise(function (resolve, reject){
-            orm.connect("mysql://root:@localhost/broGaming", function (err, db) {
-                if(err) return reject(err);
+    var db  = null;
 
-                var User = loadUser(db);
+    that.connect = function(url){
+        return new Promise(function (resolve, reject) {
+            orm.connect(url, function (err, _db) {
+                if(err) reject(err);
+                db = _db;
 
-                User.find({ username: input.username }, function (err, users) {
-                    if(err) return reject(err);
+                that.getDb = function(){
+                    return db;
+                };
 
-                    resolve(users);
-                });
+                resolve();
+            });
+        });
+
+    };
+
+
+
+    that.getDb = function(){
+        throw 'not connected to database';
+    }
+}
+repositories.UsersRepository = function(ormRepository) {
+    var that = this;
+
+    that.findUsersByUsername = function (input) {
+        var db = ormRepository.getDb();
+        var User = loadUser(db);
+
+        return new Promise(function (resolve, reject) {
+            User.find({username: input.username}, function (err, users) {
+                if (err) return reject(err);
+
+                resolve(users);
             });
         })
     };
 
-    var loadUser = function(db){
+    var loadUser = function (db) {
         return db.define("users", {
-            username      : String,
-            password   : String
-        },{
+            username: String,
+            password: String
+        }, {
             id: 'username'
         });
     }

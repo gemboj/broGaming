@@ -1,6 +1,31 @@
 define(["/../plugins"], function (plugins){
 var dataChannel = {};
 
+dataChannel.ChatChannel = function(dataChannel){
+    plugins.EventListener.call(this);
+    var that = this;
+
+    var eventsNames = [
+        'receiveMessage'
+    ];
+
+    that.events = {};
+    that.send = function(data, cb){
+        dataChannel.send('chat', data, cb);
+    };
+
+    for(var i = 0; i < eventsNames.length; ++i){
+        that.events[eventsNames[i]] = that.createEvent(eventsNames[i], function (action, data) {
+            action(function (listener) {
+                listener(data);
+            });
+        });
+    }
+
+    dataChannel.registerApplication('chat', that.events);
+}
+
+dataChannel.ChatChannel.prototype = Object.create(plugins.EventListener);
 dataChannel.DataChannel = function(socketio, address){
     plugins.EventListener.call(this);
     var that = this;
@@ -8,7 +33,7 @@ dataChannel.DataChannel = function(socketio, address){
     var socket = null;
     var address = address;
 
-    var chatEventNames = [
+/*    var chatEventNames = [
         'receiveMessage'
     ];
     that.chat = {
@@ -23,8 +48,10 @@ dataChannel.DataChannel = function(socketio, address){
                 listener(data);
             });
         });
-    }
+    }*/
 
+
+    var applications = {};
     that.connect = function(credentials){
         socket = socketio.connect(address, { 'force new connection': true, query:  'username=' + credentials.username + '&password=' + credentials.password});
 
@@ -34,13 +61,19 @@ dataChannel.DataChannel = function(socketio, address){
 
         socket.on('error', error);
 
-        socket.on('chat', function(data){
+
+        for(app in applications){
+            socket.on(app, function(data){
+                applications[app][data.eventType](data);
+            });
+        }
+        /*socket.on('chat', function(data){
             that.chat[data.type](data);
-        });
+        });*/
     };
 
-    var send = function(type, data, cb){
-        error('Not connecter');
+    that.send = function(type, data, cb){
+        error('Not connected');
     };
 
     var connected = that.createEvent('connected', function (action, username) {
@@ -50,7 +83,7 @@ dataChannel.DataChannel = function(socketio, address){
     });
 
     that.registerOnConnected(function(){
-        send = function(type, data, cb){
+        that.send = function(type, data, cb){
             socket.emit(type, data, cb);
         }
     });
@@ -60,6 +93,12 @@ dataChannel.DataChannel = function(socketio, address){
             listener(message);
         });
     });
+
+    that.registerApplication = function (name, events) {
+        if(applications[name] !== undefined) throw name + 'event already exists!';
+
+        applications[name] = events;
+    };
 }
 
 dataChannel.DataChannel.prototype = Object.create(plugins.EventListener);

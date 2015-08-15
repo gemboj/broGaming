@@ -5,23 +5,7 @@ function DataChannel(socketio, address){
     var socket = null;
     var address = address;
 
-    var chatEventNames = [
-        'receiveMessage'
-    ];
-    that.chat = {
-        send: function(data, cb){
-            send('chat', data, cb)
-        }
-    };
-
-    for(var i = 0; i < chatEventNames.length; ++i){
-        that.chat[chatEventNames[i]] = that.createEvent(chatEventNames[i], function (action, data) {
-            action(function (listener) {
-                listener(data);
-            });
-        });
-    }
-
+    var applications = {};
     that.connect = function(credentials){
         socket = socketio.connect(address, { 'force new connection': true, query:  'username=' + credentials.username + '&password=' + credentials.password});
 
@@ -31,13 +15,16 @@ function DataChannel(socketio, address){
 
         socket.on('error', error);
 
-        socket.on('chat', function(data){
-            that.chat[data.type](data);
-        });
+
+        for(app in applications){
+            socket.on(app, function(data){
+                applications[app][data.eventType](data);
+            });
+        }
     };
 
-    var send = function(type, data, cb){
-        error('Not connecter');
+    that.send = function(type, data, cb){
+        error('Not connected');
     };
 
     var connected = that.createEvent('connected', function (action, username) {
@@ -47,7 +34,7 @@ function DataChannel(socketio, address){
     });
 
     that.registerOnConnected(function(){
-        send = function(type, data, cb){
+        that.send = function(type, data, cb){
             socket.emit(type, data, cb);
         }
     });
@@ -57,6 +44,12 @@ function DataChannel(socketio, address){
             listener(message);
         });
     });
+
+    that.registerApplication = function (name, events) {
+        if(applications[name] !== undefined) throw name + 'event already exists!';
+
+        applications[name] = events;
+    };
 }
 
 DataChannel.prototype = Object.create(EventListener);

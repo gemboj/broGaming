@@ -2,9 +2,6 @@ function ChatController(scope){
     EventListener.call(this);
     var that = this;
 
-    var scope = scope;
-
-
     scope.message = 'fgfghfgh';
     scope.login = 'fvnvn';
     scope.error = '';
@@ -24,12 +21,12 @@ function ChatController(scope){
     that.showLogin = function(username){
         scope.login = username;
         applyChanges()
-    }
+    };
 
     that.showError = function(error){
         scope.error = error;
         applyChanges()
-    }
+    };
 
     var applyChanges = function(){
         if(!scope.$$phase) {
