@@ -8,10 +8,6 @@ plugins.EventListener = function(){
         var eventCallbacks = [];
         var event = function(){
             var args = [function(forListener){
-                /*var cbArguments = [];
-                 for(arg in arguments){
-                 cbArguments.push(arguments[arg]);
-                 }*/
                 for(var i = 0; i < eventCallbacks.length; ++i) {
                     forListener(eventCallbacks[i]);
                 }

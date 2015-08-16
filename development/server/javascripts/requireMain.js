@@ -17,11 +17,12 @@ module.exports = function(server){
             var newDataChannel = new dataChannel.DataChannel(socketio);
             var authenticate = new serverInteractors.Authenticate(userRepo.findUsersByUsername);
 
-            newDataChannel.registerOnNewConnection(authenticate.do);
+            newDataChannel.registerOnIncomingConnection(authenticate.do);
 
             console.log('Done');
         })
         .catch(function(err){
+            console.error('db error:');
             console.error(err);
         });
 };

@@ -3,13 +3,13 @@ function DataChannel(socketio){
     var that = this;
     that.socketio = socketio;
 
-    that.chat = {};
 
+    var sockets = {};
     socketio.use(function(socket, next){
         var username = socket.handshake.query.username,
             password = socket.handshake.query.password;
 
-            newConnectionEvent({
+            incomingConnectionEvent({
                 username: username, password: password, successCb: function () {
                     next();
                 }, failCb: function(err){
@@ -18,7 +18,28 @@ function DataChannel(socketio){
             });
     });
 
-    var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
+
+    var applications = {};
+    socketio.sockets.on('connection', function(socket) {
+        var username = socket.handshake.query.username
+        newConnectionEvent(username);
+        sockets[username] = socket;
+        for(event in applications){
+            socket.on(event, function(_data){
+                var data = _data;
+                data.sendersUsername = username;
+                applications[event][data.type](data);
+            });
+        }
+    });
+
+    that.registerEvents = function (name, events) {
+        if(applications[name] !== undefined) throw name + 'application already exists!';
+
+        applications[name] = events;
+    };
+
+    var incomingConnectionEvent = that.createEvent('incomingConnection', function (action, data) {
         action(function (listener) {
             listener(data).then(function(){
                 data.successCb();
@@ -28,21 +49,18 @@ function DataChannel(socketio){
         });
     });
 
-    var events = {};
-
-    socketio.sockets.on('connection', function(socket) {
-        for(event in events){
-            socket.on(event, function(data){
-                events[event][data.type](data);
-            });
-        }
+    var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
+        action(function (listener) {
+            listener(data);
+        });
     });
 
-    that.registerEvents = function (eventName, events) {
-        if(events[eventName] !== undefined) throw eventName + 'event already exists!';
+    that.send = function(user, application, data){
+        var username = user.getUsername();
+        var socket = sockets[username];
 
-        events[eventName] = events;
-    };
+        socket.emit(application, data);
+    }
 }
 
 DataChannel.prototype = Object.create(EventListener);

@@ -9,11 +9,11 @@ dataChannel.ChatChannel = function(dataChannel){
         'receiveMessage'
     ];
 
-    that.events = {};
     that.send = function(data, cb){
         dataChannel.send('chat', data, cb);
     };
 
+    that.events = {};
     for(var i = 0; i < eventsNames.length; ++i){
         that.events[eventsNames[i]] = that.createEvent(eventsNames[i], function (action, data) {
             action(function (listener) {
@@ -33,24 +33,6 @@ dataChannel.DataChannel = function(socketio, address){
     var socket = null;
     var address = address;
 
-/*    var chatEventNames = [
-        'receiveMessage'
-    ];
-    that.chat = {
-        send: function(data, cb){
-            send('chat', data, cb)
-        }
-    };
-
-    for(var i = 0; i < chatEventNames.length; ++i){
-        that.chat[chatEventNames[i]] = that.createEvent(chatEventNames[i], function (action, data) {
-            action(function (listener) {
-                listener(data);
-            });
-        });
-    }*/
-
-
     var applications = {};
     that.connect = function(credentials){
         socket = socketio.connect(address, { 'force new connection': true, query:  'username=' + credentials.username + '&password=' + credentials.password});
@@ -67,9 +49,6 @@ dataChannel.DataChannel = function(socketio, address){
                 applications[app][data.eventType](data);
             });
         }
-        /*socket.on('chat', function(data){
-            that.chat[data.type](data);
-        });*/
     };
 
     that.send = function(type, data, cb){

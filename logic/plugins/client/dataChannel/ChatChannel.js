@@ -6,11 +6,11 @@ function ChatChannel(dataChannel){
         'receiveMessage'
     ];
 
-    that.events = {};
     that.send = function(data, cb){
         dataChannel.send('chat', data, cb);
     };
 
+    that.events = {};
     for(var i = 0; i < eventsNames.length; ++i){
         that.events[eventsNames[i]] = that.createEvent(eventsNames[i], function (action, data) {
             action(function (listener) {
