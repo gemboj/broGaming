@@ -6,10 +6,10 @@ function UsersRepository(ormRepository) {
         var User = loadUser(db);
 
         return new Promise(function (resolve, reject) {
-            User.find({username: input.username}, function (err, users) {
+            User.find({username: input.username}, function (err, modelUsers) {
                 if (err) return reject(err);
 
-                resolve(users);
+                resolve(createUsers(modelUsers));
             });
         })
     };
@@ -21,5 +21,13 @@ function UsersRepository(ormRepository) {
         }, {
             id: 'username'
         });
+    }
+
+    var createUsers = function(modelUsers){
+        var users = [];
+        for(var i = 0; i < modelUsers.length; ++i){
+            users.push(new User(model.username, model.password));
+        }
+        return users;
     }
 }

@@ -1,34 +1,53 @@
-xdescribe('Authenticate', function(){
+describe('Authenticate', function(){
     beforeEach(function(){
-        this.findUserByUsername = function(username){
-            return new Promise.resolve({username: 'username', password: 'password'});
+        this.findUsersByUsername = function(){
+            return Promise.resolve([new User('username', 'password')]);
         };
 
-        this.findUserByUsernameWithError = function(username){
-            return new Promise.reject();
+        this.findUsersByUsernameWithError = function(username){
+            return Promise.reject('error');
         };
-        this.successCb = function(){};
-        this.failCb = function(){};
 
-        this.matchingCredentials = {username: 'username', password: 'password'};
-        this.notmatchingCredentials = {username: 'username', password: 'passwordd'};
+        this.credentials = {username: 'username', password: 'password'};
 
-        spyOn(this, 'successCb');
-        spyOn(this, 'failCb');
+        this.resolved = function(){};
+        this.rejected = function(){};
 
-        this.authenticate = new Authenticate(this.findUserByUsername);
+        spyOn(this, 'resolved').and.callThrough();
+        spyOn(this, 'rejected').and.callThrough();
     });
 
-    it('calls successCb when password matches users password', function(){
-        this.authenticate.do(this.matchingCredentials, this.successCb, this.failCb);
+    it('resolves promise when given password matches that in database', function(done){
+        this.authenticate = new Authenticate(this.findUsersByUsername);
 
-        expect(this.successCb).toHaveBeenCalled();
-        expect(this.failCb).not.toHaveBeenCalled();
+        var that = this;
+        this.authenticate.do(this.credentials)
+            .then(this.resolved)
+            .catch(this.rejected)
+            .then(function(){
+                expect(that.resolved).toHaveBeenCalled();
+                expect(that.rejected).not.toHaveBeenCalled();
+                done();
+            })
+            .catch(function () {
+                done.fail();
+            });
     });
 
-    it('calls failsCb when password doesnt match users password or there is no such user', function(){
-        this.authenticate.do(this.notmatchingCredentials, this.successCb, this.failCb);
+    it('reject promise when passwords dont match', function(){
+        this.authenticate = new Authenticate(this.findUsersByUsernameWithError);
 
-        expect(this.failCb).toHaveBeenCalledWith('Wrong username or password');
+        var that = this;
+        this.authenticate.do(this.credentials)
+            .then(this.resolved)
+            .catch(this.rejected)
+            .then(function(){
+                expect(that.resolved).toHaveBeenCalled();
+                expect(that.rejected).not.toHaveBeenCalled();
+                done();
+            })
+            .catch(function () {
+                done.fail();
+            });
     });
 });

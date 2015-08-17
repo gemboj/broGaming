@@ -10,9 +10,11 @@ function DataChannel(socketio){
             password = socket.handshake.query.password;
 
             incomingConnectionEvent({
-                username: username, password: password, successCb: function () {
+                username: username, password: password,
+                successCb: function () {
                     next();
-                }, failCb: function(err){
+                },
+                failCb: function(err){
                     next(new Error(err));
                 }
             });

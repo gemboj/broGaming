@@ -7,7 +7,7 @@ function Authenticate(findUsersByUsername) {
     that.do = function (input) {
         return that.findUsersByUsername(input)
             .then(function (users) {
-                if (users.length === 1 && users[0].password === input.password) {
+                if (users.length === 1 && users[0].getPassword() === input.password) {
                     return;
                 }
                 throw that.wrongUserT;

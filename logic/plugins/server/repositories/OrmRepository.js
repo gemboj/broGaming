@@ -17,10 +17,7 @@ function OrmRepository(orm){
                 resolve();
             });
         });
-
     };
-
-
 
     that.getDb = function(){
         throw 'not connected to database';
