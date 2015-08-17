@@ -204,7 +204,7 @@ function resolveDependencies(dependenciesJSON, output){
             resolvedDependencies.paths.push('"' + dependencies[i].path + '"');
             resolvedDependencies.args.push(dependencies[i].module);
             //moduleContent = moduleContent.replace(dependencies[i].class, dependencies[i].module + '.' + dependencies[i].class);
-            output.content = output.content.replace(new RegExp(dependencies[i].class, 'g'), dependencies[i].module + '.' + dependencies[i].class);
+            output.content = output.content.replace(new RegExp('([\\s\\(])' + dependencies[i].class, 'g'), '$1' + dependencies[i].module + '.' + dependencies[i].class);
         }
     }
 

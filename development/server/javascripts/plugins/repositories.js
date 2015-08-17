@@ -37,23 +37,23 @@ repositories.OrmDB = function(orm){
         throw 'not connected to database';
     }
 }
-repositories.plugins.UsersRepository = function(ormRepository) {
+repositories.UsersRepository = function(ormRepository) {
     var that = this;
 
-    that.findplugins.UsersByplugins.Username = function (input) {
+    that.findUsersByUsername = function (input) {
         var db = ormRepository.getDb();
-        var plugins.User = loadplugins.User(db);
+        var user = loadUser(db);
 
         return new Promise(function (resolve, reject) {
-            plugins.User.find({username: input.username}, function (err, modelplugins.Users) {
+            user.find({username: input.username}, function (err, modelUsers) {
                 if (err) return reject(err);
 
-                resolve(createplugins.Users(modelplugins.Users));
+                resolve(createUsers(modelUsers));
             });
         })
     };
 
-    var loadplugins.User = function (db) {
+    var loadUser = function (db) {
         return db.define("users", {
             username: String,
             password: String
@@ -62,9 +62,9 @@ repositories.plugins.UsersRepository = function(ormRepository) {
         });
     }
 
-    var createplugins.Users = function(modelplugins.Users){
+    var createUsers = function(modelUsers){
         var users = [];
-        for(var i = 0; i < modelplugins.Users.length; ++i){
+        for(var i = 0; i < modelUsers.length; ++i){
             users.push(new plugins.User(model.username, model.password));
         }
         return users;

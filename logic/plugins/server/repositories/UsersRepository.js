@@ -3,10 +3,10 @@ function UsersRepository(ormRepository) {
 
     that.findUsersByUsername = function (input) {
         var db = ormRepository.getDb();
-        var User = loadUser(db);
+        var user = loadUser(db);
 
         return new Promise(function (resolve, reject) {
-            User.find({username: input.username}, function (err, modelUsers) {
+            user.find({username: input.username}, function (err, modelUsers) {
                 if (err) return reject(err);
 
                 resolve(createUsers(modelUsers));
