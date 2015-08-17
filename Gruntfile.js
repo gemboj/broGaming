@@ -64,7 +64,7 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
 
             var className = /function\s+(\w+)\(/.exec(fileContent)[1];
             var newFileContent = fileContent.replace(/(function)\s+(\w+)\(/, "$2 = $1(");
-            newFileContent = newFileContent.replace(new RegExp(className, 'g'), libName + "." + className);
+            newFileContent = newFileContent.replace(new RegExp('^' + className, 'gm'), libName + "." + className);
 
             var index = subdir + platform;
             output[index] = (output[index] === undefined ? {} : output[index]);
@@ -229,7 +229,7 @@ function wrapNodeJsModule(content, libName, resolvedDependencies){
     var dependanciesString = '';
 
     for(var i = 0; i < resolvedDependencies.paths.length; ++i){
-        var path = resolvedDependencies.paths[i][0] + '.' + resolvedDependencies.paths[i].slice(1);
+        var path = resolvedDependencies.paths[i][0] + (resolvedDependencies.paths[i][1] != '/' ? '' : '.') + resolvedDependencies.paths[i].slice(1);
         dependanciesString += 'var ' + resolvedDependencies.args[i] + ' = require(' + path + ');';
     }
 

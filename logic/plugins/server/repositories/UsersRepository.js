@@ -26,7 +26,7 @@ function UsersRepository(ormRepository) {
     var createUsers = function(modelUsers){
         var users = [];
         for(var i = 0; i < modelUsers.length; ++i){
-            users.push(new User(model.username, model.password));
+            users.push(new User(modelUsers[i].username, modelUsers[i].password));
         }
         return users;
     }

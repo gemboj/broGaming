@@ -1,5 +1,5 @@
 var repositories = {};
-var plugins = require(".logic/entities/server/entities");
+var entities = require("./../entities/entities");
 
 repositories.LokiDB = function(Loki){
     var that = this;
@@ -65,7 +65,7 @@ repositories.UsersRepository = function(ormRepository) {
     var createUsers = function(modelUsers){
         var users = [];
         for(var i = 0; i < modelUsers.length; ++i){
-            users.push(new plugins.User(model.username, model.password));
+            users.push(new entities.User(modelUsers[i].username, modelUsers[i].password));
         }
         return users;
     }
