@@ -1,7 +1,18 @@
 var repositories = {};
+var plugins = require(".logic/entities/server/entities");
 
+repositories.LokiDB = function(Loki){
+    var that = this;
 
-repositories.OrmRepository = function(orm){
+    var db  = new Loki('broGamingChat.json');
+
+    var users = db.addCollection('users');
+
+    that.getDb = function(){
+        return db;
+    }
+}
+repositories.OrmDB = function(orm){
     var that = this;
     that.orm = orm;
 
@@ -20,38 +31,43 @@ repositories.OrmRepository = function(orm){
                 resolve();
             });
         });
-
     };
-
-
 
     that.getDb = function(){
         throw 'not connected to database';
     }
 }
-repositories.UsersRepository = function(ormRepository) {
+repositories.plugins.UsersRepository = function(ormRepository) {
     var that = this;
 
-    that.findUsersByUsername = function (input) {
+    that.findplugins.UsersByplugins.Username = function (input) {
         var db = ormRepository.getDb();
-        var User = loadUser(db);
+        var plugins.User = loadplugins.User(db);
 
         return new Promise(function (resolve, reject) {
-            User.find({username: input.username}, function (err, users) {
+            plugins.User.find({username: input.username}, function (err, modelplugins.Users) {
                 if (err) return reject(err);
 
-                resolve(users);
+                resolve(createplugins.Users(modelplugins.Users));
             });
         })
     };
 
-    var loadUser = function (db) {
+    var loadplugins.User = function (db) {
         return db.define("users", {
             username: String,
             password: String
         }, {
             id: 'username'
         });
+    }
+
+    var createplugins.Users = function(modelplugins.Users){
+        var users = [];
+        for(var i = 0; i < modelplugins.Users.length; ++i){
+            users.push(new plugins.User(model.username, model.password));
+        }
+        return users;
     }
 }
 

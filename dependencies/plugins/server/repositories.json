@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : "logic/entities/server/entities",
+      "module" : "plugins",
+      "class" : "User"
+    }
+  ]
+}

@@ -9,11 +9,11 @@ module.exports = function(server){
     var orm = require("orm");
 
 
-    var repo = new repositories.OrmRepository(orm);
+    var ormDB = new repositories.OrmDB(orm);
 
-    repo.connect("mysql://root:@localhost/broGaming")
+    ormDB.connect("mysql://root:@localhost/broGaming")
         .then(function () {
-            var userRepo = new repositories.UsersRepository(repo);
+            var userRepo = new repositories.UsersRepository(ormDB);
             var newDataChannel = new dataChannel.DataChannel(socketio);
             var authenticate = new serverInteractors.Authenticate(userRepo.findUsersByUsername);
 

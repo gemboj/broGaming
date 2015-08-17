@@ -1,4 +1,4 @@
-function OrmRepository(orm){
+function OrmDB(orm){
     var that = this;
     that.orm = orm;
 

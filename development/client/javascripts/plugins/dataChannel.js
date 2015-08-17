@@ -29,9 +29,7 @@ dataChannel.ChatChannel.prototype = Object.create(plugins.EventListener);
 dataChannel.DataChannel = function(socketio, address){
     plugins.EventListener.call(this);
     var that = this;
-    var socketio = socketio;
     var socket = null;
-    var address = address;
 
     var applications = {};
     that.connect = function(credentials){
@@ -39,16 +37,15 @@ dataChannel.DataChannel = function(socketio, address){
 
         socket.on('connect', function(){
             connected(credentials.username);
+
+            for(app in applications){
+                socket.on(app, function(data){
+                    applications[app][data.eventType](data);
+                });
+            }
         });
 
         socket.on('error', error);
-
-
-        for(app in applications){
-            socket.on(app, function(data){
-                applications[app][data.eventType](data);
-            });
-        }
     };
 
     that.send = function(type, data, cb){
