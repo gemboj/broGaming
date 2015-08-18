@@ -55,7 +55,7 @@ dataChannel.DataChannel = function(socketio){
     var applications = {};
     socketio.sockets.on('connection', function(socket) {
         var username = socket.handshake.query.username
-        newConnectionEvent(username);
+        //newConnectionEvent(username);
         sockets[username] = socket;
         for(event in applications){
             socket.on(event, function(_data){
@@ -64,6 +64,10 @@ dataChannel.DataChannel = function(socketio){
                 applications[event][data.type](data);
             });
         }
+
+        socket.on('disconnect', function () {
+            disconnectedEvent(username);
+        });
     });
 
     that.registerEvents = function (name, events) {
@@ -82,11 +86,17 @@ dataChannel.DataChannel = function(socketio){
         });
     });
 
-    var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
+    var disconnectedEvent = that.createEvent('disconnected', function (action, username) {
+        action(function (listener) {
+            listener(username);
+        });
+    });
+
+    /*var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
         action(function (listener) {
             listener(data);
         });
-    });
+    });*/
 
     that.send = function(user, application, data){
         var username = user.getUsername();

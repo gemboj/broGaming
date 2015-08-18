@@ -1,12 +1,12 @@
 
 module.exports = function(server){
     var chat = require('./interactors/chat'),
-        serverInteractors = require('./interactors/server'),
+        authenticationInteractors = require('./interactors/authorization'),
         dataChannel = require('./plugins/dataChannel'),
         socketio = require('socket.io')().listen(server),
         repositories = require('./plugins/repositories'),
         orm = require("orm"),
-        entities = require('./entities/entities'),
+        //entities = require('./entities/entities'),
         loki = require('lokijs');
 
     var ormDB = new repositories.OrmDB(orm);
@@ -14,14 +14,21 @@ module.exports = function(server){
     ormDB.connect("mysql://root:@localhost/broGaming")
         .then(function () {
             var userRepo = new repositories.UsersRepository(ormDB);
-            var newDataChannel = new dataChannel.DataChannel(socketio);
-            var authenticateUser = new serverInteractors.AuthenticateUser(userRepo.findUsersByUsername);
 
-            newDataChannel.registerOnIncomingConnection(authenticateUser.do);
+            var lokiDb = new repositories.LokiDB(loki);
+            var loggedUserRepo = new repositories.LoggedUsersRepository(lokiDb);
+
+            var socketDataChannel = new dataChannel.DataChannel(socketio);
+
+            var authenticateUser = new authenticationInteractors.AuthenticateUser(userRepo.findUsersByUsername);
+            var login = new authenticationInteractors.Login(loggedUserRepo);
+            var verifyConnection = new authenticationInteractors.VerifyConnection(authenticateUser.do, login.do);
+
+            socketDataChannel.registerOnIncomingConnection(verifyConnection.do);
 
             console.log('Done');
         })
         .catch(function(err){
-            console.error(err);
+            console.trace(err);
         });
 };

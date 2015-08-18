@@ -7,9 +7,9 @@ function LokiDB(Loki){
 
     that.getDb = function(){
         return db;
-    }
+    };
 
     that.getUsersCollection = function(){
         return users;
-    }
+    };
 }

@@ -1,7 +1,7 @@
-var server = {};
+var authentication = {};
+var entities = require("./../entities/entities");
 
-
-server.AuthenticateUser = function(findUsersByUsername) {
+authentication.AuthenticateUser = function(findUsersByUsername) {
     var that = this;
     that.findUsersByUsername = findUsersByUsername;
 
@@ -21,34 +21,31 @@ server.AuthenticateUser = function(findUsersByUsername) {
     }
 }
 
-server.Login = function(loggedUsersRepo){
+authentication.Login = function(loggedUsersRepo){
     var that = this;
 
     that.alreadyLogged = 'User is already logged in.';
 
-    that.do = function(input){//username
-        return loggedUsersRepo.getUsersByUsername(input.username)
+    that.do = function(username){
+        return loggedUsersRepo.findUsersByUsername(username)
                 .then(function (users) {
                     if(users.length === 0){
-                        return loggedUsersRepo.insertUser(new LoggedUser(input.username));
+                        return loggedUsersRepo.insertUser(new entities.LoggedUser(username));
                     }
 
                     throw that.alreadyLogged;
                 })
     }
 }
-server.VerifyConnection = function(authenticateUser, login){
+authentication.VerifyConnection = function(authenticateUser, login){
     var that = this;
     
-    that.do = function (input) {//username
+    that.do = function (input) {//username, password
         return authenticateUser(input)
             .then(function () {
-                return login(input);
-            })
-            .catch(function (err) {
-                throw err;
+                return login(input.username);
             })
     }
 }
 
-module.exports = server;
+module.exports = authentication;

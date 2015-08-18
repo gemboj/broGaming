@@ -10,9 +10,17 @@ function LoggedUsersRepository(lokiDb) {
         })
     };
 
-    that.insertUser = function (input) {
+    that.insertUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.insert(input.user);
+            usersCollection.insert(user);
+
+            resolve();
+        })
+    };
+
+    that.removeUser = function (user) {
+        return new Promise(function (resolve, reject) {
+            usersCollection.remove(user);
 
             resolve();
         })

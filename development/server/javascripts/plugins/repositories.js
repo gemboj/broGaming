@@ -13,9 +13,17 @@ repositories.LoggedUsersRepository = function(lokiDb) {
         })
     };
 
-    that.insertUser = function (input) {
+    that.insertUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.insert(input.user);
+            usersCollection.insert(user);
+
+            resolve();
+        })
+    };
+
+    that.removeUser = function (user) {
+        return new Promise(function (resolve, reject) {
+            usersCollection.remove(user);
 
             resolve();
         })
@@ -28,13 +36,23 @@ repositories.LokiDB = function(Loki){
 
     var users = db.addCollection('users');
 
+    users.insert({username: 'adam'});
+    users.insert({username: 'adam'});
+
+    users.removeWhere({username: {$eq: 'adam'}});
+
+    var arr = users.find({username: 'adam'});
+    for(var i = 0; i < arr.length; ++i){
+        console.log(arr[i].username);
+    }
+
     that.getDb = function(){
         return db;
-    }
+    };
 
     that.getUsersCollection = function(){
         return users;
-    }
+    };
 }
 repositories.OrmDB = function(orm){
     var that = this;

@@ -1,7 +1,7 @@
 describe('login test', function(){
     beforeEach(function () {
         this.loggedUserRepo = {
-            getUsersByUsername: function(input){
+            findUsersByUsername: function(input){
                 return new Promise(function (resolve, reject) {
                     resolve([new LoggedUser(input.username)]);
                 });
@@ -13,7 +13,7 @@ describe('login test', function(){
             }
         };
         this.emptyRepo = {
-            getUsersByUsername: function(input){
+            findUsersByUsername: function(input){
                 return new Promise(function (resolve, reject) {
                     resolve([]);
                 });
@@ -38,7 +38,7 @@ describe('login test', function(){
         var that = this,
             login = new Login(this.emptyRepo);
 
-        login.do({username: 'username'})
+        login.do('username')
             .then(function () {
                 that.resolved();
             })
