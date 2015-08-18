@@ -1,9 +1,8 @@
 
 module.exports = function(server){
-    var chat = require('./interactors/chat');
-    var serverInteractors = require('./interactors/server');
-
-    var dataChannel = require('./plugins/dataChannel'),
+    var chat = require('./interactors/chat'),
+        serverInteractors = require('./interactors/server'),
+        dataChannel = require('./plugins/dataChannel'),
         socketio = require('socket.io')().listen(server),
         repositories = require('./plugins/repositories'),
         orm = require("orm"),
@@ -16,9 +15,9 @@ module.exports = function(server){
         .then(function () {
             var userRepo = new repositories.UsersRepository(ormDB);
             var newDataChannel = new dataChannel.DataChannel(socketio);
-            var authenticate = new serverInteractors.Authenticate(userRepo.findUsersByUsername);
+            var authenticateUser = new serverInteractors.AuthenticateUser(userRepo.findUsersByUsername);
 
-            newDataChannel.registerOnIncomingConnection(authenticate.do);
+            newDataChannel.registerOnIncomingConnection(authenticateUser.do);
 
             console.log('Done');
         })

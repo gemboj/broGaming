@@ -1,4 +1,4 @@
-describe('Authenticate', function(){
+describe('AuthenticateUser', function(){
     beforeEach(function(){
         this.findUsersByUsername = function(){
             return Promise.resolve([new User('username', 'password')]);
@@ -18,7 +18,7 @@ describe('Authenticate', function(){
     });
 
     it('resolves promise when given password matches that in database', function(done){
-        this.authenticate = new Authenticate(this.findUsersByUsername);
+        this.authenticate = new AuthenticateUser(this.findUsersByUsername);
 
         var that = this;
         this.authenticate.do(this.credentials)
@@ -35,7 +35,7 @@ describe('Authenticate', function(){
     });
 
     it('reject promise when passwords dont match', function(){
-        this.authenticate = new Authenticate(this.findUsersByUsernameWithError);
+        this.authenticate = new AuthenticateUser(this.findUsersByUsernameWithError);
 
         var that = this;
         this.authenticate.do(this.credentials)

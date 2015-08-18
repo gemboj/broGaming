@@ -1,4 +1,4 @@
-function Authenticate(findUsersByUsername) {
+function AuthenticateUser(findUsersByUsername) {
     var that = this;
     that.findUsersByUsername = findUsersByUsername;
 
