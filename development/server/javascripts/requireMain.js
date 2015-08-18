@@ -3,11 +3,12 @@ module.exports = function(server){
     var chat = require('./interactors/chat');
     var serverInteractors = require('./interactors/server');
 
-    var dataChannel = require('./plugins/dataChannel');
-    var socketio = require('socket.io')().listen(server);
-    var repositories = require('./plugins/repositories');
-    var orm = require("orm");
-
+    var dataChannel = require('./plugins/dataChannel'),
+        socketio = require('socket.io')().listen(server),
+        repositories = require('./plugins/repositories'),
+        orm = require("orm"),
+        entities = require('./entities/entities'),
+        loki = require('loki');
 
     var ormDB = new repositories.OrmDB(orm);
 
