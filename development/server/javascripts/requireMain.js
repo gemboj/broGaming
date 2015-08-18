@@ -8,7 +8,7 @@ module.exports = function(server){
         repositories = require('./plugins/repositories'),
         orm = require("orm"),
         entities = require('./entities/entities'),
-        loki = require('loki');
+        loki = require('lokijs');
 
     var ormDB = new repositories.OrmDB(orm);
 
@@ -23,7 +23,6 @@ module.exports = function(server){
             console.log('Done');
         })
         .catch(function(err){
-            console.error('db error:');
             console.error(err);
         });
 };

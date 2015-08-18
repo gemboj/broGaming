@@ -1,4 +1,4 @@
-function UserLogged(_username){
+function LoggedUser(_username){
     var username = _username;
 
     this.getUsername = function(){

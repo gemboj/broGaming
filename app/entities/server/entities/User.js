@@ -12,7 +12,7 @@ function User(_username, _password, usersRepo){
         return password;
     };
 
-    this.isValid = function(){
+    /*this.isValid = function(){
         return usersRepo.getUsersByUsername(username)
             .then(function(users){
                 if(users.length === 0){
@@ -23,5 +23,5 @@ function User(_username, _password, usersRepo){
             .catch(function(err){
                 throw err;
             });
-    }
+    }*/
 }
