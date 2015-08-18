@@ -3762,7 +3762,7 @@ exports.enable(load());
 },{"./debug":23}],23:[function(_dereq_,module,exports){
 
 /**
- * This is the common logic for both the Node.js and web browser
+ * This is the common app for both the Node.js and web browser
  * implementations of `debug()`.
  *
  * Expose `debug()` as the module.

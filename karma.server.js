@@ -13,14 +13,14 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'logic/**/*.js',
-            'logicTests/**/*.js'
+            'app/**/*.js',
+            'appUnitTests/**/*.js'
         ],
 
         // list of files to exclude
         exclude: [
-            'logic/**/client/**/*.js',
-            'logicTests/**/client/**/*.js'
+            'app/**/client/**/*.js',
+            'appUnitTests/**/client/**/*.js'
         ],
 
         // preprocess matching files before serving them to the browser

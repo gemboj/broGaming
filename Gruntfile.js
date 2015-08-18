@@ -1,9 +1,9 @@
 var grunt = require('grunt');
 
-grunt.registerTask('default', 'default task description', ['concatLogicRequireJs']);
+grunt.registerTask('default', 'default task description', ['concatAppRequireJs']);
 
-grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into one requireJs library', function(){
-    var resourcePath = './logic/',
+grunt.registerTask('concatAppRequireJs', 'merges javascript app files into one requireJs library', function(){
+    var resourcePath = './app/',
         outputPath = './development/',
         dependencyPath = './dependencies/';
 
@@ -112,8 +112,8 @@ grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into o
      //console.log(output);
 });
 
-/*grunt.registerTask('concatLogicRequireJs', 'merges javascript logic files into one requireJs library', function(){
-    var resourcePath = './logic/',
+/*grunt.registerTask('concatLogicRequireJs', 'merges javascript app files into one requireJs library', function(){
+    var resourcePath = './app/',
         outputPath = './development/';
 
     var output = {};
