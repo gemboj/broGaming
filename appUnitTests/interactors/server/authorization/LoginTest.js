@@ -1,23 +1,13 @@
 describe('login test', function(){
     beforeEach(function () {
         this.loggedUserRepo = {
-            findLoggedUsersByUsername: function(input){
-                return new Promise(function (resolve, reject) {
-                    resolve([new LoggedUser(input.username)]);
-                });
-            },
             insertLoggedUser: function(){
                 return new Promise(function (resolve, reject) {
-                    resolve();
+                    reject();
                 });
             }
         };
         this.emptyRepo = {
-            findLoggedUsersByUsername: function(input){
-                return new Promise(function (resolve, reject) {
-                    resolve([]);
-                });
-            },
             insertLoggedUser: function(){
                 return new Promise(function (resolve, reject) {
                     resolve();
@@ -36,7 +26,7 @@ describe('login test', function(){
 
     it('it resolves when user is not already logged and inserts that user into db', function(done){
         var that = this,
-            login = new Login(this.emptyRepo.findLoggedUsersByUsername, this.emptyRepo.insertLoggedUser);
+            login = new Login(this.emptyRepo.insertLoggedUser);
 
         login.do('username')
             .then(function () {
@@ -59,7 +49,7 @@ describe('login test', function(){
 
     it('it rejects with message when user is already logged', function(done){
         var that = this,
-            login = new Login(this.loggedUserRepo.findLoggedUsersByUsername, this.loggedUserRepo.insertLoggedUser);
+            login = new Login(this.loggedUserRepo.insertLoggedUser);
 
         login.do({username: 'username'})
             .then(function () {

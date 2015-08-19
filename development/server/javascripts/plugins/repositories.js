@@ -1,42 +1,16 @@
 var repositories = {};
 var entities = require("./../entities/entities");
 
-repositories.LoggedUsersRepository = function(lokiDb) {
-    var that = this;
-    var collections = lokiDb.getCollections();
-
-    that.findUsersByUsername = function (input) {
-        return new Promise(function (resolve, reject) {
-            var users = collections.loggedUsers.find({username: input.username});
-
-            resolve(users);
-        })
-    };
-
-    that.insertUser = function (user) {
-        return new Promise(function (resolve, reject) {
-            collections.loggedUsers.insert(user);
-
-            resolve();
-        })
-    };
-
-    that.removeUser = function (user) {
-        return new Promise(function (resolve, reject) {
-            collections.loggedUsers.remove(user);
-
-            resolve();
-        })
-    };
-}
-repositories.LokiDBRepository = function(Loki){
+repositories.LokiDBRepository = function(Loki) {
     var that = this;
 
-    var db  = new Loki('broGamingChat.json');
+    var db = new Loki('broGamingChat.json');
 
     var loggedUsers = db.addCollection('users');
     var rooms = db.addCollection('rooms');
     var loggedUsers_rooms = db.addCollection('loggedUsers_rooms');
+
+    loggedUsers.ensureUniqueIndex('username');
 
     that.findLoggedUsersByUsername = function (username) {
         return new Promise(function (resolve, reject) {
@@ -48,9 +22,14 @@ repositories.LokiDBRepository = function(Loki){
 
     that.insertLoggedUser = function (user) {
         return new Promise(function (resolve, reject) {
-            loggedUsers.insert(user);
+            var insertedLoggedUser = loggedUsers.insert(user);
 
-            resolve();
+            if (insertedLoggedUser === user) {
+                resolve();
+            }
+            else {
+                reject();
+            }
         })
     };
 

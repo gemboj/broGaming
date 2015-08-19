@@ -1,11 +1,13 @@
-function LokiDBRepository(Loki){
+function LokiDBRepository(Loki) {
     var that = this;
 
-    var db  = new Loki('broGamingChat.json');
+    var db = new Loki('broGamingChat.json');
 
     var loggedUsers = db.addCollection('users');
     var rooms = db.addCollection('rooms');
     var loggedUsers_rooms = db.addCollection('loggedUsers_rooms');
+
+    loggedUsers.ensureUniqueIndex('username');
 
     that.findLoggedUsersByUsername = function (username) {
         return new Promise(function (resolve, reject) {
@@ -17,9 +19,14 @@ function LokiDBRepository(Loki){
 
     that.insertLoggedUser = function (user) {
         return new Promise(function (resolve, reject) {
-            loggedUsers.insert(user);
+            var insertedLoggedUser = loggedUsers.insert(user);
 
-            resolve();
+            if (insertedLoggedUser === user) {
+                resolve();
+            }
+            else {
+                reject();
+            }
         })
     };
 

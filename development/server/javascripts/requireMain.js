@@ -21,7 +21,7 @@ module.exports = function(server){
             var socketDataChannel = new dataChannel.DataChannel(socketio);
 
             var authenticateUser = new authenticationInteractors.AuthenticateUser(userRepo.findUsersByUsername);
-            var login = new authenticationInteractors.Login(lokiDBRepository.findLoggedUsersByUsername, lokiDBRepository.insertLoggedUser);
+            var login = new authenticationInteractors.Login(lokiDBRepository.insertLoggedUser);
             var verifyConnection = new authenticationInteractors.VerifyConnection(authenticateUser.do, login.do);
             var logout = new authenticationInteractors.Logout(lokiDBRepository.removeLoggedUserByUsername);
 

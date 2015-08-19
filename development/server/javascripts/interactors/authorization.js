@@ -21,20 +21,16 @@ authorization.AuthenticateUser = function(findUsersByUsername) {
     }
 }
 
-authorization.Login = function(findUsersByUsername, insertLoggedUser){
+authorization.Login = function(insertLoggedUser){
     var that = this;
 
     that.alreadyLogged = 'User is already logged in.';
 
     that.do = function(username){
-        return findUsersByUsername(username)
-                .then(function (users) {
-                    if(users.length === 0){
-                        return insertLoggedUser(new entities.LoggedUser(username));
-                    }
-
-                    throw that.alreadyLogged;
-                })
+        return insertLoggedUser(new entities.LoggedUser(username))
+            .catch(function () {
+                throw that.alreadyLogged;
+            });
     }
 }
 authorization.Logout = function(removeLoggedUserByUsername){
