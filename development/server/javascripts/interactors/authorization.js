@@ -28,7 +28,7 @@ authorization.Login = function(insertLoggedUser){
 
     that.do = function(username){
         return insertLoggedUser(new entities.LoggedUser(username))
-            .catch(function () {
+            .catch(function(){
                 throw that.alreadyLogged;
             });
     }

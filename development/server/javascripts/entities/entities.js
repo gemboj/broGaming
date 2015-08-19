@@ -12,6 +12,23 @@ entities.LoggedUser = function(_username){
         return new Promise.resolve();
     }
 }
+entities.Room = function(id, name, deletable){
+    this.id = id;
+    this.name = name;
+    this.deletable = deletable === undefined ? false : deletable;
+
+    this.getId = function(){
+        return this.id;
+    }
+
+    this.getName = function(){
+        return this.name;
+    }
+
+    this.idDeletable = function(){
+        return this.deletable;
+    }
+}
 entities.User = function(_username, _password, usersRepo){
     var username = _username;
     var password = _password;

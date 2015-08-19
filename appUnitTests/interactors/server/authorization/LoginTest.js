@@ -1,4 +1,4 @@
-describe('login test', function(){
+describe('Login', function(){
     beforeEach(function () {
         this.loggedUserRepo = {
             insertLoggedUser: function(){

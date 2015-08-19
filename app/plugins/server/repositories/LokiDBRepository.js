@@ -6,6 +6,8 @@ function LokiDBRepository(Loki) {
     var loggedUsers = db.addCollection('users');
     var rooms = db.addCollection('rooms');
     var loggedUsers_rooms = db.addCollection('loggedUsers_rooms');
+    var roomsIdCounter = db.addCollection('roomsIdCounter');
+    roomsIdCounter.insert({id: 0});
 
     loggedUsers.ensureUniqueIndex('username');
 
@@ -38,4 +40,16 @@ function LokiDBRepository(Loki) {
             resolve();
         })
     };
+
+    that.getNextRoomId = function(){
+        return new Promise(function (resolve, reject) {
+            var nextId = null;
+            roomsIdCounter.update(function(obj){
+                nextId = obj.id;
+                return ++obj.id;
+            });
+
+            resolve(nextId);
+        })
+    }
 }
