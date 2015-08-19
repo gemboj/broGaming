@@ -1,6 +1,6 @@
 .idea
 node_modules
 production
-development/**
+development/**/javascripts
 !/development/**/requireMain.js
 !/development/**/vendors
