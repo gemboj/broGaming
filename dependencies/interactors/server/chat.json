@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : "/../entities/entities",
+      "module" : "entities",
+      "class" : "Room"
+    }
+  ]
+}

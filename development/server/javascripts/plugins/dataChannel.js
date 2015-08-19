@@ -10,10 +10,9 @@ dataChannel.ChatChannel = function(dataChannel){
     ];
 
     that.send = function(user, type, _data){
-        var data = _data;
-        data.eventType = type;
+        var _package = {data: _data, eventType: type};
 
-        dataChannel.send(user, 'chat', data);
+        dataChannel.send(user, 'chat', _package);
     };
 
     var events = {};
@@ -55,19 +54,22 @@ dataChannel.DataChannel = function(socketio){
     var applications = {};
     socketio.sockets.on('connection', function(socket) {
         var username = socket.handshake.query.username
-        //newConnectionEvent(username);
+
         sockets[username] = socket;
+
         for(event in applications){
-            socket.on(event, function(_data){
-                var data = _data;
-                data.sendersUsername = username;
-                applications[event][data.type](data);
+            socket.on(event, function(_package){
+                var data = _package.data;
+                data._sendersUsername = username;
+                applications[event][_package.eventType](data);
             });
         }
 
         socket.on('disconnect', function () {
             disconnectedEvent(username);
         });
+
+        newConnectionEvent(username);
     });
 
     that.registerEvents = function (name, events) {
@@ -92,17 +94,16 @@ dataChannel.DataChannel = function(socketio){
         });
     });
 
-    /*var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
+    var newConnectionEvent = that.createEvent('newConnection', function (action, data) {
         action(function (listener) {
             listener(data);
         });
-    });*/
+    });
 
-    that.send = function(user, application, data){
-        var username = user.getUsername();
+    that.send = function(username, application, _package){
         var socket = sockets[username];
 
-        socket.emit(application, data);
+        socket.emit(application, _package);
     }
 }
 

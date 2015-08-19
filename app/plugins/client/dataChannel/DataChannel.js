@@ -11,8 +11,8 @@ function DataChannel(socketio, address){
             connected(credentials.username);
 
             for(app in applications){
-                socket.on(app, function(data){
-                    applications[app][data.eventType](data);
+                socket.on(app, function(_package){
+                    applications[app][_package.eventType](_package.data);
                 });
             }
         });
@@ -38,8 +38,8 @@ function DataChannel(socketio, address){
     });
 
     that.registerOnConnected(function(){
-        that.send = function(type, data, cb){
-            socket.emit(type, data, cb);
+        that.send = function(type, _package, cb){
+            socket.emit(type, _package, cb);
         }
     });
 

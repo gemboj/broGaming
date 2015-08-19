@@ -6,11 +6,13 @@ dataChannel.ChatChannel = function(dataChannel){
     var that = this;
 
     var eventsNames = [
-        'receiveMessage'
+        'receiveMessage',
+        'roomUsers'
     ];
 
-    that.send = function(data, cb){
-        dataChannel.send('chat', data, cb);
+    that.send = function(eventType, data, cb){
+        var _package = {data: data, eventType: eventType};
+        dataChannel.send('chat', _package, cb);
     };
 
     that.events = {};
@@ -39,8 +41,8 @@ dataChannel.DataChannel = function(socketio, address){
             connected(credentials.username);
 
             for(app in applications){
-                socket.on(app, function(data){
-                    applications[app][data.eventType](data);
+                socket.on(app, function(_package){
+                    applications[app][_package.eventType](_package.data);
                 });
             }
         });
@@ -66,8 +68,8 @@ dataChannel.DataChannel = function(socketio, address){
     });
 
     that.registerOnConnected(function(){
-        that.send = function(type, data, cb){
-            socket.emit(type, data, cb);
+        that.send = function(type, _package, cb){
+            socket.emit(type, _package, cb);
         }
     });
 

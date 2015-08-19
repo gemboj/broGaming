@@ -29,7 +29,7 @@ describe('JoinRoom', function(){
         this.joinRoom.do('username', 2)
             .then(function(){
                 expect(that.loggedusernameJoinsRoomid).toHaveBeenCalledWith('username', 2);
-                expect(that.sendLoggedUsersList).toHaveBeenCalledWith(that.users);
+                expect(that.sendLoggedUsersList).toHaveBeenCalled();
                 done();
             })
             .catch(function(){
@@ -43,7 +43,7 @@ describe('JoinRoom', function(){
         this.joinRoom.do('username')
             .then(function(){
                 expect(that.loggedusernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
-                expect(that.sendLoggedUsersList).toHaveBeenCalledWith(that.users);
+                expect(that.sendLoggedUsersList).toHaveBeenCalled();
                 done();
             })
             .catch(function(){

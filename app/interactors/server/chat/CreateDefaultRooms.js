@@ -1,4 +1,4 @@
-function CreateDefaultRooms(insertRoom, getNextRoomId){
+function CreateDefaultRooms(insertRoom, getNextRoomid){
 
     var roomNames = [
         'Main'
@@ -19,7 +19,7 @@ function CreateDefaultRooms(insertRoom, getNextRoomId){
 
         for(var i = 0; i < roomNames.length; ++i){
             arr.push(
-                getNextRoomId().then(function(id){
+                getNextRoomid().then(function(id){
                     insertRoom(new Room(id, roomNames[i], false));
                 })
             );

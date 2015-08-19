@@ -28,9 +28,14 @@ require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel',
         chatController.registerOnSendMessage(chatChannel.send);
         chatController.registerOnConnect(dataChannel.connect);
 
+
         //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
         dataChannel.registerOnConnected(chatController.showLogin);
         dataChannel.registerOnError(chatController.showError);
+
+        chatChannel.registerOnRoomUsers(function(data){
+            console.dir(data);
+        });
     });
 });
 
@@ -50,6 +55,7 @@ function createAngularController(angular, name, cb){
     });
 }
 
+/*
 function registerChatEvents(chatChannel, chatController){
     chatController.registerOnSendMessage(dataChannel.chat.send);
     chatController.registerOnConnect(dataChannel.connect);
@@ -64,4 +70,4 @@ function registerDataChannelChatEvents(dataChannel, chatController){
     //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
     dataChannel.registerOnConnected(chatController.showLogin);
     dataChannel.registerOnError(chatController.showError);
-}
+}*/

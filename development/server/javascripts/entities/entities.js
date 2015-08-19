@@ -15,7 +15,7 @@ entities.LoggedUser = function(_username){
 entities.Room = function(id, name, deletable){
     this.id = id;
     this.name = name;
-    this.deletable = deletable === undefined ? false : deletable;
+    this.deletable = deletable === undefined ? true : deletable;
 
     this.getId = function(){
         return this.id;
@@ -25,7 +25,7 @@ entities.Room = function(id, name, deletable){
         return this.name;
     }
 
-    this.idDeletable = function(){
+    this.isDeletable = function(){
         return this.deletable;
     }
 }

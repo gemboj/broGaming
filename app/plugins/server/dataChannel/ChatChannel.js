@@ -7,10 +7,9 @@ function ChatChannel(dataChannel){
     ];
 
     that.send = function(user, type, _data){
-        var data = _data;
-        data.eventType = type;
+        var _package = {data: _data, eventType: type};
 
-        dataChannel.send(user, 'chat', data);
+        dataChannel.send(user, 'chat', _package);
     };
 
     var events = {};

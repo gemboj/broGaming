@@ -3,11 +3,13 @@ function ChatChannel(dataChannel){
     var that = this;
 
     var eventsNames = [
-        'receiveMessage'
+        'receiveMessage',
+        'roomUsers'
     ];
 
-    that.send = function(data, cb){
-        dataChannel.send('chat', data, cb);
+    that.send = function(eventType, data, cb){
+        var _package = {data: data, eventType: eventType};
+        dataChannel.send('chat', _package, cb);
     };
 
     that.events = {};
