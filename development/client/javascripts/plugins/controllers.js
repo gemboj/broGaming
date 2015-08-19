@@ -5,9 +5,10 @@ controllers.ChatController = function(scope){
     plugins.EventListener.call(this);
     var that = this;
 
-    scope.message = 'fgfghfgh';
-    scope.login = 'fvnvn';
+    scope.message = 'gemboj';
+    scope.login = '';
     scope.error = '';
+    scope.messageLog = '';
 
     scope.sendMessage = that.createEvent('sendMessage', function(action){
         action(function(listener){
@@ -22,12 +23,14 @@ controllers.ChatController = function(scope){
     });
 
     that.showLogin = function(username){
-        scope.login = username;
+        scope.messageLog += 'Logged as: ' + username + '\n';
+        //scope.login = username;
         applyChanges()
     };
 
     that.showError = function(error){
-        scope.error = error;
+        //scope.error = error;
+        scope.messageLog += 'Error: ' + error + '\n';
         applyChanges()
     };
 

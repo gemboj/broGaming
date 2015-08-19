@@ -3,11 +3,11 @@ var entities = require("./../entities/entities");
 
 repositories.LoggedUsersRepository = function(lokiDb) {
     var that = this;
-    var usersCollection = lokiDb.getUsersCollection();
+    var collections = lokiDb.getCollections();
 
     that.findUsersByUsername = function (input) {
         return new Promise(function (resolve, reject) {
-            var users = usersCollection.find({username: input.username});
+            var users = collections.loggedUsers.find({username: input.username});
 
             resolve(users);
         })
@@ -15,7 +15,7 @@ repositories.LoggedUsersRepository = function(lokiDb) {
 
     that.insertUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.insert(user);
+            collections.loggedUsers.insert(user);
 
             resolve();
         })
@@ -23,35 +23,44 @@ repositories.LoggedUsersRepository = function(lokiDb) {
 
     that.removeUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.remove(user);
+            collections.loggedUsers.remove(user);
 
             resolve();
         })
     };
 }
-repositories.LokiDB = function(Loki){
+repositories.LokiDBRepository = function(Loki){
     var that = this;
 
     var db  = new Loki('broGamingChat.json');
 
-    var users = db.addCollection('users');
+    var loggedUsers = db.addCollection('users');
+    var rooms = db.addCollection('rooms');
+    var loggedUsers_rooms = db.addCollection('loggedUsers_rooms');
 
-    users.insert({username: 'adam'});
-    users.insert({username: 'adam'});
+    that.findLoggedUsersByUsername = function (username) {
+        return new Promise(function (resolve, reject) {
+            var users = loggedUsers.find({username: username});
 
-    users.removeWhere({username: {$eq: 'adam'}});
-
-    var arr = users.find({username: 'adam'});
-    for(var i = 0; i < arr.length; ++i){
-        console.log(arr[i].username);
-    }
-
-    that.getDb = function(){
-        return db;
+            resolve(users);
+        })
     };
 
-    that.getUsersCollection = function(){
-        return users;
+    that.insertLoggedUser = function (user) {
+        return new Promise(function (resolve, reject) {
+            loggedUsers.insert(user);
+
+            resolve();
+        })
+    };
+
+    that.removeLoggedUserByUsername = function (username) {
+        return new Promise(function (resolve, reject) {
+            loggedUsers.removeWhere({username: {$eq: username}});
+            loggedUsers_rooms.removeWhere({username: {$eq: username}});
+
+            resolve();
+        })
     };
 }
 repositories.OrmDB = function(orm){

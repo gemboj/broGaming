@@ -1,10 +1,10 @@
 function LoggedUsersRepository(lokiDb) {
     var that = this;
-    var usersCollection = lokiDb.getUsersCollection();
+    var collections = lokiDb.getCollections();
 
     that.findUsersByUsername = function (input) {
         return new Promise(function (resolve, reject) {
-            var users = usersCollection.find({username: input.username});
+            var users = collections.loggedUsers.find({username: input.username});
 
             resolve(users);
         })
@@ -12,7 +12,7 @@ function LoggedUsersRepository(lokiDb) {
 
     that.insertUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.insert(user);
+            collections.loggedUsers.insert(user);
 
             resolve();
         })
@@ -20,7 +20,7 @@ function LoggedUsersRepository(lokiDb) {
 
     that.removeUser = function (user) {
         return new Promise(function (resolve, reject) {
-            usersCollection.remove(user);
+            collections.loggedUsers.remove(user);
 
             resolve();
         })

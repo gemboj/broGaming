@@ -21,27 +21,27 @@ authorization.AuthenticateUser = function(findUsersByUsername) {
     }
 }
 
-authorization.Login = function(loggedUsersRepo){
+authorization.Login = function(findUsersByUsername, insertLoggedUser){
     var that = this;
 
     that.alreadyLogged = 'User is already logged in.';
 
     that.do = function(username){
-        return loggedUsersRepo.findUsersByUsername(username)
+        return findUsersByUsername(username)
                 .then(function (users) {
                     if(users.length === 0){
-                        return loggedUsersRepo.insertUser(new entities.LoggedUser(username));
+                        return insertLoggedUser(new entities.LoggedUser(username));
                     }
 
                     throw that.alreadyLogged;
                 })
     }
 }
-authorization.Logout = function(removeLoggedUser){
+authorization.Logout = function(removeLoggedUserByUsername){
     var that = this;
 
     that.do = function(username){
-        return removeLoggedUser(username);
+        return removeLoggedUserByUsername(username);
     }
 }
 authorization.VerifyConnection = function(authenticateUser, login){

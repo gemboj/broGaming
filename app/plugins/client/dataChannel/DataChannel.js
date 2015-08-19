@@ -18,6 +18,13 @@ function DataChannel(socketio, address){
         });
 
         socket.on('error', error);
+        socket.on('disconnect', error);
+        socket.on('reconnect', function () {
+            error('Reconnected');
+        });
+        socket.on('reconnecting', function (err) {
+            error('Trying to reconnect...');
+        });
     };
 
     that.send = function(type, data, cb){

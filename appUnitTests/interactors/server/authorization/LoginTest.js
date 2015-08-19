@@ -1,24 +1,24 @@
 describe('login test', function(){
     beforeEach(function () {
         this.loggedUserRepo = {
-            findUsersByUsername: function(input){
+            findLoggedUsersByUsername: function(input){
                 return new Promise(function (resolve, reject) {
                     resolve([new LoggedUser(input.username)]);
                 });
             },
-            insertUser: function(){
+            insertLoggedUser: function(){
                 return new Promise(function (resolve, reject) {
                     resolve();
                 });
             }
         };
         this.emptyRepo = {
-            findUsersByUsername: function(input){
+            findLoggedUsersByUsername: function(input){
                 return new Promise(function (resolve, reject) {
                     resolve([]);
                 });
             },
-            insertUser: function(){
+            insertLoggedUser: function(){
                 return new Promise(function (resolve, reject) {
                     resolve();
                 });
@@ -30,13 +30,13 @@ describe('login test', function(){
 
         spyOn(this, 'resolved');
         spyOn(this, 'rejected');
-        spyOn(this.loggedUserRepo, 'insertUser').and.callThrough();
-        spyOn(this.emptyRepo, 'insertUser').and.callThrough();
+        spyOn(this.loggedUserRepo, 'insertLoggedUser').and.callThrough();
+        spyOn(this.emptyRepo, 'insertLoggedUser').and.callThrough();
     });
 
     it('it resolves when user is not already logged and inserts that user into db', function(done){
         var that = this,
-            login = new Login(this.emptyRepo);
+            login = new Login(this.emptyRepo.findLoggedUsersByUsername, this.emptyRepo.insertLoggedUser);
 
         login.do('username')
             .then(function () {
@@ -47,7 +47,7 @@ describe('login test', function(){
             })
             .then(function () {
                 expect(that.resolved).toHaveBeenCalled();
-                expect(that.emptyRepo.insertUser).toHaveBeenCalled();
+                expect(that.emptyRepo.insertLoggedUser).toHaveBeenCalled();
 
                 done();
 
@@ -59,7 +59,7 @@ describe('login test', function(){
 
     it('it rejects with message when user is already logged', function(done){
         var that = this,
-            login = new Login(this.loggedUserRepo);
+            login = new Login(this.loggedUserRepo.findLoggedUsersByUsername, this.loggedUserRepo.insertLoggedUser);
 
         login.do({username: 'username'})
             .then(function () {

@@ -1,7 +1,7 @@
-function Logout(removeLoggedUser){
+function Logout(removeLoggedUserByUsername){
     var that = this;
 
     that.do = function(username){
-        return removeLoggedUser(username);
+        return removeLoggedUserByUsername(username);
     }
 }

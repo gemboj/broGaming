@@ -15,16 +15,18 @@ module.exports = function(server){
         .then(function () {
             var userRepo = new repositories.UsersRepository(ormDB);
 
-            var lokiDb = new repositories.LokiDB(loki);
-            var loggedUserRepo = new repositories.LoggedUsersRepository(lokiDb);
+            var lokiDBRepository = new repositories.LokiDBRepository(loki);
+            //var loggedUserRepo = new repositories.LoggedUsersRepository(lokiDb);
 
             var socketDataChannel = new dataChannel.DataChannel(socketio);
 
             var authenticateUser = new authenticationInteractors.AuthenticateUser(userRepo.findUsersByUsername);
-            var login = new authenticationInteractors.Login(loggedUserRepo);
+            var login = new authenticationInteractors.Login(lokiDBRepository.findLoggedUsersByUsername, lokiDBRepository.insertLoggedUser);
             var verifyConnection = new authenticationInteractors.VerifyConnection(authenticateUser.do, login.do);
+            var logout = new authenticationInteractors.Logout(lokiDBRepository.removeLoggedUserByUsername);
 
             socketDataChannel.registerOnIncomingConnection(verifyConnection.do);
+            socketDataChannel.registerOnDisconnected(logout.do);
 
             console.log('Done');
         })

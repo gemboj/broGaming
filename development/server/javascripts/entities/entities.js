@@ -2,10 +2,10 @@ var entities = {};
 
 
 entities.LoggedUser = function(_username){
-    var username = _username;
+    this.username = _username;
 
     this.getUsername = function(){
-        return username;
+        return this.username;
     };
 
     this.isValid = function(){
