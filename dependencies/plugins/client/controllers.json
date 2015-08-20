@@ -4,6 +4,11 @@
       "path" : "/../plugins",
       "module" : "plugins",
       "class" : "EventListener"
+    },
+    {
+      "path" : ".",
+      "module" : "controllers",
+      "class" : "Controller"
     }
   ]
 }

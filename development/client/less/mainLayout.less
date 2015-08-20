@@ -1,0 +1,80 @@
+
+
+html {
+  .container;
+  body {
+    .flexContainerV;
+    .container;
+
+    div {
+      flex: 1 1 auto;
+
+      div {
+        flex: 1 1 auto;
+
+
+        div {
+          flex: 1 1 auto;
+
+          div {
+
+          }
+
+          nav {
+            background: @primaryBackgroundColorLight;
+            flex: 0 0 30px !important;
+            padding: 3px 3px 0 !important;
+
+            span {
+              //flex: 0 1 30px;
+              margin: 0px 2px;
+              padding: 2px;
+
+              &.selected {
+                background: white;
+              }
+              input {
+                //flex: 0 1 30px;
+                padding: 2px;
+              }
+            }
+
+
+          }
+        }
+
+        textarea {
+          flex: 0 0 150px;
+          resize: none;
+        }
+      }
+
+      aside {
+        background: @primaryBackgroundColor;
+        flex: 0 0 100px;
+
+        div {
+          h3 {
+            color: @secondaryFontColor;
+          }
+        }
+      }
+    }
+
+    footer {
+      flex: 0 0 50px !important;
+      background: @primaryBackgroundColorDark;
+      padding: 5px;
+
+      form {
+        [type="text"] {
+          flex: 9 0 auto;
+          //font-size: 22px;
+        }
+        [type="submit"] {
+          flex: 1 0 auto;
+        }
+      }
+    }
+  }
+}

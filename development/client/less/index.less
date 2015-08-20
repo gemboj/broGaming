@@ -1,0 +1,44 @@
+@import 'variables.less';
+@import 'mainLayout.less';
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.flexContainerV{
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100%;
+}
+
+.flexContainerVR{
+  display: flex;
+  flex-direction: column-reverse;
+  flex: 1 1 100%;
+}
+
+.flexContainerH{
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 100%;
+}
+
+.button {
+  background: @secondaryBackgroundColor;
+  border: none;
+}
+
+.button:hover {
+  background: @secondaryBackgroundColorLight;
+}
+
+.button:active {
+  background: @secondaryBackgroundColorDark;
+}

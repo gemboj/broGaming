@@ -7,6 +7,41 @@ function ChatController(scope){
     scope.error = '';
     scope.messageLog = '';
 
+    scope.rooms = [
+        {
+            id: 'id1',
+            name: 'name1',
+            users: [
+                'nick1',
+                'nick2'
+            ]
+        }
+    ];
+
+    scope.users = [];
+
+
+    var mainTab = new Tab('tab1');
+    var selectedTab = mainTab;
+
+    scope.tabs = [
+        mainTab,
+        new Tab('tab2')
+    ];
+
+    function Tab(title){
+        this.title = title;
+
+        this.isSelected = function(){
+            return this === selectedTab;
+        };
+    };
+
+    scope.switchTab = function(tab){
+        selectedTab = tab;
+        applyChanges();
+    };
+
     scope.sendMessage = that.createEvent('sendMessage', function(action){
         action(function(listener){
             listener(scope.message);

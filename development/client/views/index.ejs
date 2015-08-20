@@ -1,23 +1,93 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>BroGaming</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-	  <script data-main="javascripts/requireMain" src="javascripts/vendors/require.js"></script>
-    <!--<script src='/javascripts/angular.js'></script>
-    <script src='/javascripts/mvc/ChatController.js'></script>-->
-  </head>
-  <body ng-controller="chatController">
-    <h1>Welcome to BroGaming</h1>
-    <form ng-submit="sendMessage()">
-      Message: <input type="text" name="message" ng-model="message" /><br>
-      <input type="submit" value="Send" />
-    </form>
-	<form ng-submit="connect()">
-		<input type="submit" value="Connect" />
-	</form>
-  	<p ng-bind="login"></p>
-  	<p ng-bind="error"></p>
-  <textarea ng-model="messageLog"></textarea>
-  </body>
+<html class="container">
+<head>
+	<base href="/">
+	<title>BroGaming</title>
+	<link rel='stylesheet' href='stylesheets/index.css' />
+	<script data-main="javascripts/requireMain" src="javascripts/vendors/require.js"></script>
+</head>
+<body class="container">
+	<div class="flexContainerV container">
+		<div class="flexContainerH">
+			<div class="flexContainerV">
+				<div class="flexContainerV" ng-controller="tabsController">
+					<nav class="navigation flexContainerH">
+						<span ng-class="{selected:tab.isSelected()}"  ng-repeat="tab in tabs">
+							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}" />
+						</span>
+					</nav>
+					<div class="content flexContainerH" ng-include="selectedTab.url">
+
+					</div>
+				</div>
+
+
+				<textarea ng-controller="receivingMessagesController" ng-model="messageLog" class="chatLog"></textarea>
+
+
+			</div>
+
+			<aside id="chatRoom">
+				<div id="roomHeader" class="flexContainerH">
+					<input type="button" id="chooseRoom" class="button" value="VV" />
+					<h3 id="roomName">Not</h3>
+				</div>
+				<ul id="roomsList">
+				</ul>
+
+				<ul id="usersList">
+				</ul>
+			</aside>
+		</div>
+
+		<footer class="flexContainerH" ng-controller="sendingMessagesController">
+			<form ng-submit="sendMessage()" class="flexContainerH">
+				<input type="text" ng-model="message"/>
+				<input type="submit" value="Send" class="button"/>
+			</form>
+		</footer>
+	</div>
+
+
+	<script type="text/ng-template" id="home">
+		<div id="chatCon" class="tab selected" >
+			<form ng-submit="connect()" class="flexContainerH">
+				<input type="text" ng-model="username"/>
+				<input type="text" ng-model="password"/>
+				<input type="submit" value="Connect" class="button"/>
+			</form>
+		</div>
+	</script>
+
+	<script type="text/ng-template" id="apps">
+		<div id="appsCon" class="tab">
+			apps
+		</div>
+	</script>
+
+	<script type="text/ng-template" id="canvas" >
+		<div ng-controller="canvasController">
+			<canvas id="canvas"></canvas>
+			<button ng-click="draw()">Draw</button>
+		</div>
+	</script>
+
+</body>
 </html>
+
+
+<!--
+<body ng-controller="chatController">
+<h1>Welcome to BroGaming</h1>
+<form ng-submit="sendMessage()">
+	Message: <input type="text" name="message" ng-model="message" /><br>
+	<input type="submit" value="Send" />
+</form>
+<form ng-submit="connect()">
+	<input type="submit" value="Connect" />
+</form>
+<p ng-bind="login"></p>
+<p ng-bind="error"></p>
+<textarea ng-model="messageLog"></textarea>
+</body>
+</html>-->

@@ -1,0 +1,91 @@
+html {
+  width: 100%;
+  height: 100%;
+}
+html body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100%;
+  width: 100%;
+  height: 100%;
+}
+html body div {
+  flex: 1 1 auto;
+}
+html body div div {
+  flex: 1 1 auto;
+}
+html body div div div {
+  flex: 1 1 auto;
+}
+html body div div div nav {
+  background: #505050;
+  flex: 0 0 30px !important;
+  padding: 3px 3px 0 !important;
+}
+html body div div div nav span {
+  margin: 0px 2px;
+  padding: 2px;
+}
+html body div div div nav span.selected {
+  background: white;
+}
+html body div div div nav span input {
+  padding: 2px;
+}
+html body div div textarea {
+  flex: 0 0 150px;
+  resize: none;
+}
+html body div aside {
+  background: #404040;
+  flex: 0 0 100px;
+}
+html body div aside div h3 {
+  color: #ffffff;
+}
+html body footer {
+  flex: 0 0 50px !important;
+  background: #303030;
+  padding: 5px;
+}
+html body footer form [type="text"] {
+  flex: 9 0 auto;
+}
+html body footer form [type="submit"] {
+  flex: 1 0 auto;
+}
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+.container {
+  width: 100%;
+  height: 100%;
+}
+.flexContainerV {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100%;
+}
+.flexContainerVR {
+  display: flex;
+  flex-direction: column-reverse;
+  flex: 1 1 100%;
+}
+.flexContainerH {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 100%;
+}
+.button {
+  background: #006600;
+  border: none;
+}
+.button:hover {
+  background: #66cc66;
+}
+.button:active {
+  background: #003300;
+}
