@@ -12,8 +12,13 @@ function JoinRoom(transaction, usernameJoinsRoomid, getUsersInRoomId, send){
                 })
         })
             .then(function(users){
+                var usersNicks = []
+                for(var i = 0; i < users.length; ++i){
+                    usersNicks.push(users.nick);
+                }
+
                 var data = {};
-                data[roomId] = users;
+                data[roomId] = usersNicks;
                 send(username, 'roomUsers', data);
             })
             .catch(function(err){
