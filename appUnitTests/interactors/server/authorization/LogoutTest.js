@@ -1,26 +1,37 @@
 describe('Logout', function(){
     beforeEach(function () {
-        this.removeUser = function(){return Promise.resolve()};
+        this.markAsNotLogged = function(){
+            return Promise.resolve()
+        };
 
-        this.logout = new Logout(this.removeUser);
+        this.removeFromRooms = function(){
+            return Promise.resolve()
+        };
+
+
 
         this.resolved = function(){};
         this.rejected = function(){};
 
         spyOn(this, 'resolved');
         spyOn(this, 'rejected');
+        spyOn(this, 'markAsNotLogged').and.callThrough();
+        spyOn(this, 'removeFromRooms').and.callThrough();
     });
 
-    it('removes user form db', function (done) {
+    it('marks user as not logged and removes from all rooms', function (done) {
         var that = this;
+
+        this.logout = new Logout(this.markAsNotLogged, this.removeFromRooms);
 
         this.logout.do('username')
             .then(that.resolved)
             .catch(that.rejected)
             .then(function () {
-                expect(that.resolved).toHaveBeenCalled();
-                expect(that.rejected).not.toHaveBeenCalled();
+                expect(that.markAsNotLogged).toHaveBeenCalled();
+                expect(that.removeFromRooms).toHaveBeenCalled();
 
+                expect(that.resolved).toHaveBeenCalled();
                 done();
             })
             .catch(function () {

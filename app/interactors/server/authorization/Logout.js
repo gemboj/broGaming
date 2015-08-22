@@ -1,7 +1,10 @@
-function Logout(removeLoggedUserByUsername){
+function Logout(markAsNotLogged, removeFromRooms){
     var that = this;
 
     that.do = function(username){
-        return removeLoggedUserByUsername(username);
+        return markAsNotLogged(username)
+            .then(function(){
+                return removeFromRooms(username);
+            });
     }
 }
