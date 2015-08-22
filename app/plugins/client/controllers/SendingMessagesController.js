@@ -6,7 +6,7 @@ function SendingMessagesController(scope){
 
     scope.sendMessage = that.createEvent('sendMessage', function(action){
         action(function(listener){
-            listener(scope.message);
+            listener({roomId: scope._chatStaticData.currentRoom.id, message: scope.message});
         });
     });
 }

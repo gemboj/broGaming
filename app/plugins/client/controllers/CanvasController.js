@@ -6,9 +6,13 @@ function CanvasController(scope){
 
 
     scope.draw = function(){
-        var c = document.getElementById("canvas");
+        var c = scope._element.find("canvas")[0];
         var ctx = c.getContext("2d");
-        ctx.fillStyle = "#FF0000";
+
+        var r = ~~(Math.random() * 255),
+            g = ~~(Math.random() * 255),
+            b = ~~(Math.random() * 255);
+        ctx.fillStyle = "rgb(" + r + ", " + g + ", " + b + ")";
         ctx.fillRect(0,0,150,75);
     };
 

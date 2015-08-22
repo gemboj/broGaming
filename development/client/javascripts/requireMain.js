@@ -1,5 +1,6 @@
 require.config({
     paths: {
+        jquery: 'vendors/jquery-2.1.4.min',
         angular: 'vendors/angular',
         controllers: 'plugins/controllers',
         io: 'vendors/socket.io',
@@ -11,8 +12,8 @@ require.config({
         angular: {
             exports: 'angular'
         },
-        angularRouter: {
-            exports: 'angular-ui-router'
+        jquery: {
+            exports: 'jquery-2.1.4.min'
         },
         io: {
             exports: 'io'
@@ -20,8 +21,30 @@ require.config({
     }
 });
 
-require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel', 'angular', 'io'], function (dataChannelChatEvents, guiChatEvents, controllers, dataChannels, angular, io) {
-    var app = angular.module('broGaming', []);
+require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel', 'angular', 'io'], function (jquery, dataChannelChatEvents, guiChatEvents, controllers, dataChannels, angular, io) {
+    var app = angular.module('broGaming', []).config(function($sceProvider) {
+        // Completely disable SCE.  For demonstration purposes only!
+        // Do not use in new projects.
+        $sceProvider.enabled(false);
+    });
+
+    app.directive('compile', function($compile) {
+        return {
+            restrict:'A',
+            link: function(scope, element, attr) {
+                element.append($compile(attr.compile)(scope));
+            }
+        }
+    });
+
+    app.factory('chatStaticData', [function () {
+        var o = {};
+
+        o.curretnRoom = null;
+        o.currentUser = null;
+
+        return o;
+    }]);
 
     var dataChannel = new dataChannels.DataChannel(io);
     var chatChannel = new dataChannels.ChatChannel(dataChannel);
@@ -43,7 +66,6 @@ require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel',
         });
     });*/
 
-    var func = null;
 
 
 
@@ -51,18 +73,17 @@ require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel',
     createAngularController(app, 'sendingMessagesController', function($scope){
         var sendingMessagesController = new controllers.SendingMessagesController($scope);
 
-        sendingMessagesController.registerOnSendMessage(function(message){
-            func.showMessage(message);
+        sendingMessagesController.registerOnSendMessage(function(data){
+            console.dir(data)
         });
     });
 
     createAngularController(app, 'receivingMessagesController', function($scope){
         var receivingMessagesController = new controllers.ReceivingMessagesController($scope);
-        func = receivingMessagesController;
     });
 
-    createAngularController(app, 'tabsController', function($scope){
-        var tabsController = new controllers.TabsController($scope);
+    createAngularController(app, 'tabsController', function($scope, $compile){
+        var tabsController = new controllers.TabsController($scope, $compile);
     });
 
     createAngularController(app, 'connectionController', function($scope){
@@ -81,35 +102,19 @@ require(['dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel',
 
     });
 
-    /*app.config([
-        '$stateProvider',
-        '$urlRouterProvider',
-        '$locationProvider',
-        function ($stateProvider, $urlRouterProvider, $locationProvider) {
-
-            $stateProvider
-                .state('home', {
-                    url: '/home',
-                    templateUrl: '/home.html',
-                    controller: 'connectionController'
-                })
-                .state('apps', {
-                    url: '/apps',
-                    templateUrl: '/apps.html',
-                    controller: 'appsController'
-                });
-
-            $urlRouterProvider.otherwise('home');
-            $locationProvider.html5Mode(true);
-        }]);*/
+    createAngularController(app, 'roomsController', function($scope){
+        var roomsController = new controllers.RoomsController($scope);
+    });
 
     angular.bootstrap(document, ['broGaming']);
 
 });
 
 function createAngularController(app, name, cb){
-    app.controller(name, ['$scope', function ($scope) {
-        cb($scope);
+    app.controller(name, ['$scope', '$element', 'chatStaticData', function ($scope, $element, chatStaticData) {
+        $scope._element = $element;
+        $scope._chatStaticData = chatStaticData;
+        cb($scope, $element);
     }]);
 
 }

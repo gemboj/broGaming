@@ -44,6 +44,39 @@ html body div aside {
 html body div aside div h3 {
   color: #ffffff;
 }
+html body div aside #roomsList {
+  padding: 5px;
+  margin: 5px;
+  background: #505050;
+  color: #ffffff;
+}
+html body div aside #roomsList li {
+  text-overflow: ellipsis;
+  background: #303030;
+  padding: 3px;
+  margin: 3px 0px;
+}
+html body div aside #roomsList li:hover {
+  background: #404040;
+}
+html body div aside #roomsList li:active {
+  background: #505050;
+}
+html body div aside #roomsList p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html body div aside #usersList {
+  padding: 5px;
+}
+html body div aside #usersList li {
+  margin: 2px 0px;
+}
+html body div aside #usersList li p {
+  padding: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 html body footer {
   flex: 0 0 50px !important;
   background: #303030;
@@ -59,6 +92,7 @@ html body footer form [type="submit"] {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  list-style-type: none;
 }
 .container {
   width: 100%;
@@ -80,12 +114,12 @@ html body footer form [type="submit"] {
   flex: 1 1 100%;
 }
 .button {
-  background: #006600;
+  background: #009900;
   border: none;
 }
 .button:hover {
   background: #66cc66;
 }
 .button:active {
-  background: #003300;
+  background: #66ee66;
 }

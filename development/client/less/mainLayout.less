@@ -58,6 +58,45 @@ html {
             color: @secondaryFontColor;
           }
         }
+
+        #roomsList {
+          padding: 5px;
+          margin: 5px;
+          background: @primaryBackgroundColorLight;
+          color: @secondaryFontColor;
+          li {
+            text-overflow: ellipsis;
+            background: @primaryBackgroundColorDark;
+            padding: 3px;
+            margin: 3px 0px;
+          }
+
+          li:hover {
+            background: @primaryBackgroundColor;
+          }
+
+          li:active {
+            background: @primaryBackgroundColorLight;
+          }
+
+          p{
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        #usersList {
+          padding: 5px;
+
+          li {
+            margin: 2px 0px;
+            p{
+              padding: 1px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+        }
       }
     }
 

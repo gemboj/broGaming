@@ -16,7 +16,7 @@
 							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}" />
 						</span>
 					</nav>
-					<div class="content flexContainerH" ng-include="selectedTab.url">
+					<div class="content flexContainerH" ng-show="tab.isSelected()" ng-repeat="tab in tabs" compile="{{tab.content}}" ng-attr-id="{{tab.id}}">
 
 					</div>
 				</div>
@@ -27,15 +27,22 @@
 
 			</div>
 
-			<aside id="chatRoom">
+			<aside id="chatRoom" ng-controller="roomsController">
 				<div id="roomHeader" class="flexContainerH">
-					<input type="button" id="chooseRoom" class="button" value="VV" />
-					<h3 id="roomName">Not</h3>
+					<input type="button" id="chooseRoom" class="button" value="VV" ng-click="toggleRooms()"/>
+					<h3 id="roomName" ng-bind="getCurrentRoom().name"></h3>
 				</div>
-				<ul id="roomsList">
+				<ul id="roomsList" ng-show="roomsVisible()">
+					<p>Rooms:</p>
+					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)">
+						<p>{{room.name}}</p>
+					</li>
 				</ul>
 
-				<ul id="usersList">
+				<ul id="usersList" ng-repeat="room in getRooms()" ng-show="room.isCurrent()">
+					<li ng-repeat="user in room.users" class="button">
+						<p ng-bind="user"></p>
+					</li>
 				</ul>
 			</aside>
 		</div>
@@ -65,12 +72,6 @@
 		</div>
 	</script>
 
-	<script type="text/ng-template" id="canvas" >
-		<div ng-controller="canvasController">
-			<canvas id="canvas"></canvas>
-			<button ng-click="draw()">Draw</button>
-		</div>
-	</script>
 
 </body>
 </html>
