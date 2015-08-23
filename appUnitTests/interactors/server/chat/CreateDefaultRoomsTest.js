@@ -33,4 +33,18 @@ describe('CreateDefaultRooms', function(){
 
 
     });
+
+    it('accepts array of room names', function(done){
+        var that = this;
+
+        this.createRooms.do(['Main1', 'Main2', 'Main3'])
+            .then(function(){
+                expect(that.insertRoom.calls.count()).toBeGreaterThan(2);
+                expect(that.getNextRoomId.calls.count()).toBe(that.insertRoom.calls.count());
+                done();
+            })
+            .catch(function(err){
+                done.fail(err);
+            })
+    })
 });

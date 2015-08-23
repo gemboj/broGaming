@@ -1,8 +1,8 @@
 function User(_username, _password, _isLogged, _isActive){
-    var username = _username;
-    var password = _password;
-    var isLogged = _isLogged;
-    var isActive = _isActive;
+    this.username = _username;
+    this.password = _password;
+    this.isLogged = _isLogged;
+    this.isActive = _isActive;
 
     this.getUsername = function(){
         return username;
