@@ -8,8 +8,4 @@ function User(_username, _password, _isLogged, _isActive, _rooms){
     this.getUsername = function(){
         return username;
     };
-
-    this.getPassword = function(){
-        return password;
-    };
 }

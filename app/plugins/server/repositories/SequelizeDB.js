@@ -45,7 +45,7 @@ function SequelizeDB(Sequelize){
         },
         {underscored : true});
 
-    users.belongsToMany(rooms, {through : users_rooms, foreignKey : 'users_username'});
+    users.belongsToMany(rooms, {});
     rooms.belongsToMany(users, {through : users_rooms, foreignKey : 'rooms_id'});
 
     var that = this;

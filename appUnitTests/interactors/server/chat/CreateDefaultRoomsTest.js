@@ -1,8 +1,8 @@
 describe('CreateDefaultRooms', function(){
     beforeEach(function(){
         this.insertRoom = function(room){
-            if(room.isDeletable()){
-                return Promise.reject('room ' + room.getId() + ' is deletable');
+            if(room.deletable){
+                return Promise.reject('room ' + room.id + ' is deletable');
             }
 
             return Promise.resolve();
