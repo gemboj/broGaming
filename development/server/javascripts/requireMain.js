@@ -89,10 +89,13 @@ module.exports = function(server){
             var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.transaction, sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
+            var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
 
             socketDataChannel.registerOnIncomingConnection(login.do);
             socketDataChannel.registerOnDisconnected(logout.do);
             socketDataChannel.registerOnNewConnection(joinRoom.do);
+
+            chatChannel.registerOnCreateRoom(createRoom.do);
 
             return deleteTemporaryData.do()
                 .then(function(){

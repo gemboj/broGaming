@@ -12,10 +12,15 @@ describe('CreateRoom', function(){
             return Promise.resolve(0);
         };
 
+        this.usernameJoinsRoomid = function(){
+            return Promise.resolve();
+        };
+
         spyOn(this, 'insertRoom').and.callThrough();
         spyOn(this, 'getNextRoomId').and.callThrough();
+        spyOn(this, 'usernameJoinsRoomid').and.callThrough();
 
-        this.createRooms = new CreateRoom(this.insertRoom, this.getNextRoomId);
+        this.createRooms = new CreateRoom(this.insertRoom, this.getNextRoomId, this.usernameJoinsRoomid);
     });
 
     it('gets next room id', function(done){
@@ -43,4 +48,17 @@ describe('CreateRoom', function(){
                 done.fail(err);
             })
     })
+
+    it('joins user into created room', function(done){
+    	var that = this;
+
+    	this.createRooms.do('roomName', 'username')
+                .then(function(){
+                    expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
+                    done();
+                })
+                .catch(function(err){
+                    done.fail(err);
+                })
+    });
 });

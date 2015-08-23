@@ -134,7 +134,7 @@ describe('JoinRoom', function(){
         this.joinRoom.do('username', 2)
             .then(function(){
                 expect(that.transaction).toHaveBeenCalled();
-                expect(that.send).toHaveBeenCalledWith('username', 'roomUsers', {id: 2, name: 'Main', usernames :that.usersNicks});
+                expect(that.send).toHaveBeenCalledWith('username', 'joinedRoom', {id: 2, name: 'Main', usernames :that.usersNicks});
                 done();
             })
             .catch(function(err){

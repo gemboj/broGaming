@@ -24,19 +24,19 @@ function RoomsController(scope){
         this.isCurrent = function(){
             return this === scope._chatStaticData.currentRoom;
         }
-    }
+    };
 
     scope.getCurrentRoom = function(){
         return scope._chatStaticData.currentRoom;
-    }
+    };
 
     scope.roomsVisible = function(){
         return showRooms;
-    }
+    };
 
     scope.getRooms = function(){
         return rooms;
-    }
+    };
 
     this.addRoom = function(data){
         var room = new Room(data.id, data.name, data.usernames);
@@ -46,5 +46,19 @@ function RoomsController(scope){
         }
 
         that.applyChanges();
-    }
+    };
+
+    this.createRoomEvent = that.createEvent('createRoom', function(action, roomName){
+        action(function(listener){
+            listener(roomName);
+        });
+    });
+
+    scope.createRoomName = '';
+    scope.createRoom = function(){
+        that.createRoomEvent(scope.createRoomName);
+        scope.createRoomName = '';
+    };
+
+    this.applyChanges()
 }

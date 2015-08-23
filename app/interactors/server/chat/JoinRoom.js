@@ -10,7 +10,8 @@ function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
                 .then(function(){
                     return getRoomWithUsersById(roomId, t);
                 })
-                .catch(function(){
+                .catch(function(err){
+                    console.log(err);
                     throw 'could not join room';
                 })
         })
@@ -27,7 +28,7 @@ function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
                     name: room.name,
                     usernames: usersNicks
                 };
-                send(username, 'roomUsers', data);
+                send(username, 'joinedRoom', data);
             })
             .catch(function(err){
                 send(username, 'error', 'could not join room');

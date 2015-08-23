@@ -36,23 +36,57 @@ function SequelizeDB(Sequelize){
     var users_rooms = db.define('users_rooms', {
             users_username : {
                 type : Sequelize.STRING,
-                primaryKey : true
             },
             rooms_id : {
                 type : Sequelize.INTEGER,
-                primaryKey : true
             }
         },
         {underscored : true});
 
-    users.belongsToMany(rooms, {});
+    users.belongsToMany(rooms, {through : users_rooms, foreignKey : 'users_username'});
     rooms.belongsToMany(users, {through : users_rooms, foreignKey : 'rooms_id'});
 
     var that = this;
     this.connect = function(){
         return db.sync()
             .then(function(){
-                return that;
+
+                return that.deleteAllRooms()
+                    .then(function(){
+                        return db.transaction(function(t){
+                            return rooms.build({id : 1, name : 'name1', is_deletable : false}).save()
+                                .then(function(){
+                                    return rooms.build({id : 2, name : 'name2', is_deletable : false}).save();
+                                })
+                                .then(function(){
+                                    return users_rooms.build({users_username: 'gemboj', rooms_id: 1}).save()
+                                })
+                                .catch(function(err){
+                                    console.log(err);
+                                })
+                                .then(function(arg){
+                                    return that.insertRoom({id : 3, name : 'room3', deletable : false})
+
+                                })
+                                .then(function(){
+                                    //return that.usernameJoinsRoomid('gemboj', 2);
+                                    return users_rooms.build({users_username: 'gemboj', rooms_id: 2}).save()
+                                });
+                        });
+
+                        //return that.insertRoom({id : 1, name : 'room1', deletable : false});
+                    })
+
+                    .then(function(arg){
+                        return that.usernameJoinsRoomid('gemboj', 3);
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                    })
+                    .then(function(){
+                 return that;
+                    });
+
             })
     };
 
@@ -111,7 +145,9 @@ function SequelizeDB(Sequelize){
     };
 
     this.usernameJoinsRoomid = function(username, roomId, t){
-        return users_rooms.build({users_username : username, rooms__id : roomId}).save();
+
+
+        return users_rooms.build({users_username : username, rooms_id : roomId}).save();
     };
 
     this.getRoomWithUsersById = function(roomId, t){

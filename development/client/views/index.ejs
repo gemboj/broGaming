@@ -37,6 +37,11 @@
 					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)">
 						<p>{{room.name}}</p>
 					</li>
+					<p>Create Room:</p>
+					<form ng-submit="createRoom()">
+						<input type="text" ng-model="createRoomName" />
+						<input type="submit" value="Create" />
+					</form>
 				</ul>
 
 				<ul id="usersList" ng-repeat="room in getRooms()" ng-show="room.isCurrent()">

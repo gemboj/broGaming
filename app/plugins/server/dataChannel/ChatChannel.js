@@ -21,6 +21,13 @@ function ChatChannel(dataChannel){
         });
     });
 
+    events['createRoom'] = that.createEvent('createRoom', function(action, data){
+        action(function(listener){
+            listener(data.roomName, data._sendersUsername);
+        });
+    });
+
+
     dataChannel.registerEvents('chat', events);
 }
 

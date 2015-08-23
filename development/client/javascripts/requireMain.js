@@ -91,17 +91,17 @@ require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dat
     createAngularController(app, 'connectionController', function($scope){
         var connectionController = new controllers.ConnectionController($scope);
 
-        connectionController.registerOnConnect(function(data){
-            console.dir(data);
-        })
-
         connectionController.registerOnConnect(dataChannel.connect)
     });
 
 
     createAngularController(app, 'roomsController', function($scope){
         var roomsController = new controllers.RoomsController($scope);
-        chatChannel.registerOnRoomUsers(roomsController.addRoom)
+        roomsController.registerOnCreateRoom(function(roomName){
+            chatChannel.send('createRoom', {roomName: roomName});
+        });
+
+        chatChannel.registerOnJoinedRoom(roomsController.addRoom);
     });
 
     createAngularController(app, 'canvasController', function($scope){

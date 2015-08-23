@@ -2,7 +2,7 @@ function ConnectionController(scope){
     Controller.call(this, scope);
     var that = this;
 
-    scope.username = '';
+    scope.username = 'gemboj';
     scope.password = 'a';
 
     scope.costam = 1;
