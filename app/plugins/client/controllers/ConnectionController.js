@@ -16,5 +16,5 @@ function ConnectionController(scope){
         });
     });
 
-    this.applyChanges();
+    //this.applyChanges();
 }

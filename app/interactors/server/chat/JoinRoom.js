@@ -1,4 +1,4 @@
-function JoinRoom(transaction, usernameJoinsRoomid, getUsersInRoomid, send){
+function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
     var that = this;
 
 
@@ -8,20 +8,25 @@ function JoinRoom(transaction, usernameJoinsRoomid, getUsersInRoomid, send){
         return transaction(function(t){
             return usernameJoinsRoomid(username, roomId, t)
                 .then(function(){
-                    return getUsersInRoomid(roomId, t);
+                    return getRoomWithUsersById(roomId, t);
                 })
                 .catch(function(){
                     throw 'could not join room';
                 })
         })
-            .then(function(users){
-                var usersNicks = []
+            .then(function(room){
+                var usersNicks = [];
+
+                var users = room.users;
                 for(var i = 0; i < users.length; ++i){
                     usersNicks.push(users[i].username);
                 }
 
-                var data = {};
-                data[roomId] = usersNicks;
+                var data = {
+                    id: roomId,
+                    name: room.name,
+                    usernames: usersNicks
+                };
                 send(username, 'roomUsers', data);
             })
             .catch(function(err){

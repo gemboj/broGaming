@@ -76,14 +76,16 @@ require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dat
         sendingMessagesController.registerOnSendMessage(function(data){
             console.dir(data)
         });
+
+        //sendingMessagesController.registerOnSendMessage(chatChannel.send);
     });
 
     createAngularController(app, 'receivingMessagesController', function($scope){
         var receivingMessagesController = new controllers.ReceivingMessagesController($scope);
-    });
 
-    createAngularController(app, 'tabsController', function($scope, $compile){
-        var tabsController = new controllers.TabsController($scope, $compile);
+        dataChannel.registerOnConnected(receivingMessagesController.showLogin);
+        dataChannel.registerOnError(receivingMessagesController.showError);
+        chatChannel.registerOnError(receivingMessagesController.showError);
     });
 
     createAngularController(app, 'connectionController', function($scope){
@@ -92,6 +94,14 @@ require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dat
         connectionController.registerOnConnect(function(data){
             console.dir(data);
         })
+
+        connectionController.registerOnConnect(dataChannel.connect)
+    });
+
+
+    createAngularController(app, 'roomsController', function($scope){
+        var roomsController = new controllers.RoomsController($scope);
+        chatChannel.registerOnRoomUsers(roomsController.addRoom)
     });
 
     createAngularController(app, 'canvasController', function($scope){
@@ -102,8 +112,8 @@ require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dat
 
     });
 
-    createAngularController(app, 'roomsController', function($scope){
-        var roomsController = new controllers.RoomsController($scope);
+    createAngularController(app, 'tabsController', function($scope, $compile){
+        var tabsController = new controllers.TabsController($scope, $compile);
     });
 
     angular.bootstrap(document, ['broGaming']);

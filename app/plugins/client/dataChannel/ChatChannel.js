@@ -4,7 +4,8 @@ function ChatChannel(dataChannel){
 
     var eventsNames = [
         'receiveMessage',
-        'roomUsers'
+        'roomUsers',
+        'error'
     ];
 
     that.send = function(eventType, data, cb){

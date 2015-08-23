@@ -4,6 +4,11 @@
       "path" : "/../entities/entities",
       "module" : "entities",
       "class" : "User"
+    },
+    {
+      "path" : "/../entities/entities",
+      "module" : "entities",
+      "class" : "Room"
     }
   ]
 }

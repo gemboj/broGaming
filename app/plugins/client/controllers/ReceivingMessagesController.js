@@ -4,8 +4,16 @@ function ReceivingMessagesController(scope){
 
     scope.messageLog = 'dgfdgdgfdg';
 
-    that.showMessage = function(message){
+    var showMessage = function(message){
         scope.messageLog += message;
-        this.applyChanges();
+        that.applyChanges();
     };
+
+    that.showLogin = function(username){
+        showMessage('Logged as: ' + username);
+    }
+
+    that.showError = function(err){
+        showMessage('Error: ' + err);
+    }
 }

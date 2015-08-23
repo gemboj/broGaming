@@ -11,11 +11,9 @@ function RoomsController(scope){
         scope._chatStaticData.currentRoom = room;
     };
 
-    scope._chatStaticData.currentRoom = new Room(1, 'name1', ['user1', 'user2']);
+    scope._chatStaticData.currentRoom = null;
     var rooms = [
-        scope._chatStaticData.currentRoom,
-        new Room(2, 'name2', ['dfgdgdfg', 'udgdfgdgdfgser2', 'blabla']),
-        new Room(3, 'name3', ['ktost52', 'ghgh', '56', '456'])
+
     ];
 
     function Room(id, name, users){
@@ -38,5 +36,15 @@ function RoomsController(scope){
 
     scope.getRooms = function(){
         return rooms;
+    }
+
+    this.addRoom = function(data){
+        var room = new Room(data.id, data.name, data.usernames);
+        rooms.push(room);
+        if(rooms.length === 1){
+            scope._chatStaticData.currentRoom = room;
+        }
+
+        that.applyChanges();
     }
 }
