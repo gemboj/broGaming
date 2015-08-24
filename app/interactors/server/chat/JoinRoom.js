@@ -27,6 +27,13 @@ function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
                     name : room.name,
                     usernames : usersNicks
                 };
+
+                for(var i = 0; i < users.length; ++i){
+                    if(users[i].username !== username){
+                        send(users[i].username, 'someoneJoinedRoom', {roomId: room.id, username: username});
+                    }
+                };
+
                 return data;
             })
             .catch(function(err){

@@ -1,9 +1,9 @@
 describe('JoinRoom', function(){
     beforeEach(function(){
         var that = this;
-        this.users = [new User('username', 'a', 0, 1)];
+        this.users = [new User('username', 'a', 0, 1), new User('username2', 'a', 0, 1), new User('username3', 'a', 0, 1)];
         this.roomName = 'Main';
-        this.usersNicks = ['username'];
+        this.usersNicks = ['username', 'username2', 'username3'];
         this.transactionObj = {};
 
         var that = this;
@@ -146,5 +146,20 @@ describe('JoinRoom', function(){
             .catch(function(err){
                 done.fail(err);
             });
+    });
+    
+    it('broadcasts join to OTHER users in room', function(done){
+    	var that = this;
+
+        this.joinRoom = new JoinRoom(this.transaction, this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+
+    	this.joinRoom.do('username', 2)
+                .then(function(){
+                    expect(that.send.calls.count()).toBe(2);
+                    done();
+                })
+                .catch(function(err){
+                    done.fail(err);
+                })
     });
 });

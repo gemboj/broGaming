@@ -65,5 +65,20 @@ function RoomsController(scope){
         scope._chatStaticData.currentRoom = null;
     }
 
+    this.addUser = function(data){
+        var room = undefined;
+        for(var i = 0; i < rooms.length; ++i){
+            if(rooms[i].id === data.roomId){
+                room = rooms[i];
+                break;
+            }
+        }
+
+        if(room !== undefined){
+            room.users.push(data.username);
+            that.applyChanges()
+        }
+    }
+
     this.applyChanges()
 }

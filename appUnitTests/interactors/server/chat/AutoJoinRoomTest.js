@@ -20,9 +20,9 @@ describe('AutoJoinRoom', function(){
     it('joins user to choosen roomid', function(done){
     	var that = this;
 
-    	this.autoJoinRoom.do('usernam')
+    	this.autoJoinRoom.do('username')
                 .then(function(){
-                    expect(that.joinRoom).toHaveBeenCalledWith(0);
+                    expect(that.joinRoom).toHaveBeenCalledWith('username', 0);
                     done();
                 })
                 .catch(function(err){

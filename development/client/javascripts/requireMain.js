@@ -105,6 +105,7 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
         roomsController.registerOnCreateRoom(createRoom.do);
 
         chatChannel.registerOnJoinedRoom(roomsController.addRoom);
+        chatChannel.registerOnSomeoneJoinedRoom(roomsController.addUser);
         dataChannel.registerOnDisconnect(roomsController.deleteRooms);
     });
 

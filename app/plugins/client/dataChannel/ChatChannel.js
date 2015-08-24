@@ -5,6 +5,7 @@ function ChatChannel(dataChannel){
     var eventsNames = [
         'receiveMessage',
         'joinedRoom',
+        'someoneJoinedRoom',
         'error'
     ];
 
