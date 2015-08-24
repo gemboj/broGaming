@@ -28,10 +28,10 @@ function DataChannel(socketio){
         sockets[username] = socket;
 
         for(event in applications){
-            socket.on(event, function(_package){
+            socket.on(event, function(_package, cb){
                 var data = _package.data;
                 data._sendersUsername = username;
-                applications[event][_package.eventType](data);
+                applications[event][_package.eventType](data, cb);
             });
         }
 

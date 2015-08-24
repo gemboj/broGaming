@@ -1,7 +1,6 @@
 function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
     var that = this;
 
-
     that.do = function(username, roomId){
         roomId = roomId === undefined ? 0 : roomId;
 
@@ -24,14 +23,14 @@ function JoinRoom(transaction, usernameJoinsRoomid, getRoomWithUsersById, send){
                 }
 
                 var data = {
-                    id: roomId,
-                    name: room.name,
-                    usernames: usersNicks
+                    id : roomId,
+                    name : room.name,
+                    usernames : usersNicks
                 };
-                send(username, 'joinedRoom', data);
+                return data;
             })
             .catch(function(err){
-                send(username, 'error', 'could not join room');
+                send(username, 'error', err);
                 throw err;
             });
     }

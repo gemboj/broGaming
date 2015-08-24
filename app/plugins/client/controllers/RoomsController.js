@@ -60,5 +60,10 @@ function RoomsController(scope){
         scope.createRoomName = '';
     };
 
+    this.deleteRooms = function(){
+        rooms = [];
+        scope._chatStaticData.currentRoom = null;
+    }
+
     this.applyChanges()
 }

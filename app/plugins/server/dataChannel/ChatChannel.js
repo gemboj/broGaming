@@ -21,9 +21,18 @@ function ChatChannel(dataChannel){
         });
     });
 
-    events['createRoom'] = that.createEvent('createRoom', function(action, data){
+    events['createRoom'] = that.createEvent('createRoom', function(action, data, cb){
         action(function(listener){
-            listener(data.roomName, data._sendersUsername);
+            var promise = listener(data.roomName, data._sendersUsername);
+
+            if(promise !== undefined){
+                promise
+                    .then(function(data){
+                        if(data !== undefined){
+                            cb(data);
+                        }
+                    })
+            }
         });
     });
 

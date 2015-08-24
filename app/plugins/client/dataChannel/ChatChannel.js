@@ -8,9 +8,15 @@ function ChatChannel(dataChannel){
         'error'
     ];
 
-    that.send = function(eventType, data, cb){
+    that.send = function(eventType, data){
         var _package = {data: data, eventType: eventType};
-        dataChannel.send('chat', _package, cb);
+
+
+        return new Promise(function(resolve, reject){
+            dataChannel.send('chat', _package, function(data){
+                resolve(data);
+            });
+        });
     };
 
     that.events = {};

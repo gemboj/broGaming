@@ -51,7 +51,7 @@ function SequelizeDB(Sequelize){
         return db.sync()
             .then(function(){
 
-                return that.deleteAllRooms()
+                /*return that.deleteAllRooms()
                     .then(function(){
                         return db.transaction(function(t){
                             return rooms.build({id : 1, name : 'name1', is_deletable : false}).save()
@@ -84,9 +84,9 @@ function SequelizeDB(Sequelize){
                         console.log(err);
                     })
                     .then(function(){
-                 return that;
-                    });
 
+                    });*/
+                return that;
             })
     };
 
@@ -96,9 +96,11 @@ function SequelizeDB(Sequelize){
         })
             .then(function(result){
                 //commit
+                console.log('commit');
                 return result
             })
             .catch(function(err){
+                console.log('rollback');
                 throw err;
             })
     };
@@ -145,13 +147,33 @@ function SequelizeDB(Sequelize){
     };
 
     this.usernameJoinsRoomid = function(username, roomId, t){
+        var transaction = {};
+        t !== undefined ? transaction.transaction = t : null;
 
-
-        return users_rooms.build({users_username : username, rooms_id : roomId}).save();
+        return users_rooms.build({users_username : username, rooms_id : roomId}).save(transaction);
     };
 
     this.getRoomWithUsersById = function(roomId, t){
-        return Promise.resolve(new Room(0, 'Main', 0, [new User('username', 'a', 1, 1)]));
+        var transaction = {
+            where : {id : roomId},
+            include:[
+                users
+            ]
+        };
+        t !== undefined ? transaction.transaction = t : null;
+
+        return rooms.findOne(transaction)
+            .then(function(data){
+                var users = [];
+                var dataValue = data.dataValues;
+                for(var i = 0; i < dataValue.users.length; ++i){
+                    var userDataValue = dataValue.users[i].dataValues;
+                    users.push(new User(userDataValue.username, userDataValue.password, userDataValue.is_logged, userDataValue.is_active));
+                }
+
+                return new Room(dataValue.id, dataValue.name, dataValue.is_deletable, users);
+            });
+        //Promise.resolve();
     };
 
     this.deleteAllRooms = function(){

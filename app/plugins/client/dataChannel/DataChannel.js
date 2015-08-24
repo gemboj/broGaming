@@ -18,7 +18,7 @@ function DataChannel(socketio, address){
         });
 
         socket.on('error', error);
-        socket.on('disconnect', error);
+        socket.on('disconnect', disconnectEvent);
         socket.on('reconnect', function () {
             error('Reconnected');
         });
@@ -44,6 +44,12 @@ function DataChannel(socketio, address){
     });
 
     var error = that.createEvent('error', function (action, message) {
+        action(function (listener) {
+            listener(message);
+        });
+    });
+
+    var disconnectEvent = that.createEvent('disconnect', function (action, message) {
         action(function (listener) {
             listener(message);
         });
