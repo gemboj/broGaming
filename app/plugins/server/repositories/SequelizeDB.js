@@ -173,13 +173,18 @@ function SequelizeDB(Sequelize){
 
                 return new Room(dataValue.id, dataValue.name, dataValue.is_deletable, users);
             });
-        //Promise.resolve();
     };
 
     this.deleteAllRooms = function(){
-        return rooms.destroy({
-            where : {}
+        return users_room.destroy({
+            where: {}
         })
+            .then(function(){
+                rooms.destroy({
+                    where : {}
+                })
+            })
+
     };
 
     this.logoutAllUsers = function(){
