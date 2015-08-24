@@ -52,40 +52,40 @@ function SequelizeDB(Sequelize){
             .then(function(){
 
                 /*return that.deleteAllRooms()
-                    .then(function(){
-                        return db.transaction(function(t){
-                            return rooms.build({id : 1, name : 'name1', is_deletable : false}).save()
-                                .then(function(){
-                                    return rooms.build({id : 2, name : 'name2', is_deletable : false}).save();
-                                })
-                                .then(function(){
-                                    return users_rooms.build({users_username: 'gemboj', rooms_id: 1}).save()
-                                })
-                                .catch(function(err){
-                                    console.log(err);
-                                })
-                                .then(function(arg){
-                                    return that.insertRoom({id : 3, name : 'room3', deletable : false})
+                 .then(function(){
+                 return db.transaction(function(t){
+                 return rooms.build({id : 1, name : 'name1', is_deletable : false}).save()
+                 .then(function(){
+                 return rooms.build({id : 2, name : 'name2', is_deletable : false}).save();
+                 })
+                 .then(function(){
+                 return users_rooms.build({users_username: 'gemboj', rooms_id: 1}).save()
+                 })
+                 .catch(function(err){
+                 console.log(err);
+                 })
+                 .then(function(arg){
+                 return that.insertRoom({id : 3, name : 'room3', deletable : false})
 
-                                })
-                                .then(function(){
-                                    //return that.usernameJoinsRoomid('gemboj', 2);
-                                    return users_rooms.build({users_username: 'gemboj', rooms_id: 2}).save()
-                                });
-                        });
+                 })
+                 .then(function(){
+                 //return that.usernameJoinsRoomid('gemboj', 2);
+                 return users_rooms.build({users_username: 'gemboj', rooms_id: 2}).save()
+                 });
+                 });
 
-                        //return that.insertRoom({id : 1, name : 'room1', deletable : false});
-                    })
+                 //return that.insertRoom({id : 1, name : 'room1', deletable : false});
+                 })
 
-                    .then(function(arg){
-                        return that.usernameJoinsRoomid('gemboj', 3);
-                    })
-                    .catch(function(err){
-                        console.log(err);
-                    })
-                    .then(function(){
+                 .then(function(arg){
+                 return that.usernameJoinsRoomid('gemboj', 3);
+                 })
+                 .catch(function(err){
+                 console.log(err);
+                 })
+                 .then(function(){
 
-                    });*/
+                 });*/
                 return that;
             })
     };
@@ -153,10 +153,10 @@ function SequelizeDB(Sequelize){
         return users_rooms.build({users_username : username, rooms_id : roomId}).save(transaction);
     };
 
-    this.getRoomWithUsersById = function(roomId, t){
+    this.getDeletableRoomWithUsersById = function(roomId, t){
         var transaction = {
             where : {id : roomId},
-            include:[
+            include : [
                 users
             ]
         };
@@ -176,8 +176,8 @@ function SequelizeDB(Sequelize){
     };
 
     this.deleteAllRooms = function(){
-        return users_room.destroy({
-            where: {}
+        return users_rooms.destroy({
+            where : {}
         })
             .then(function(){
                 rooms.destroy({
@@ -194,4 +194,21 @@ function SequelizeDB(Sequelize){
             where : {}
         });
     };
+
+    this.removeUsernameFromRoomid = function(username, roomId){
+        return users_rooms.destroy({
+            where : {
+                users_username : username,
+                rooms_id : roomId
+            }
+        })
+    };
+
+    this.removeRoomById = function(roomId){
+        return rooms.destroy({
+            where : {
+                id : roomId
+            }
+        })
+    }
 }

@@ -16,7 +16,16 @@ function ChatChannel(dataChannel){
     eventsNames.forEach(function(event){
         events[event] = that.createEvent(event, function (action, data) {
             action(function (listener) {
-                listener(data);
+                var promise = listener(data);
+
+                if(promise !== undefined){
+                    promise
+                        .then(function(data){
+                            if(data !== undefined){
+                                cb(data);
+                            }
+                        })
+                }
             });
         });
     });
@@ -25,17 +34,31 @@ function ChatChannel(dataChannel){
         action(function(listener){
             var promise = listener(data.roomName, data._sendersUsername);
 
-            if(promise !== undefined){
-                promise
-                    .then(function(data){
-                        if(data !== undefined){
-                            cb(data);
-                        }
-                    })
-            }
+            resolveCallback(promise, cb);
         });
     });
 
+    events['leaveRoom'] = that.createEvent('leaveRoom', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data._sendersUsername, data.roomId);
+
+            resolveCallback(promise, cb);
+        });
+    });
+
+    function resolveCallback(promise, cb){
+        if(promise !== undefined){
+            promise
+                .then(function(data){
+                    if(data !== undefined){
+                        cb(data);
+                    }
+                })
+                .catch(function(){
+                    cb(null, 'error');
+                })
+        }
+    }
 
     dataChannel.registerEvents('chat', events);
 }

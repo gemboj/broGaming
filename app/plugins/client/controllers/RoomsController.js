@@ -59,6 +59,12 @@ function RoomsController(scope){
         that.createRoomEvent(scope.createRoomName);
         scope.createRoomName = '';
     };
+    
+    scope.leaveRoom = that.createEvent('leaveRoom', function(action, roomId){
+        action(function(listener){
+            listener(roomId);
+        });
+    });
 
     this.deleteRooms = function(){
         rooms = [];
@@ -78,7 +84,36 @@ function RoomsController(scope){
             room.users.push(data.username);
             that.applyChanges()
         }
-    }
+    };
+
+    this.removeUser = function(data){
+        var room = undefined;
+        for(var i = 0; i < rooms.length; ++i){
+            if(rooms[i].id === data.roomId){
+                room = rooms[i];
+                break;
+            }
+        }
+
+        if(room !== undefined){
+            var index = room.users.indexOf(data.username);
+
+            if(index > -1){
+                room.users.splice(index, 1);
+            }
+            that.applyChanges()
+        }
+    };
+
+    this.removeRoomById = function(roomId){
+        for(var i = 0; i < rooms.length; ++i){
+            if(rooms[i].id === roomId){
+                rooms.splice(i, 1);
+                break;
+            }
+        }
+        that.applyChanges()
+    };
 
     this.applyChanges()
 }

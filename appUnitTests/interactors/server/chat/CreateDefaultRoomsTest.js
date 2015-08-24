@@ -15,13 +15,13 @@ describe('CreateDefaultRooms', function(){
         spyOn(this, 'insertRoom').and.callThrough();
         spyOn(this, 'getNextRoomId').and.callThrough();
 
-        this.createRooms = new CreateDefaultRooms(this.insertRoom, this.getNextRoomId);
+        this.createRoom = new CreateDefaultRooms(this.insertRoom, this.getNextRoomId);
     });
 
     it('creates non deletable rooms, at least 1', function(done){
         var that = this;
 
-        this.createRooms.do()
+        this.createRoom.do()
             .then(function(){
                 expect(that.insertRoom.calls.count()).toBeGreaterThan(0);
                 expect(that.getNextRoomId.calls.count()).toBe(that.insertRoom.calls.count());
@@ -37,7 +37,7 @@ describe('CreateDefaultRooms', function(){
     it('accepts array of room names', function(done){
         var that = this;
 
-        this.createRooms.do(['Main1', 'Main2', 'Main3'])
+        this.createRoom.do(['Main1', 'Main2', 'Main3'])
             .then(function(){
                 expect(that.insertRoom.calls.count()).toBeGreaterThan(2);
                 expect(that.getNextRoomId.calls.count()).toBe(that.insertRoom.calls.count());

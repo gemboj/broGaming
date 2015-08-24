@@ -35,7 +35,7 @@
 				<ul id="roomsList" ng-show="roomsVisible()">
 					<p>Rooms:</p>
 					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)">
-						<p>{{room.name}}</p>
+						<p>{{room.name}}</p><input type="button" class="button" ng-click="leaveRoom(room.id)" value="x"/>
 					</li>
 					<p>Create Room:</p>
 					<form ng-submit="createRoom()">

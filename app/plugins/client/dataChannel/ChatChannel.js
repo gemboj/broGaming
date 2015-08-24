@@ -6,6 +6,7 @@ function ChatChannel(dataChannel){
         'receiveMessage',
         'joinedRoom',
         'someoneJoinedRoom',
+        'someoneLeftRoom',
         'error'
     ];
 
@@ -14,8 +15,12 @@ function ChatChannel(dataChannel){
 
 
         return new Promise(function(resolve, reject){
-            dataChannel.send('chat', _package, function(data){
-                resolve(data);
+            dataChannel.send('chat', _package, function(data, error){
+                if(error === undefined){
+                    resolve(data);
+                }
+
+                reject(error);
             });
         });
     };

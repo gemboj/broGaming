@@ -101,11 +101,15 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
         });*/
 
         var createRoom = new chatTnteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
+        var leaveRoom = new chatTnteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
 
         roomsController.registerOnCreateRoom(createRoom.do);
+        roomsController.registerOnLeaveRoom(leaveRoom.do);
 
         chatChannel.registerOnJoinedRoom(roomsController.addRoom);
         chatChannel.registerOnSomeoneJoinedRoom(roomsController.addUser);
+        chatChannel.registerOnSomeoneLeftRoom(roomsController.removeUser);
+
         dataChannel.registerOnDisconnect(roomsController.deleteRooms);
     });
 
