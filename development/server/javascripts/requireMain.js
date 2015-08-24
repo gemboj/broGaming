@@ -83,15 +83,17 @@ module.exports = function(server){
             var socketDataChannel = new dataChannel.DataChannel(socketio);
             var chatChannel = new dataChannel.ChatChannel(socketDataChannel);
 
-            var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
-            var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.removeUsernameFromAllRooms);
-
             var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getDeletableRoomWithUsersById, chatChannel.send);
             var autoJoinRoom = new chatInteractors.AutoJoinRoom(joinRoom.do, chatChannel.send);
             var leaveRoom = new chatInteractors.LeaveRoom(sequelizeRepo.getDeletableRoomWithUsersById, chatChannel.send, sequelizeRepo.removeUsernameFromRoomid, sequelizeRepo.removeRoomById);
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
             var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
+
+            var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
+            var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
+
+
 
             socketDataChannel.registerOnIncomingConnection(login.do);
             socketDataChannel.registerOnDisconnected(logout.do);

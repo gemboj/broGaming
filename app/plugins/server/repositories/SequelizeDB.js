@@ -210,5 +210,27 @@ function SequelizeDB(Sequelize){
                 id : roomId
             }
         })
+    };
+
+    this.getUsernameRooms = function(username){
+        return users.findOne({
+            where : {
+                username : username
+            },
+            include : [
+                rooms
+            ]
+        })
+            .then(function(userData){
+                var dataValue = userData.dataValues;
+                var rooms = [];
+
+                for(var i = 0; i < dataValue.rooms.length; ++i){
+                    var roomDataValue = dataValue.rooms[i].dataValues;
+                    rooms.push(new Room(roomDataValue.id, roomDataValue.name, roomDataValue.is_deletable));
+                }
+
+                return rooms;
+            })
     }
 }
