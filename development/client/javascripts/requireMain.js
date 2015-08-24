@@ -5,8 +5,7 @@ require.config({
         controllers: 'plugins/controllers',
         io: 'vendors/socket.io',
         dataChannel: 'plugins/dataChannel',
-        dataChannelChatEvents: 'interactors/chat/dataChannelEvents',
-        guiChatEvents: 'interactors/chat/guiEvents'
+        chatTnteractors: 'interactors/chat'
     },
     shim: {
         angular: {
@@ -21,7 +20,7 @@ require.config({
     }
 });
 
-require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dataChannel', 'angular', 'io'], function (jquery, dataChannelChatEvents, guiChatEvents, controllers, dataChannels, angular, io) {
+require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteractors'], function (jquery, controllers, dataChannels, angular, io, chatTnteractors) {
     var app = angular.module('broGaming', []).config(function($sceProvider) {
         // Completely disable SCE.  For demonstration purposes only!
         // Do not use in new projects.
@@ -97,11 +96,16 @@ require(['jquery', 'dataChannelChatEvents', 'guiChatEvents', 'controllers', 'dat
 
     createAngularController(app, 'roomsController', function($scope){
         var roomsController = new controllers.RoomsController($scope);
-        roomsController.registerOnCreateRoom(function(roomName){
+        /*roomsController.registerOnCreateRoom(function(roomName){
             chatChannel.send('createRoom', {roomName: roomName});
-        });
+        });*/
+
+        var createRoom = new chatTnteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
+
+        roomsController.registerOnCreateRoom(createRoom.do);
 
         chatChannel.registerOnJoinedRoom(roomsController.addRoom);
+        dataChannel.registerOnDisconnect(roomsController.deleteRooms);
     });
 
     createAngularController(app, 'canvasController', function($scope){

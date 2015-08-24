@@ -126,15 +126,21 @@ describe('JoinRoom', function(){
             });
     });
 
-    it('sends back usernames from joined room', function(done){
+    it('returns usernames from joined room', function(done){
         var that = this;
 
         this.joinRoom = new JoinRoom(this.transaction, this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
 
         this.joinRoom.do('username', 2)
-            .then(function(){
+            .then(function(data){
                 expect(that.transaction).toHaveBeenCalled();
-                expect(that.send).toHaveBeenCalledWith('username', 'joinedRoom', {id: 2, name: 'Main', usernames :that.usersNicks});
+                expect(data.id).toBe(2);
+                expect(data.name).toBe('Main');
+
+                for(var i = 0; i < data.usernames.lenght; ++i){
+                    expect(data.usernames[i]).toBe(that.usersNicks[i]);
+                }
+
                 done();
             })
             .catch(function(err){
