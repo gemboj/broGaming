@@ -38,6 +38,14 @@ function ChatChannel(dataChannel){
         });
     });
 
+    events['joinRoom'] = that.createEvent('joinRoom', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data._sendersUsername, data.roomId);
+
+            resolveCallback(promise, cb);
+        });
+    });
+
     events['leaveRoom'] = that.createEvent('leaveRoom', function(action, data, cb){
         action(function(listener){
             var promise = listener(data._sendersUsername, data.roomId);
@@ -49,6 +57,14 @@ function ChatChannel(dataChannel){
     events['sendRoomData'] = that.createEvent('sendRoomData', function(action, data, cb){
         action(function(listener){
             var promise = listener(data.roomId, data._sendersUsername, data.data);
+
+            resolveCallback(promise, cb);
+        });
+    });
+
+    events['sendData'] = that.createEvent('sendData', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data.receiver, data._sendersUsername, data.data);
 
             resolveCallback(promise, cb);
         });

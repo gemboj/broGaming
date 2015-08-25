@@ -95,12 +95,9 @@ function SequelizeDB(Sequelize){
             return func(t);
         })
             .then(function(result){
-                //commit
-                console.log('commit');
                 return result
             })
             .catch(function(err){
-                console.log('rollback');
                 throw err;
             })
     };
@@ -114,9 +111,15 @@ function SequelizeDB(Sequelize){
             is_logged : true
         }, {
             where : {
-                username : username
+                username : username,
+                is_logged : false
             }
-        });
+        })
+            .then(function(arg){
+                if(arg[0] === 0){
+                    throw 'alreadyLogged';
+                }
+            });
     };
 
     this.markAsNotLoggedUser = function(username){
@@ -210,6 +213,9 @@ function SequelizeDB(Sequelize){
                 id : roomId
             }
         })
+            .catch(function(){
+                console.log("room: " + roomId + " is not empty")
+            });
     };
 
     this.getUsernameRooms = function(username){
@@ -231,6 +237,23 @@ function SequelizeDB(Sequelize){
                 }
 
                 return rooms;
+            })
+    }
+
+    this.getUserByUsername = function(username){
+        return users.findOne({
+            where : {
+                username : username
+            }
+        })
+            .then(function(userData){
+                if(userData === null){
+                    return null;
+                }
+
+                var dataValue = userData.dataValues;
+
+                return new User(dataValue.username, dataValue.password, dataValue.is_logged, dataValue.is_active);
             })
     }
 }

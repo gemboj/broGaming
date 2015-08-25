@@ -29,31 +29,48 @@
 
 			<aside id="chatRoom" ng-controller="roomsController">
 				<div id="roomHeader" class="flexContainerH">
-					<input type="button" id="chooseRoom" class="button" value="VV" ng-click="toggleRooms()"/>
+					<input type="button" id="chooseRoom" class="button" value="V" ng-click="toggleRooms()"/>
 					<h3 id="roomName" ng-bind="getCurrentRoom().name"></h3>
 				</div>
 				<ul id="roomsList" ng-show="roomsVisible()">
 					<p>Rooms:</p>
-					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)">
-						<p>{{room.name}}</p><input type="button" class="button" ng-click="leaveRoom(room.id)" value="x"/>
+					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)" class="flexContainerH">
+						<input type="button" class="button" ng-click="leaveRoom(room.id); $event.stopPropagation();" value="x"/><p>{{room.name}}</p>
 					</li>
-					<p>Create Room:</p>
-					<form ng-submit="createRoom()">
-						<input type="text" ng-model="createRoomName" />
-						<input type="submit" value="Create" />
+					<hr />
+					<form ng-submit="createRoom()" class="flexContainerV">
+						<input type="text" ng-model="createRoomName" size="1"/>
+
+						<input type="submit" value="Create" class="button"/>
 					</form>
 				</ul>
 
 				<ul id="usersList" ng-repeat="room in getRooms()" ng-show="room.isCurrent()">
 					<li ng-repeat="user in room.users" class="button">
-						<p ng-bind="user"></p>
+						<p ng-bind="user.username" ng-click="selectUser(user)" ng-class="{selected:user.isSelected()}"></p>
 					</li>
 				</ul>
+				<div id="options" class="flexContainerV" ng-show="selectedUsers.length > 0">
+					<input type="button" class="button" value="Invite" ng-click="roomInvites()">
+					<ul ng-show="isRoomInvite()" >
+						<li ng-repeat="room in getRooms()">
+							<p class="button" ng-click="roomInvite(room)">{{room.name}}</p>
+						</li>
+					</ul>
+				</div>
+				<div id="invites">
+					<div ng-repeat="invite in invites">
+						<p>You have been invited</p>
+						<input class="button" ng-click="invite.successCb()" value="yes" />
+						<input class="button" ng-click="invite.failCb()" value="no" />
+					</div>
+				</div>
 			</aside>
 		</div>
 
 		<footer class="flexContainerH" ng-controller="sendingMessagesController">
 			<form ng-submit="sendMessage()" class="flexContainerH">
+				<input type="text" ng-model="receiverUsername"/>
 				<input type="text" ng-model="message"/>
 				<input type="submit" value="Send" class="button"/>
 			</form>

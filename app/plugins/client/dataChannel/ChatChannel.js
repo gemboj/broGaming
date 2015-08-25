@@ -8,6 +8,8 @@ function ChatChannel(dataChannel){
         'someoneJoinedRoom',
         'someoneLeftRoom',
         'roomMessage',
+        'message',
+        'roomInvite',
         'error'
     ];
 

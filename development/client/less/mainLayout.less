@@ -1,5 +1,4 @@
 
-
 html {
   .container;
   body {
@@ -11,7 +10,6 @@ html {
 
       div {
         flex: 1 1 auto;
-
 
         div {
           flex: 1 1 auto;
@@ -39,7 +37,6 @@ html {
               }
             }
 
-
           }
         }
 
@@ -51,11 +48,16 @@ html {
 
       aside {
         background: @primaryBackgroundColor;
-        flex: 0 0 100px;
+        flex: 1 0 150px !important;
 
-        div {
+        #roomHeader {
+          flex: 0 1 auto;
+          input {
+          }
           h3 {
             color: @secondaryFontColor;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
 
@@ -64,11 +66,22 @@ html {
           margin: 5px;
           background: @primaryBackgroundColorLight;
           color: @secondaryFontColor;
+
           li {
             text-overflow: ellipsis;
             background: @primaryBackgroundColorDark;
             padding: 3px;
             margin: 3px 0px;
+
+            input {
+              padding: 2px;
+              margin-right: 3px;
+            }
+
+            p {
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
           }
 
           li:hover {
@@ -79,9 +92,8 @@ html {
             background: @primaryBackgroundColorLight;
           }
 
-          p{
-            overflow: hidden;
-            text-overflow: ellipsis;
+          hr {
+            margin: 10px;
           }
         }
 
@@ -90,13 +102,36 @@ html {
 
           li {
             margin: 2px 0px;
-            p{
+            p {
               padding: 1px;
               overflow: hidden;
               text-overflow: ellipsis;
+
+              &.selected {
+                border: 1px solid white;
+              }
             }
           }
         }
+
+        #options {
+          ul {
+
+            li {
+              margin: 2px 0px;
+              overflow: hidden;
+              p {
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+            }
+          }
+        }
+
+        #invites {
+          flex: 1 0 auto;
+        }
+
       }
     }
 
@@ -106,12 +141,16 @@ html {
       padding: 5px;
 
       form {
-        [type="text"] {
-          flex: 9 0 auto;
+        [type="text"]:nth-child(1) {
+          flex: 1 1 50px;
+          //font-size: 22px;
+        }
+        [type="text"]:nth-child(2) {
+          flex: 8 0 auto;
           //font-size: 22px;
         }
         [type="submit"] {
-          flex: 1 0 auto;
+          flex: 1 1 auto;
         }
       }
     }

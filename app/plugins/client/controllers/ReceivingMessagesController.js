@@ -19,5 +19,9 @@ function ReceivingMessagesController(scope){
 
     that.showRoomMessage = function(data){
         showMessage(data.sender + " [" + data.roomName + "] :" + data.message);
-    }
+    };
+
+    that.showMessage = function(data){
+        showMessage(data.sender + " :" + data.message);
+    };
 }

@@ -67,7 +67,7 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
 
 
 
-
+    var sendData = new chatTnteractors.SendData(chatChannel.send);
 
     createAngularController(app, 'sendingMessagesController', function($scope){
         var sendingMessagesController = new controllers.SendingMessagesController($scope);
@@ -77,7 +77,9 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
         });
 
         var sendRoomData = new chatTnteractors.SendRoomData(chatChannel.send);
-        sendingMessagesController.registerOnSendMessage(sendRoomData.do);
+
+        sendingMessagesController.registerOnSendMessage(sendData.do);
+        sendingMessagesController.registerOnSendRoomMessage(sendRoomData.do);
     });
 
     createAngularController(app, 'receivingMessagesController', function($scope){
@@ -87,8 +89,10 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
         dataChannel.registerOnConnected(receivingMessagesController.showLogin);
 
         dataChannel.registerOnError(receivingMessagesController.showError);
+
         chatChannel.registerOnError(receivingMessagesController.showError);
         chatChannel.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
+        chatChannel.registerOnMessage(receivingMessagesController.showMessage);
     });
 
     createAngularController(app, 'connectionController', function($scope){
@@ -108,13 +112,16 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
 
         var createRoom = new chatTnteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
         var leaveRoom = new chatTnteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
+        var receiveRoomInvite = new chatTnteractors.ReceiveRoomInvite(roomsController.showRoomInvite, chatChannel.send, roomsController.addRoom);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);
+        roomsController.registerOnRoomInvite(sendData.do);
 
         chatChannel.registerOnJoinedRoom(roomsController.addRoom);
         chatChannel.registerOnSomeoneJoinedRoom(roomsController.addUser);
         chatChannel.registerOnSomeoneLeftRoom(roomsController.removeUser);
+        chatChannel.registerOnRoomInvite(receiveRoomInvite.do);
 
         dataChannel.registerOnDisconnect(roomsController.deleteRooms);
     });

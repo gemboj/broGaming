@@ -39,10 +39,15 @@ html body div div textarea {
 }
 html body div aside {
   background: #404040;
-  flex: 0 0 100px;
+  flex: 1 0 150px !important;
 }
-html body div aside div h3 {
+html body div aside #roomHeader {
+  flex: 0 1 auto;
+}
+html body div aside #roomHeader h3 {
   color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 html body div aside #roomsList {
   padding: 5px;
@@ -56,15 +61,22 @@ html body div aside #roomsList li {
   padding: 3px;
   margin: 3px 0px;
 }
+html body div aside #roomsList li input {
+  padding: 2px;
+  margin-right: 3px;
+}
+html body div aside #roomsList li p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 html body div aside #roomsList li:hover {
   background: #404040;
 }
 html body div aside #roomsList li:active {
   background: #505050;
 }
-html body div aside #roomsList p {
-  overflow: hidden;
-  text-overflow: ellipsis;
+html body div aside #roomsList hr {
+  margin: 10px;
 }
 html body div aside #usersList {
   padding: 5px;
@@ -77,16 +89,33 @@ html body div aside #usersList li p {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+html body div aside #usersList li p.selected {
+  border: 1px solid white;
+}
+html body div aside #options ul li {
+  margin: 2px 0px;
+  overflow: hidden;
+}
+html body div aside #options ul li p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html body div aside #invites {
+  flex: 1 0 auto;
+}
 html body footer {
   flex: 0 0 50px !important;
   background: #303030;
   padding: 5px;
 }
-html body footer form [type="text"] {
-  flex: 9 0 auto;
+html body footer form [type="text"]:nth-child(1) {
+  flex: 1 1 50px;
+}
+html body footer form [type="text"]:nth-child(2) {
+  flex: 8 0 auto;
 }
 html body footer form [type="submit"] {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
 }
 * {
   box-sizing: border-box;
