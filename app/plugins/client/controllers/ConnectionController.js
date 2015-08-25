@@ -16,15 +16,15 @@ function ConnectionController(scope){
         });
     });
 
-    this.showLogin = function(username){
-        scope._chatStaticData.currentUser = username;
+    this.saveCurrentUser = function(username){
+        scope._chatStaticData.currentUser = {username: username};
         scope.username = username;
         that.applyChanges();
     };
 
     this.isLogged = function(){
         return scope._chatStaticData.currentUser != null;
-    }
+    };
 
     this.applyChanges();
 }

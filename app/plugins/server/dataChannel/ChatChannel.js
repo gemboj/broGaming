@@ -46,6 +46,14 @@ function ChatChannel(dataChannel){
         });
     });
 
+    events['sendRoomData'] = that.createEvent('sendRoomData', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data.roomId, data._sendersUsername, data.data);
+
+            resolveCallback(promise, cb);
+        });
+    });
+
     function resolveCallback(promise, cb){
         if(promise !== undefined){
             promise

@@ -89,6 +89,7 @@ module.exports = function(server){
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
             var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
+            var sendRoomData = new chatInteractors.SendRoomData(sequelizeRepo.getRoomWithUsersById, chatChannel.send);
 
             var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
@@ -101,6 +102,7 @@ module.exports = function(server){
 
             chatChannel.registerOnCreateRoom(createRoom.do);
             chatChannel.registerOnLeaveRoom(leaveRoom.do);
+            chatChannel.registerOnSendRoomData(sendRoomData.do);
 
             return deleteTemporaryData.do()
                 .then(function(){

@@ -16,4 +16,8 @@ function ReceivingMessagesController(scope){
     that.showError = function(err){
         showMessage('Error: ' + err);
     };
+
+    that.showRoomMessage = function(data){
+        showMessage(data.sender + " [" + data.roomName + "] :" + data.message);
+    }
 }

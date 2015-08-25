@@ -53,11 +53,12 @@ describe('SendRoomData', function(){
                 })
     });
 
-    it('sends data to OTHER room users with given type', function(done){
+    it('sends data to room users with given type', function(done){
     	var that = this;
 
     	this.sendRoomData.do(0, 'sender', {type: 'roomMessage', data: 'some message'})
                 .then(function(){
+                    expect(that.send).toHaveBeenCalledWith('sender', 'roomMessage', 'some message');
                     expect(that.send).toHaveBeenCalledWith('username2', 'roomMessage', 'some message');
                     expect(that.send).toHaveBeenCalledWith('username3', 'roomMessage', 'some message');
                     done();

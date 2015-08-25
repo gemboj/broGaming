@@ -76,21 +76,27 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
             console.dir(data)
         });
 
-        //sendingMessagesController.registerOnSendMessage(chatChannel.send);
+        var sendRoomData = new chatTnteractors.SendRoomData(chatChannel.send);
+        sendingMessagesController.registerOnSendMessage(sendRoomData.do);
     });
 
     createAngularController(app, 'receivingMessagesController', function($scope){
         var receivingMessagesController = new controllers.ReceivingMessagesController($scope);
 
+
         dataChannel.registerOnConnected(receivingMessagesController.showLogin);
+
         dataChannel.registerOnError(receivingMessagesController.showError);
         chatChannel.registerOnError(receivingMessagesController.showError);
+        chatChannel.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
     });
 
     createAngularController(app, 'connectionController', function($scope){
         var connectionController = new controllers.ConnectionController($scope);
 
         connectionController.registerOnConnect(dataChannel.connect)
+
+        dataChannel.registerOnConnected(connectionController.saveCurrentUser);
     });
 
 

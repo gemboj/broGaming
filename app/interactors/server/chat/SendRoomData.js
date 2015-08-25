@@ -6,14 +6,13 @@ function SendRoomData(getRoomWithUsersById, send){
             .then(function(room){
                 var users = room.users,
                     isInRoom = false,
-                    otherUsers = [];
+                    usersNicks = [];
                 for(var i = 0; i < users.length; ++i){
                     if(users[i].username === sendersUsername){
                         isInRoom = true;
                     }
-                    else{
-                        otherUsers.push(users[i].username);
-                    }
+
+                    usersNicks.push(users[i].username);
                 }
 
                 if(!isInRoom){
@@ -21,8 +20,8 @@ function SendRoomData(getRoomWithUsersById, send){
                     return ;
                 }
 
-                for(var i = 0; i < otherUsers.length; ++i){
-                    send(otherUsers[i], data.type, data.data);
+                for(var i = 0; i < usersNicks.length; ++i){
+                    send(usersNicks[i], data.type, data.data);
                 }
             })
     }
