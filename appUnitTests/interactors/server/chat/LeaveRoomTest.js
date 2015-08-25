@@ -6,7 +6,7 @@ describe('LeaveRoom', function(){
         this.roomName = 'Main';
         this.usersNicks = ['username', 'username2', 'username3'];
 
-        this.getDeletableRoomWithUsersById = function(roomId){
+        this.getRoomWithUsersById = function(roomId){
             return Promise.resolve(new Room(roomId, that.roomName, 1, that.users));
         };
 
@@ -26,12 +26,12 @@ describe('LeaveRoom', function(){
             return Promise.resolve();
         }
 
-        spyOn(this, 'getDeletableRoomWithUsersById').and.callThrough();
+        spyOn(this, 'getRoomWithUsersById').and.callThrough();
         spyOn(this, 'send').and.callThrough();
         spyOn(this, 'removeUsernameFromRoomid').and.callThrough();
         spyOn(this, 'removeRoomById').and.callThrough();
 
-        this.leaveRoom = new LeaveRoom(this.getDeletableRoomWithUsersById, this.send, this.removeUsernameFromRoomid, this.removeRoomById);
+        this.leaveRoom = new LeaveRoom(this.getRoomWithUsersById, this.send, this.removeUsernameFromRoomid, this.removeRoomById);
     });
 
     it('gets room with users', function(done){
@@ -39,7 +39,7 @@ describe('LeaveRoom', function(){
 
     	this.leaveRoom.do('username', 0)
                 .then(function(){
-                    expect(that.getDeletableRoomWithUsersById).toHaveBeenCalledWith(0);
+                    expect(that.getRoomWithUsersById).toHaveBeenCalledWith(0);
                     done();
                 })
                 .catch(function(err){
@@ -78,7 +78,7 @@ describe('LeaveRoom', function(){
     it('tries to remove only deletable rooms', function(done){
     	var that = this;
 
-        var leaveRoomDeletable = new LeaveRoom(this.getDeletableRoomWithUsersById, this.send, this.removeUsernameFromRoomid, this.removeRoomById);
+        var leaveRoomDeletable = new LeaveRoom(this.getRoomWithUsersById, this.send, this.removeUsernameFromRoomid, this.removeRoomById);
 
     	leaveRoomDeletable.do('username', 0)
                 .then(function(){

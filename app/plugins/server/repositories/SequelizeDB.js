@@ -153,7 +153,7 @@ function SequelizeDB(Sequelize){
         return users_rooms.build({users_username : username, rooms_id : roomId}).save(transaction);
     };
 
-    this.getDeletableRoomWithUsersById = function(roomId, t){
+    this.getRoomWithUsersById = function(roomId, t){
         var transaction = {
             where : {id : roomId},
             include : [

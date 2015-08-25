@@ -83,9 +83,9 @@ module.exports = function(server){
             var socketDataChannel = new dataChannel.DataChannel(socketio);
             var chatChannel = new dataChannel.ChatChannel(socketDataChannel);
 
-            var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getDeletableRoomWithUsersById, chatChannel.send);
+            var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var autoJoinRoom = new chatInteractors.AutoJoinRoom(joinRoom.do, chatChannel.send);
-            var leaveRoom = new chatInteractors.LeaveRoom(sequelizeRepo.getDeletableRoomWithUsersById, chatChannel.send, sequelizeRepo.removeUsernameFromRoomid, sequelizeRepo.removeRoomById);
+            var leaveRoom = new chatInteractors.LeaveRoom(sequelizeRepo.getRoomWithUsersById, chatChannel.send, sequelizeRepo.removeUsernameFromRoomid, sequelizeRepo.removeRoomById);
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
             var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
