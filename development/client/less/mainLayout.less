@@ -6,37 +6,27 @@ html {
     .container;
 
     div {
-      flex: 1 1 0% !important;
-
+      overflow: auto;
       div {
-        flex: 1 1 0% !important;
-
         div {
-          flex: 1 1 auto;
-
+          flex: 1 0 0% !important;
           div {
-
-          }
-
-          nav {
-            background: @primaryBackgroundColorLight;
-            flex: 0 0 30px !important;
-            padding: 3px 3px 0 !important;
-
-            span {
-              //flex: 0 1 30px;
-              margin: 0px 2px;
-              padding: 2px;
-
-              &.selected {
-                background: white;
-              }
-              input {
-                //flex: 0 1 30px;
+            nav {
+              background: @primaryBackgroundColorLight;
+              flex: 0 0 30px !important;
+              padding: 3px 3px 0 !important;
+              span {
+                margin: 0px 2px;
                 padding: 2px;
+
+                &.selected {
+                  background: white;
+                }
+                input {
+                  padding: 2px;
+                }
               }
             }
-
           }
         }
 

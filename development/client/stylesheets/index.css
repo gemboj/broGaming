@@ -10,27 +10,24 @@ html body {
   height: 100%;
 }
 html body div {
-  flex: 1 1 0% !important;
-}
-html body div div {
-  flex: 1 1 0% !important;
+  overflow: auto;
 }
 html body div div div {
-  flex: 1 1 auto;
+  flex: 1 0 0% !important;
 }
-html body div div div nav {
+html body div div div div nav {
   background: #505050;
   flex: 0 0 30px !important;
   padding: 3px 3px 0 !important;
 }
-html body div div div nav span {
+html body div div div div nav span {
   margin: 0px 2px;
   padding: 2px;
 }
-html body div div div nav span.selected {
+html body div div div div nav span.selected {
   background: white;
 }
-html body div div div nav span input {
+html body div div div div nav span input {
   padding: 2px;
 }
 html body div div textarea {
