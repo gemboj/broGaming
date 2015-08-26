@@ -34,7 +34,7 @@ html body div div div nav span input {
   padding: 2px;
 }
 html body div div textarea {
-  flex: 0 0 150px;
+  flex: 0 1 150px;
   resize: none;
 }
 html body div aside {
