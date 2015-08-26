@@ -5,7 +5,8 @@ require.config({
         controllers: 'plugins/controllers',
         io: 'vendors/socket.io',
         dataChannel: 'plugins/dataChannel',
-        chatTnteractors: 'interactors/chat'
+        chatInteractors: 'interactors/chat',
+        ajax: 'plugins/AJAX'
     },
     shim: {
         angular: {
@@ -20,7 +21,7 @@ require.config({
     }
 });
 
-require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteractors'], function (jquery, controllers, dataChannels, angular, io, chatTnteractors) {
+require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteractors', 'ajax'], function (jquery, controllers, dataChannels, angular, io, chatInteractors, ajax) {
     var app = angular.module('broGaming', []).config(function($sceProvider) {
         // Completely disable SCE.  For demonstration purposes only!
         // Do not use in new projects.
@@ -48,6 +49,9 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
     var dataChannel = new dataChannels.DataChannel(io);
     var chatChannel = new dataChannels.ChatChannel(dataChannel);
 
+    var appLoader = new ajax.AppLoader($.ajax);
+
+    appLoader.load('test');
     /*createAngularController(angular, 'chatController', function($scope){
         var chatController = new controllers.ChatController($scope);
 
@@ -67,7 +71,7 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
 
 
 
-    var sendData = new chatTnteractors.SendData(chatChannel.send);
+    var sendData = new chatInteractors.SendData(chatChannel.send);
 
     createAngularController(app, 'sendingMessagesController', function($scope){
         var sendingMessagesController = new controllers.SendingMessagesController($scope);
@@ -76,7 +80,7 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
             console.dir(data)
         });
 
-        var sendRoomData = new chatTnteractors.SendRoomData(chatChannel.send);
+        var sendRoomData = new chatInteractors.SendRoomData(chatChannel.send);
 
         sendingMessagesController.registerOnSendMessage(sendData.do);
         sendingMessagesController.registerOnSendRoomMessage(sendRoomData.do);
@@ -110,9 +114,9 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
             chatChannel.send('createRoom', {roomName: roomName});
         });*/
 
-        var createRoom = new chatTnteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
-        var leaveRoom = new chatTnteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
-        var receiveRoomInvite = new chatTnteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.addRoom);
+        var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
+        var leaveRoom = new chatInteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
+        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.addRoom);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);
