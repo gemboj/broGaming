@@ -189,6 +189,7 @@ function RoomsController(scope){
     };
 
     scope.sendRoomInvite = that.createEvent('sendRoomInvite', function(action, room){
+        scope.enableInvites(false);
         action(function(listener){
             for(var i = 0; i < scope.selectedUsers.length; ++i){
                 listener(scope.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: scope._chatStaticData.currentUser.username});
