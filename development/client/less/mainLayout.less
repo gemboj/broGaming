@@ -6,10 +6,10 @@ html {
     .container;
 
     div {
-      flex: 1 1 auto;
+      flex: 1 1 0% !important;
 
       div {
-        flex: 1 1 auto;
+        flex: 1 1 0% !important;
 
         div {
           flex: 1 1 auto;
@@ -48,7 +48,8 @@ html {
 
       aside {
         background: @primaryBackgroundColor;
-        flex: 1 0 150px !important;
+        flex: 0 1 200px !important;
+        overflow: auto;
 
         #roomHeader {
           flex: 0 1 auto;

@@ -10,10 +10,10 @@ html body {
   height: 100%;
 }
 html body div {
-  flex: 1 1 auto;
+  flex: 1 1 0% !important;
 }
 html body div div {
-  flex: 1 1 auto;
+  flex: 1 1 0% !important;
 }
 html body div div div {
   flex: 1 1 auto;
@@ -39,7 +39,8 @@ html body div div textarea {
 }
 html body div aside {
   background: #404040;
-  flex: 1 0 150px !important;
+  flex: 0 1 200px !important;
+  overflow: auto;
 }
 html body div aside #roomHeader {
   flex: 0 1 auto;
