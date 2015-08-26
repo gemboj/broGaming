@@ -112,11 +112,11 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatTnteracto
 
         var createRoom = new chatTnteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
         var leaveRoom = new chatTnteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
-        var receiveRoomInvite = new chatTnteractors.ReceiveRoomInvite(roomsController.showRoomInvite, chatChannel.send, roomsController.addRoom);
+        var receiveRoomInvite = new chatTnteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.addRoom);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);
-        roomsController.registerOnRoomInvite(sendData.do);
+        roomsController.registerOnSendRoomInvite(sendData.do);
 
         chatChannel.registerOnJoinedRoom(roomsController.addRoom);
         chatChannel.registerOnSomeoneJoinedRoom(roomsController.addUser);

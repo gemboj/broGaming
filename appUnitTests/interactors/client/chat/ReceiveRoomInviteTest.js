@@ -2,7 +2,7 @@ describe('ReceiveRoomInvite', function(){
     beforeEach(function(){
         var that = this;
 
-        this.showRoomInviteResolve = function(roomName){
+        this.addRoomInviteResolve = function(roomName){
             return Promise.resolve();
         };
 
@@ -15,19 +15,19 @@ describe('ReceiveRoomInvite', function(){
 
         };
 
-        spyOn(this, 'showRoomInviteResolve').and.callThrough();
+        spyOn(this, 'addRoomInviteResolve').and.callThrough();
         spyOn(this, 'send').and.callThrough();
         spyOn(this, 'addRoom').and.callThrough();
 
-        this.receiveRoomInvite = new ReceiveRoomInvite(this.showRoomInviteResolve, this.send, this.addRoom);
+        this.receiveRoomInvite = new ReceiveRoomInvite(this.addRoomInviteResolve, this.send, this.addRoom);
     })
     
     it('shows room invite', function(done){
     	var that = this;
     
-    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName'})
+    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName', sendersUsername: 'sender'})
                 .then(function(){
-                    expect(that.showRoomInviteResolve).toHaveBeenCalledWith('roomName');
+                    expect(that.addRoomInviteResolve).toHaveBeenCalledWith("sender invites you to room: roomName");
                     done();
                 })
                 .catch(function(err){
@@ -35,7 +35,7 @@ describe('ReceiveRoomInvite', function(){
                 })
     });
 
-    it('sends joinRoom when showRoomInvite resolves ', function(done){
+    it('sends joinRoom when addInvite resolves ', function(done){
     	var that = this;
 
     	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName'})

@@ -51,16 +51,16 @@
 					</li>
 				</ul>
 				<div id="options" class="flexContainerV" ng-show="selectedUsers.length > 0">
-					<input type="button" class="button" value="Invite" ng-click="roomInvites()">
-					<ul ng-show="isRoomInvite()" >
+					<input type="button" class="button" value="Invite" ng-click="enableInvites()">
+					<ul ng-show="isInvitesEnabled()" >
 						<li ng-repeat="room in getRooms()">
-							<p class="button" ng-click="roomInvite(room)">{{room.name}}</p>
+							<p class="button" ng-click="sendRoomInvite(room)">{{room.name}}</p>
 						</li>
 					</ul>
 				</div>
 				<div id="invites">
 					<div ng-repeat="invite in invites">
-						<p>You have been invited</p>
+						<p>{{invite.info}}</p>
 						<input class="button" ng-click="invite.successCb()" value="yes" />
 						<input class="button" ng-click="invite.failCb()" value="no" />
 					</div>
