@@ -23,9 +23,12 @@ function ChatChannel(dataChannel){
                     resolve(data);
                 }
 
-                reject(error);
-            });
-        });
+                //reject(error);
+            })
+        })
+            .catch(function(err){
+
+            });;
     };
 
     that.events = {};

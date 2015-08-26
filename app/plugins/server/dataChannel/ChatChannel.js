@@ -79,7 +79,7 @@ function ChatChannel(dataChannel){
                     }
                 })
                 .catch(function(){
-                    cb(null, 'error');
+                    //cb(null, 'no cb data');
                 })
         }
     }

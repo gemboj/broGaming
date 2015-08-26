@@ -7,7 +7,10 @@ function ReceiveRoomInvite(addInvite, send, addRoom){
                 send('joinRoom', {roomId: data.roomId})
                     .then(function(data){
                         addRoom(data)
-                    });
+                    })
+            })
+            .catch(function(){
+
             });
     }
 }
