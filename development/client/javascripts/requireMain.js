@@ -22,9 +22,11 @@ require.config({
 });
 
 require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteractors', 'ajax'], function (jquery, controllers, dataChannels, angular, io, chatInteractors, ajax) {
-    var app = angular.module('broGaming', []).config(function($sceProvider) {
+    var controllerProvider = null;
+    var app = angular.module('broGaming', []).config(function($sceProvider, $controllerProvider) {
         // Completely disable SCE.  For demonstration purposes only!
         // Do not use in new projects.
+        controllerProvider = $controllerProvider;
         $sceProvider.enabled(false);
     });
 
@@ -37,7 +39,7 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteracto
         }
     });
 
-    app.factory('chatStaticData', [function () {
+    app.factory('chatStaticData', [function (ControllerChecker) {
         var o = {};
 
         o.curretnRoom = null;
@@ -46,29 +48,9 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteracto
         return o;
     }]);
 
+
     var dataChannel = new dataChannels.DataChannel(io);
     var chatChannel = new dataChannels.ChatChannel(dataChannel);
-
-    var appLoader = new ajax.AppLoader($.ajax);
-
-    appLoader.load('test');
-    /*createAngularController(angular, 'chatController', function($scope){
-        var chatController = new controllers.ChatController($scope);
-
-
-        chatController.registerOnSendMessage(chatChannel.send);
-        chatController.registerOnConnect(dataChannel.connect);
-
-
-        //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
-        dataChannel.registerOnConnected(chatController.showLogin);
-        dataChannel.registerOnError(chatController.showError);
-
-        chatChannel.registerOnRoomUsers(function(data){
-            console.dir(data);
-        });
-    });*/
-
 
 
     var sendData = new chatInteractors.SendData(chatChannel.send);
@@ -110,9 +92,6 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteracto
 
     createAngularController(app, 'roomsController', function($scope){
         var roomsController = new controllers.RoomsController($scope);
-        /*roomsController.registerOnCreateRoom(function(roomName){
-            chatChannel.send('createRoom', {roomName: roomName});
-        });*/
 
         var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsController.addRoom);
         var leaveRoom = new chatInteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
@@ -138,24 +117,25 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteracto
 
     });
 
-    createAngularController(app, 'tabsController', function($scope, $compile){
-        var tabsController = new controllers.TabsController($scope, $compile);
+
+
+    createAngularController(app, 'tabsController', function($scope){
+        $scope._controllerProvider = controllerProvider;
+        var tabsController = new controllers.TabsController($scope, app, angular);
+
+        var appLoader = new ajax.AppLoader($.ajax, tabsController.newTab);
+        appLoader.load('test');
     });
 
     angular.bootstrap(document, ['broGaming']);
-
 });
 
 function createAngularController(app, name, cb){
     app.controller(name, ['$scope', '$element', 'chatStaticData', function ($scope, $element, chatStaticData) {
         $scope._element = $element;
         $scope._chatStaticData = chatStaticData;
-        cb($scope, $element);
+        cb($scope);
     }]);
-
-}
-
-function createAngularModule(module){
 
 }
 
