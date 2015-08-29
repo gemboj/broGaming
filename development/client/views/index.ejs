@@ -3,38 +3,51 @@
 <head>
 	<base href="/">
 	<title>BroGaming</title>
-	<link rel='stylesheet' href='stylesheets/index.css' />
+	<link rel='stylesheet' href='stylesheets/index.css'/>
 	<script data-main="javascripts/requireMain" src="javascripts/vendors/require.js"></script>
 </head>
 <body class="container">
-	<div class="flexContainerV container">
-		<div class="flexContainerH">
-			<div class="flexContainerV">
-				<div class="flexContainerV" ng-controller="tabsController">
-					<nav class="navigation flexContainerH">
-						<span ng-class="{selected:tab.isSelected()}"  ng-repeat="tab in tabs">
-							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}" />
+<div class="flexContainerV container">
+	<div class="flexContainerH">
+		<div class="flexContainerV">
+			<div class="flexContainerV" ng-controller="tabsController">
+				<nav class="navigation flexContainerH">
+						<span ng-class="{selected:tab.isSelected()}" ng-repeat="tab in tabs">
+							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}"/>
 						</span>
-					</nav>
-					<div class="content flexContainerH" ng-show="tab.isSelected()" ng-repeat="tab in tabs" compile="{{tab.content}}" ng-attr-id="{{tab.id}}">
+				</nav>
+				<div class="content flexContainerH" ng-show="tab.isSelected()" ng-repeat="tab in tabs"
+					 compile="{{tab.content}}" ng-attr-id="{{tab.id}}">
 
-					</div>
 				</div>
-
-				<textarea ng-controller="receivingMessagesController" ng-model="messageLog" class="chatLog"></textarea>
 			</div>
 
-			<aside id="chatRoom" ng-controller="roomsController">
+			<textarea ng-controller="receivingMessagesController" ng-model="messageLog" class="chatLog"></textarea>
+		</div>
+
+		<aside>
+			<div id="connection"  ng-controller="connectionController" ng-show="!_chatStaticData.isConnected()">
+				<form ng-submit="connect()" class="flexContainerV">
+					<input type="text" ng-model="username"/>
+					<input type="text" ng-model="password"/>
+					<input type="submit" value="Connect" class="button"/>
+				</form>
+			</div>
+			<div id="rooms" ng-controller="roomsController" ng-show="_chatStaticData.isConnected()">
 				<div id="roomHeader" class="flexContainerH">
 					<input type="button" id="chooseRoom" class="button" value="V" ng-click="toggleRooms()"/>
-					<h3 id="roomName" ng-bind="getCurrentRoom().name"></h3>
+
+					<h3 ng-bind="getCurrentRoom().name"></h3>
 				</div>
 				<ul id="roomsList" ng-show="roomsVisible()">
 					<p>Rooms:</p>
 					<li ng-repeat="room in getRooms()" ng-click="switchRoom(room)" class="flexContainerH">
-						<input type="button" class="button" ng-click="leaveRoom(room.id); $event.stopPropagation();" value="x"/><p>{{room.name}}</p>
+						<input type="button" class="button" ng-click="leaveRoom(room.id); $event.stopPropagation();"
+							   value="x"/>
+
+						<p>{{room.name}}</p>
 					</li>
-					<hr />
+					<hr/>
 					<form ng-submit="createRoom()" class="flexContainerV">
 						<input type="text" ng-model="createRoomName" size="1"/>
 
@@ -44,12 +57,13 @@
 
 				<ul id="usersList" ng-repeat="room in getRooms()" ng-show="room.isCurrent()">
 					<li ng-repeat="user in room.users" class="button">
-						<p ng-bind="user.username" ng-click="selectUser(user)" ng-class="{selected:user.isSelected()}"></p>
+						<p ng-bind="user.username" ng-click="selectUser(user)"
+						   ng-class="{selected:user.isSelected()}"></p>
 					</li>
 				</ul>
 				<div id="options" class="flexContainerV" ng-show="selectedUsers.length > 0">
 					<input type="button" class="button" value="Invite" ng-click="enableInvites()">
-					<ul ng-show="isInvitesEnabled()" >
+					<ul ng-show="isInvitesEnabled()">
 						<li ng-repeat="room in getRooms()">
 							<p class="button" ng-click="sendRoomInvite(room)">{{room.name}}</p>
 						</li>
@@ -58,21 +72,22 @@
 				<div id="invites">
 					<div ng-repeat="invite in invites">
 						<p>{{invite.info}}</p>
-						<input class="button" ng-click="invite.successCb()" value="yes" />
-						<input class="button" ng-click="invite.failCb()" value="no" />
+						<input class="button" ng-click="invite.successCb()" value="yes"/>
+						<input class="button" ng-click="invite.failCb()" value="no"/>
 					</div>
 				</div>
-			</aside>
-		</div>
-
-		<footer class="flexContainerH" ng-controller="sendingMessagesController">
-			<form ng-submit="sendMessage()" class="flexContainerH">
-				<input type="text" ng-model="receiverUsername"/>
-				<input type="text" ng-model="message"/>
-				<input type="submit" value="Send" class="button"/>
-			</form>
-		</footer>
+			</div>
+		</aside>
 	</div>
+
+	<footer class="flexContainerH" ng-controller="sendingMessagesController">
+		<form ng-submit="sendMessage()" class="flexContainerH">
+			<input type="text" ng-model="receiverUsername"/>
+			<input type="text" ng-model="message"/>
+			<input type="submit" value="Send" class="button"/>
+		</form>
+	</footer>
+</div>
 
 
 <!--	<script type="text/ng-template" id="home">

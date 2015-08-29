@@ -39,11 +39,15 @@ require(['jquery', 'controllers', 'dataChannel', 'angular', 'io', 'chatInteracto
         }
     });
 
-    app.factory('chatStaticData', [function (ControllerChecker) {
+    app.factory('chatStaticData', [function () {
         var o = {};
 
         o.curretnRoom = null;
         o.currentUser = null;
+
+        o.isConnected = function(){
+            return o.currentUser !== null;
+        };
 
         return o;
     }]);

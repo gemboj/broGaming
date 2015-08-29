@@ -41,88 +41,93 @@ html {
         flex: 0 1 200px !important;
         overflow: auto;
 
-        #roomHeader {
-          flex: 0 1 auto;
-          input {
-          }
-          h3 {
-            color: @secondaryFontColor;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
+        #connection {
+          padding: 5px;
         }
 
-        #roomsList {
-          padding: 5px;
-          margin: 5px;
-          background: @primaryBackgroundColorLight;
-          color: @secondaryFontColor;
-
-          li {
-            text-overflow: ellipsis;
-            background: @primaryBackgroundColorDark;
-            padding: 3px;
-            margin: 3px 0px;
-
+        #rooms {
+          #roomHeader {
+            flex: 0 1 auto;
             input {
-              padding: 2px;
-              margin-right: 3px;
             }
-
-            p {
+            h3 {
+              color: @secondaryFontColor;
               overflow: hidden;
               text-overflow: ellipsis;
             }
           }
 
-          li:hover {
-            background: @primaryBackgroundColor;
-          }
-
-          li:active {
+          #roomsList {
+            padding: 5px;
+            margin: 5px;
             background: @primaryBackgroundColorLight;
-          }
-
-          hr {
-            margin: 10px;
-          }
-        }
-
-        #usersList {
-          padding: 5px;
-
-          li {
-            margin: 2px 0px;
-            p {
-              padding: 1px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-
-              &.selected {
-                border: 1px solid white;
-              }
-            }
-          }
-        }
-
-        #options {
-          ul {
+            color: @secondaryFontColor;
 
             li {
-              margin: 2px 0px;
-              overflow: hidden;
+              text-overflow: ellipsis;
+              background: @primaryBackgroundColorDark;
+              padding: 3px;
+              margin: 3px 0px;
+
+              input {
+                padding: 2px;
+                margin-right: 3px;
+              }
+
               p {
                 overflow: hidden;
                 text-overflow: ellipsis;
               }
             }
+
+            li:hover {
+              background: @primaryBackgroundColor;
+            }
+
+            li:active {
+              background: @primaryBackgroundColorLight;
+            }
+
+            hr {
+              margin: 10px;
+            }
+          }
+
+          #usersList {
+            padding: 5px;
+
+            li {
+              margin: 2px 0px;
+              p {
+                padding: 1px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                &.selected {
+                  border: 1px solid white;
+                }
+              }
+            }
+          }
+
+          #options {
+            ul {
+
+              li {
+                margin: 2px 0px;
+                overflow: hidden;
+                p {
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+              }
+            }
+          }
+
+          #invites {
+            flex: 1 0 auto;
           }
         }
-
-        #invites {
-          flex: 1 0 auto;
-        }
-
       }
     }
 

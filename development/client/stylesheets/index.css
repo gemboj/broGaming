@@ -39,66 +39,69 @@ html body div aside {
   flex: 0 1 200px !important;
   overflow: auto;
 }
-html body div aside #roomHeader {
+html body div aside #connection {
+  padding: 5px;
+}
+html body div aside #rooms #roomHeader {
   flex: 0 1 auto;
 }
-html body div aside #roomHeader h3 {
+html body div aside #rooms #roomHeader h3 {
   color: #ffffff;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-html body div aside #roomsList {
+html body div aside #rooms #roomsList {
   padding: 5px;
   margin: 5px;
   background: #505050;
   color: #ffffff;
 }
-html body div aside #roomsList li {
+html body div aside #rooms #roomsList li {
   text-overflow: ellipsis;
   background: #303030;
   padding: 3px;
   margin: 3px 0px;
 }
-html body div aside #roomsList li input {
+html body div aside #rooms #roomsList li input {
   padding: 2px;
   margin-right: 3px;
 }
-html body div aside #roomsList li p {
+html body div aside #rooms #roomsList li p {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-html body div aside #roomsList li:hover {
+html body div aside #rooms #roomsList li:hover {
   background: #404040;
 }
-html body div aside #roomsList li:active {
+html body div aside #rooms #roomsList li:active {
   background: #505050;
 }
-html body div aside #roomsList hr {
+html body div aside #rooms #roomsList hr {
   margin: 10px;
 }
-html body div aside #usersList {
+html body div aside #rooms #usersList {
   padding: 5px;
 }
-html body div aside #usersList li {
+html body div aside #rooms #usersList li {
   margin: 2px 0px;
 }
-html body div aside #usersList li p {
+html body div aside #rooms #usersList li p {
   padding: 1px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-html body div aside #usersList li p.selected {
+html body div aside #rooms #usersList li p.selected {
   border: 1px solid white;
 }
-html body div aside #options ul li {
+html body div aside #rooms #options ul li {
   margin: 2px 0px;
   overflow: hidden;
 }
-html body div aside #options ul li p {
+html body div aside #rooms #options ul li p {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-html body div aside #invites {
+html body div aside #rooms #invites {
   flex: 1 0 auto;
 }
 html body footer {
