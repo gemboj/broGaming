@@ -27,8 +27,8 @@ function ChatChannel(dataChannel){
             })
         })
             .catch(function(err){
-
-            });;
+                throw err;
+            });
     };
 
     that.events = {};

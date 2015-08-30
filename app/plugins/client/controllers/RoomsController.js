@@ -1,25 +1,14 @@
-function RoomsController(scope){
+function RoomsController(scope, roomsService, chatStaticData){
     Controller.call(this, scope);
     var that = this;
 
-    scope.selectedUsers = [];
-    scope._chatStaticData.currentRoom = null;
+    scope.selectedUsers = roomsService.selectedUsers;
     scope.createRoomName = '';
 
     var showRooms = false;
-    var rooms = [];
+    var rooms = roomsService.rooms;;
 
-    scope.switchRoom = function(room){
-        if(scope._chatStaticData.currentRoom !== null){
-            scope._chatStaticData.currentRoom.users.forEach(function(user){
-                user.selected = false;
-            });
-        }
-        scope.enableInvites(false);
-        scope.selectedUsers = [];
-
-        scope._chatStaticData.currentRoom = room;
-    };
+    scope.switchRoom = roomsService.switchRoom;
 
 
 
@@ -29,33 +18,14 @@ function RoomsController(scope){
 
 
 
-    function Room(id, name, usernames){
-        this.id = id;
-        this.name = name;
-        this.users = [];
-
-        usernames.forEach(function(element){
-            this.users.push(new User(element, false));
-        }, this);
-
-        this.isCurrent = function(){
-            return this === scope._chatStaticData.currentRoom;
-        }
-    };
-
-
-
-    function User(username, selected){
-        this.username = username;
-        this.selected = selected;
-
-        this.isSelected = function(){
-            return this.selected;
-        }
-    }
+    this.User = roomsService.User;
 
     scope.getCurrentRoom = function(){
-        return scope._chatStaticData.currentRoom;
+        return chatStaticData.currentRoom;
+    };
+
+    scope.isConnected = function(){
+        return chatStaticData.currentUser !== null;
     };
 
     scope.roomsVisible = function(){
@@ -66,13 +36,12 @@ function RoomsController(scope){
         return rooms;
     };
 
-    this.addRoom = function(data){
-        var room = new Room(data.id, data.name, data.usernames);
-        rooms.push(room);
-
-        scope.switchRoom(room);
+    this.newRoom = function(data){
+        var room = roomsService.newRoom(data);
 
         that.applyChanges();
+
+        return room;
     };
 
     this.createRoomEvent = that.createEvent('createRoom', function(action, roomName){
@@ -81,19 +50,13 @@ function RoomsController(scope){
         });
     });
 
-
     scope.createRoom = function(){
         that.createRoomEvent(scope.createRoomName);
         scope.createRoomName = '';
     };
 
-    scope.leaveRoom = that.createEvent('leaveRoom', function(action, roomId){
-        action(function(listener){
-            listener(roomId);
-        });
-    });
-
-
+    scope.leaveRoom = roomsService.leaveRoom;
+    this.registerOnLeaveRoom = roomsService.registerOnLeaveRoom;
 
     scope.selectUser = function(user, selected){
         if(selected !== undefined){
@@ -117,7 +80,7 @@ function RoomsController(scope){
 
     this.deleteRooms = function(){
         rooms = [];
-        scope._chatStaticData.currentRoom = null;
+        chatStaticData.currentRoom = null;
     };
 
     this.addUser = function(data){
@@ -164,8 +127,8 @@ function RoomsController(scope){
         for(var i = 0; i < rooms.length; ++i){
             if(rooms[i].id === roomId){
 
-                if(scope._chatStaticData.currentRoom.name === rooms[i].name){
-                    scope._chatStaticData.currentRoom = rooms[0];
+                if(chatStaticData.currentRoom.name === rooms[i].name){
+                    chatStaticData.currentRoom = rooms[0];
                 }
 
                 rooms.splice(i, 1);
@@ -175,24 +138,17 @@ function RoomsController(scope){
         that.applyChanges()
     };
 
-    var enableInvites = false;
     scope.isInvitesEnabled = function(){
-        return enableInvites;
+        return roomsService.invitesEnabled;
     };
 
-    scope.enableInvites = function(enable){
-        if(enable !== undefined){
-            enableInvites = enable;
-            return;
-        }
-        enableInvites = !enableInvites;
-    };
+    scope.enableInvites = roomsService.enableInvites;
 
     scope.sendRoomInvite = that.createEvent('sendRoomInvite', function(action, room){
         scope.enableInvites(false);
         action(function(listener){
             for(var i = 0; i < scope.selectedUsers.length; ++i){
-                listener(scope.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: scope._chatStaticData.currentUser.username});
+                listener(scope.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: chatStaticData.currentUser.username});
             }
         });
     });

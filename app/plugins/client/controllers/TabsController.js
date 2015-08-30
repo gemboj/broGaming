@@ -1,60 +1,48 @@
-function TabsController(scope){
+function TabsController(scope, tabsService, roomsService){
     Controller.call(this, scope);
     var that = this;
 
-    var id = 0;
-    function getUniqueId(){
-        return id++;
+    scope.tabs = tabsService.tabs;
+
+    scope.changeTab = tabsService.changeTab;
+
+    this.newTab = function(name, html, func){
+        tabsService.newTab(name, html, func)
+        that.applyChanges();
     }
 
-    var mainTab = new Tab('home1', 'home1', '<div id="chatCon" class="tab selected" ng-controller="connectionController">cos</div>', 'connectionController');
-    var mainTab2 = new Tab('home2', 'home2', '<div ng-controller="connectionController"><p ng-bind="costam"></p><button ng-click="cos()">Cos</button></div>', 'connectionController');
-    scope.selectedTab = mainTab;
+    this.addTab = function(name, id, html){
+        var tab = new Tab(name, id, html);
 
-    scope.tabs = [
-        mainTab,
-        mainTab2,
-        new Tab('apps1', 'apps1', '<div ng-controller="appsController">tab 2 content</div>', 'appsController'),
-        new Tab('canvas1', 'canvas1', '<div ng-controller="canvasController"><canvas id="canvas"></canvas><button ng-click="draw()">Draw</button></div>', 'canvasController'),
-        new Tab('canvas2', 'canvas2', '<div ng-controller="canvasController"><canvas id="canvas"></canvas><button ng-click="draw()">Draw</button></div>', 'canvasController')
-    ];
-
-    scope.changeTab = function(tab){
-        scope.selectedTab = tab;
+        tabsService.tabs.push(tab);
+        tabsService.changeTab(tab);
     };
 
-    this.newTab = function(name, htmlContent, mainFunction){
-        var id = getUniqueId();
-        var controllerName = 'controller' + id;
-        var controllerContent = '<div ng-controller="' + controllerName + '">' + htmlContent + '</div>';
+    var Tab = tabsService.Tab;
 
-        /*var app = angular.module('someApp', []).config(function($sceProvider) {
-            // Completely disable SCE.  For demonstration purposes only!
-            // Do not use in new projects.
-            $sceProvider.enabled(false);
-        });*/
-
-        scope._controllerProvider.register(controllerName, function($scope, $element){
-            mainFunction({id: id, $scope: $scope, $div: $element});
-        });
-
-        //angular.bootstrap(document, ['someApp']);
-        scope.tabs.push(new Tab(name, id, controllerContent, controllerName));
-        that.applyChanges();
+    scope.getSelectedTab = function(){
+        return tabsService.selectedTab;
     };
 
-    function Tab(title, id, content, controller){
-        this.title = title;
-        this.id = id;
-        this.content = content;
-        this.controller = controller;
+    scope.deleteTab = function(tab){
+        for(var i = 0; i < scope.tabs.length; ++i){
+            if(scope.tabs[i] === tab){
+                scope.tabs.splice(i, 1);
 
-        this.isSelected = function(){
-            return this === scope.selectedTab;
-        };
+                if(tab.room !== undefined){
+                    roomsService.leaveRoom(tab.room.id);
 
-        this.getController = function(){
-            return this.controller;
+                    if(tabsService.getSelectedTab() === tab){
+                        tabsService.changeTab(scope.tabs[0]);
+                    }
+                    else if(scope.tabs[0] === tab){
+                        tabsService.changeTab(null);
+                    }
+
+                }
+
+                break;
+            }
         }
     };
 

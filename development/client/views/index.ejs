@@ -13,7 +13,7 @@
 			<div class="flexContainerV" ng-controller="tabsController">
 				<nav class="navigation flexContainerH">
 						<span ng-class="{selected:tab.isSelected()}" ng-repeat="tab in tabs">
-							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}"/>
+							<input type="button" class="button" value="x" ng-show="tab.isDeletable()" ng-click="deleteTab(tab)"/><input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}"/>
 						</span>
 				</nav>
 				<div class="content flexContainerH" ng-show="tab.isSelected()" ng-repeat="tab in tabs"
@@ -26,14 +26,14 @@
 		</div>
 
 		<aside>
-			<div id="connection"  ng-controller="connectionController" ng-show="!_chatStaticData.isConnected()">
+			<div id="connection"  ng-controller="connectionController" ng-hide="isConnected()">
 				<form ng-submit="connect()" class="flexContainerV">
 					<input type="text" ng-model="username"/>
 					<input type="text" ng-model="password"/>
 					<input type="submit" value="Connect" class="button"/>
 				</form>
 			</div>
-			<div id="rooms" ng-controller="roomsController" ng-show="_chatStaticData.isConnected()">
+			<div id="rooms" ng-controller="roomsController" ng-show="isConnected()">
 				<div id="roomHeader" class="flexContainerH">
 					<input type="button" id="chooseRoom" class="button" value="V" ng-click="toggleRooms()"/>
 

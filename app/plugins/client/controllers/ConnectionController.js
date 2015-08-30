@@ -26,5 +26,10 @@ function ConnectionController(scope){
         return scope._chatStaticData.currentUser != null;
     };
 
+    scope.isConnected = function(){
+        return scope._chatStaticData.currentUser !== null;
+    };
+
+
     this.applyChanges();
 }

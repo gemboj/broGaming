@@ -47,6 +47,8 @@ function DataChannel(socketio, address){
         action(function (listener) {
             listener(message);
         });
+
+        throw 'not connected';
     });
 
     var disconnectEvent = that.createEvent('disconnect', function (action, message) {
