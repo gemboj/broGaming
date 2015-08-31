@@ -1,4 +1,5 @@
-function TabsService(controllerProvider){
+function TabsService(scope, controllerProvider){
+    Service.call(this, scope);
     var that = this;
 
     var id = 0;
@@ -9,17 +10,19 @@ function TabsService(controllerProvider){
     this.tabs = [];
     var selectedTab = null;
 
-    this.newTab = function(name, htmlContent, mainFunction, room){
+    this.newTab = function(name, htmlContent, app, room){
         var id = getUniqueId();
         var controllerName = 'controller' + id;
         var controllerContent = '<div ng-controller="' + controllerName + '">' + htmlContent + '</div>';
 
         controllerProvider.register(controllerName, function($scope, $element){
-            mainFunction({id: id, $scope: $scope, $div: $element});
+            app.client({id: id, $scope: $scope, $div: $element});
         });
         var tab = new that.Tab(name, id, controllerContent, room);
         that.tabs.push(tab);
         selectedTab = tab;
+
+        that.applyChanges();
         return tab;
     };
 

@@ -1,5 +1,5 @@
-function RoomsService(chatStaticData){
-    Service.call(this);
+function RoomsService(scope, chatStaticData){
+    Service.call(this, scope);
     var that = this;
 
     this.rooms = [];
@@ -45,6 +45,7 @@ function RoomsService(chatStaticData){
         this.id = id;
         this.name = name;
         this.users = [];
+        this.app = null;
 
         usernames.forEach(function(element){
             this.users.push(new that.User(element, false));

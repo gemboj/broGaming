@@ -11,15 +11,21 @@ describe('ReceiveRoomInvite', function(){
             return Promise.resolve(that.data);
         };
 
+        this.room = {};
         this.addRoom = function(data){
+            return that.room;
+        };
+
+        this.createApp = function(data){
 
         };
 
         spyOn(this, 'addRoomInviteResolve').and.callThrough();
         spyOn(this, 'send').and.callThrough();
         spyOn(this, 'addRoom').and.callThrough();
+        spyOn(this, 'createApp').and.callThrough();
 
-        this.receiveRoomInvite = new ReceiveRoomInvite(this.addRoomInviteResolve, this.send, this.addRoom);
+        this.receiveRoomInvite = new ReceiveRoomInvite(this.addRoomInviteResolve, this.send, this.addRoom, this.createApp);
     })
     
     it('shows room invite', function(done){
@@ -54,6 +60,19 @@ describe('ReceiveRoomInvite', function(){
     	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName'})
                 .then(function(){
                     expect(that.addRoom).toHaveBeenCalledWith(that.data);
+                    done();
+                })
+                .catch(function(err){
+                    done.fail(err);
+                })
+    });
+
+    it('creates app when join room data contains app name', function(done){
+    	var that = this;
+
+    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName', app: 'appName'})
+                .then(function(){
+                    expect(that.createApp).toHaveBeenCalledWith('appName', that.room);
                     done();
                 })
                 .catch(function(err){

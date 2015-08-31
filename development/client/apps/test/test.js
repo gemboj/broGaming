@@ -1,6 +1,8 @@
 define([], function (){
+    var o = {};
 
-    function test(input){//id, $div, $scope
+
+    o.client = function(input){//id, $div, $scope
         var scope = input.$scope;
 
         scope.costam = 0;
@@ -9,5 +11,9 @@ define([], function (){
         }
     }
 
-    return test;
+    o.server = function(){
+        console.log('');
+    }
+
+    return o;
 });

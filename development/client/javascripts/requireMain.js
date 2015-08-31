@@ -22,7 +22,10 @@ require.config({
 });
 
 require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'chatInteractors'], function(jquery, controllers, services, dataChannels, angular, io, chatInteractors){
-    var controllerProvider = null
+    var dataChannel = new dataChannels.DataChannel(io);
+    var chatChannel = new dataChannels.ChatChannel(dataChannel);
+
+    var controllerProvider = null;
     var app = angular.module('broGaming', []).config(function($sceProvider, $controllerProvider){
         // Completely disable SCE.  For demonstration purposes only!
         // Do not use in new projects.
@@ -39,8 +42,9 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
         }
     });
 
-    app.factory('appLoader', ['tabsService', function(){
-        return new services.AppLoader($.ajax, require);
+    app.factory('appLoader', ['tabsService', 'roomsService', '$rootScope', function(tabsService, roomsService, $rootScope){
+        var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsService.newRoom);
+        return new services.AppLoader($rootScope, $.ajax, require, createRoom.do, tabsService.newTab);
     }]);
 
     app.factory('chatStaticData', [function(){
@@ -56,16 +60,15 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
         return o;
     }]);
 
-    app.factory('tabsService', [function(){
-        return new services.TabsService(controllerProvider);
+    app.factory('tabsService', ['$rootScope', function($rootScope){
+        return new services.TabsService($rootScope, controllerProvider);
     }]);
 
-    app.factory('roomsService', ['chatStaticData', function(chatStaticData){
-        return new services.RoomsService(chatStaticData);
+    app.factory('roomsService', ['chatStaticData', '$rootScope', function(chatStaticData, $rootScope){
+        return new services.RoomsService($rootScope, chatStaticData);
     }]);
 
-    var dataChannel = new dataChannels.DataChannel(io);
-    var chatChannel = new dataChannels.ChatChannel(dataChannel);
+
 
     var sendData = new chatInteractors.SendData(chatChannel.send);
 
@@ -102,12 +105,12 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
         dataChannel.registerOnConnected(connectionController.saveCurrentUser);
     });
 
-    app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', function($scope, roomsService, chatStaticData){
+    app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', function($scope, roomsService, chatStaticData, appLoader){
         var roomsController = new controllers.RoomsController($scope, roomsService, chatStaticData);
 
         var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsController.newRoom);
         var leaveRoom = new chatInteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
-        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.newRoom);
+        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.newRoom, appLoader.createApp);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);
@@ -126,10 +129,8 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
         var canvasController = new controllers.CanvasController($scope);
     });
 
-    app.controller('appsController', ['$scope', 'appLoader', 'tabsService', 'roomsService', function($scope, appLoader, tabsService, roomsService){
-        var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsService.newRoom);
-
-        var appsController = controllers.AppsController($scope, appLoader, tabsService.newTab, createRoom.do, roomsService);
+    app.controller('appsController', ['$scope', 'appLoader', 'tabsService', 'roomsService', function($scope, appLoader){
+        var appsController = controllers.AppsController($scope, appLoader.createApp);
     }]);
 
     app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', function($scope, tabsService, roomsService){

@@ -101,6 +101,7 @@ function RoomsController(scope, roomsService, chatStaticData){
 
     this.removeUser = function(data){
         var room = undefined;
+
         for(var i = 0; i < rooms.length; ++i){
             if(rooms[i].id === data.roomId){
                 room = rooms[i];
@@ -110,8 +111,10 @@ function RoomsController(scope, roomsService, chatStaticData){
 
         if(room !== undefined){
             var index = -1;
+            var user = null;
             for(var i = 0; i < room.users.length; ++i){
                 if(room.users[i].username === data.username){
+                    user = room.users[i];
                     index = i;
                     break;
                 }
@@ -119,9 +122,17 @@ function RoomsController(scope, roomsService, chatStaticData){
 
             if(index > -1){
                 room.users.splice(index, 1);
+
+                index = roomsService.selectedUsers.indexOf(user);
+                if(index > -1){
+                    roomsService.selectedUsers.splice(index, 1);
+                }
             }
-            that.applyChanges()
+
+
         }
+
+        that.applyChanges();
     };
 
     this.removeRoomById = function(roomId){

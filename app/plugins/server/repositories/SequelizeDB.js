@@ -27,7 +27,8 @@ function SequelizeDB(Sequelize){
                 primaryKey : true
             },
             name : Sequelize.STRING,
-            is_deletable : Sequelize.BOOLEAN
+            is_deletable : Sequelize.BOOLEAN,
+            host
         },
         {
             underscored : true
