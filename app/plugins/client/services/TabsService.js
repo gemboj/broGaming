@@ -18,7 +18,12 @@ function TabsService(scope, controllerProvider){
         controllerProvider.register(controllerName, function($scope, $element){
             app.client({id: id, $scope: $scope, $div: $element});
         });
-        var tab = new that.Tab(name, id, controllerContent, room);
+
+        var startServer = function(){
+            app.server();
+        };
+
+        var tab = new that.Tab(name, id, controllerContent, room, startServer);
         that.tabs.push(tab);
         selectedTab = tab;
 
@@ -26,11 +31,12 @@ function TabsService(scope, controllerProvider){
         return tab;
     };
 
-    this.Tab = function(title, id, content, room){
+    this.Tab = function(title, id, content, room, startServer){
         this.title = title;
         this.id = id;
         this.content = content;
         this.room = room;
+        this.startServer = startServer;
 
         this.isSelected = function(){
             return this === selectedTab;

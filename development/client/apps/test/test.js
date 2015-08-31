@@ -12,7 +12,7 @@ define([], function (){
     }
 
     o.server = function(){
-        console.log('');
+        console.log('starting server');
     }
 
     return o;
