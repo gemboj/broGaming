@@ -61,7 +61,7 @@
 						   ng-class="{selected:user.isSelected()}"></p>
 					</li>
 				</ul>
-				<div id="options" class="flexContainerV" ng-show="selectedUsers.length > 0">
+				<div id="options" class="flexContainerV" ng-show="isSelectedUsers()">
 					<input type="button" class="button" value="Invite" ng-click="enableInvites()">
 					<ul ng-show="isInvitesEnabled()">
 						<li ng-repeat="room in getRooms()">

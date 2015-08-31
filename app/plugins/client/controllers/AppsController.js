@@ -7,10 +7,11 @@ function AppsController(scope, appLoader, newTab, createRoom){
     scope.newApp = function(name){
         var roomData = null;
 
-        createRoom('test')
+        createRoom(name)
             .then(function(room){
+                room.app = name;
                 roomData = room;
-                return appLoader.load('test');
+                return appLoader.load(name);
             })
             .then(function(data){
                 newTab(data.name, data.html, data.mainFunc, roomData);
@@ -19,8 +20,8 @@ function AppsController(scope, appLoader, newTab, createRoom){
                 that.applyChanges();
             })
             .catch(function(err){
-                that.applyChanges();
-                //console.log(err)
+                //that.applyChanges();
+                console.log(err)
             });
     }
 }

@@ -107,7 +107,7 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
 
         var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsController.newRoom);
         var leaveRoom = new chatInteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
-        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.addRoom);
+        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.newRoom);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);

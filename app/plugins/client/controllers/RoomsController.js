@@ -2,7 +2,6 @@ function RoomsController(scope, roomsService, chatStaticData){
     Controller.call(this, scope);
     var that = this;
 
-    scope.selectedUsers = roomsService.selectedUsers;
     scope.createRoomName = '';
 
     var showRooms = false;
@@ -10,13 +9,15 @@ function RoomsController(scope, roomsService, chatStaticData){
 
     scope.switchRoom = roomsService.switchRoom;
 
-
+    
 
     scope.toggleRooms = function(){
         showRooms = !showRooms;
     };
 
-
+    scope.isSelectedUsers = function(){
+        return roomsService.selectedUsers.length > 0;
+    };
 
     this.User = roomsService.User;
 
@@ -67,13 +68,13 @@ function RoomsController(scope, roomsService, chatStaticData){
         }
 
         if(user.selected){
-            scope.selectedUsers.push(user);
+            roomsService.selectedUsers.push(user);
         }
         else{
-            var index = scope.selectedUsers.indexOf(user);
+            var index = roomsService.selectedUsers.indexOf(user);
 
             if(index > -1){
-                scope.selectedUsers.splice(index, 1);
+                roomsService.selectedUsers.splice(index, 1);
             }
         }
     };
@@ -93,7 +94,7 @@ function RoomsController(scope, roomsService, chatStaticData){
         }
 
         if(room !== undefined){
-            room.users.push(new User(data.username, false));
+            room.users.push(new that.User(data.username, false));
             that.applyChanges()
         }
     };
@@ -147,8 +148,8 @@ function RoomsController(scope, roomsService, chatStaticData){
     scope.sendRoomInvite = that.createEvent('sendRoomInvite', function(action, room){
         scope.enableInvites(false);
         action(function(listener){
-            for(var i = 0; i < scope.selectedUsers.length; ++i){
-                listener(scope.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: chatStaticData.currentUser.username});
+            for(var i = 0; i < roomsService.selectedUsers.length; ++i){
+                listener(roomsService.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: chatStaticData.currentUser.username, app: room.app});
             }
         });
     });

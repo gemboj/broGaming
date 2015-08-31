@@ -8,7 +8,7 @@ function RoomsService(chatStaticData){
 
     this.enableInvites = function(enable){
         if(enable !== undefined){
-            this.invitesEnabled = enable;
+            that.invitesEnabled = enable;
             return;
         }
         that.invitesEnabled = !that.invitesEnabled;
