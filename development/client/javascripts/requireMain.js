@@ -133,8 +133,8 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
         var appsController = controllers.AppsController($scope, appLoader.createApp);
     }]);
 
-    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', function($scope, tabsService, roomsService){
-        var tabsController = new controllers.TabsController($scope, tabsService, roomsService);
+    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', function($scope, tabsService, roomsService, chatStaticData){
+        var tabsController = new controllers.TabsController($scope, tabsService, roomsService, chatStaticData);
 
         tabsController.addTab('apps', 0, '<div ng-controller="appsController"><p ng-click="newApp(\'test\')">ffgfghf</p></div>');
 

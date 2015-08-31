@@ -1,4 +1,4 @@
-function TabsController(scope, tabsService, roomsService){
+function TabsController(scope, tabsService, roomsService, chatStaticData){
     Controller.call(this, scope);
     var that = this;
 
@@ -44,6 +44,10 @@ function TabsController(scope, tabsService, roomsService){
                 break;
             }
         }
+    };
+
+    scope.isHost = function(tab){
+        return (tab.room === undefined ? false : tab.room.host === chatStaticData.currentUser.username);
     };
 
     this.applyChanges();

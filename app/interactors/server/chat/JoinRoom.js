@@ -23,7 +23,8 @@ function JoinRoom(usernameJoinsRoomid, getRoomWithUsersById, send){
                 var data = {
                     id : roomId,
                     name : room.name,
-                    usernames : usersNicks
+                    usernames : usersNicks,
+                    host: room.host.username
                 };
 
                 for(var i = 0; i < users.length; ++i){

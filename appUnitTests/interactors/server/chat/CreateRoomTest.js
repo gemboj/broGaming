@@ -3,7 +3,7 @@ describe('CreateRoom', function(){
         var that = this;
 
         this.insertRoom = function(room){
-            if((room.id == 0) && (room.name == 'roomName') && (room.deletable === true)){
+            if((room.id == 0) && (room.name == 'roomName') && (room.deletable === true) && (room.host === 'username')){
                 return Promise.resolve();
             }
 
@@ -12,7 +12,8 @@ describe('CreateRoom', function(){
 
         this.roomData = {
             id : 0,
-            name : 'roomName'
+            name : 'roomName',
+            host: 'username'
         };
 
         this.getNextRoomId = function(){
@@ -33,7 +34,7 @@ describe('CreateRoom', function(){
     it('gets next room id', function(done){
         var that = this;
 
-        this.createRoom.do('roomName')
+        this.createRoom.do('roomName', 'username')
             .then(function(){
                 expect(that.getNextRoomId).toHaveBeenCalled();
                 done();
@@ -46,7 +47,7 @@ describe('CreateRoom', function(){
     it('inserts room into db', function(done){
         var that = this;
 
-        this.createRoom.do('roomName')
+        this.createRoom.do('roomName', 'username')
             .then(function(){
                 expect(that.insertRoom).toHaveBeenCalled();
                 done();
@@ -57,28 +58,28 @@ describe('CreateRoom', function(){
     })
 
     it('joins user into created room', function(done){
-    	var that = this;
+        var that = this;
 
-    	this.createRoom.do('roomName', 'username')
-                .then(function(){
-                    expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
-                    done();
-                })
-                .catch(function(err){
-                    done.fail(err);
-                })
+        this.createRoom.do('roomName', 'username')
+            .then(function(){
+                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
+                done();
+            })
+            .catch(function(err){
+                done.fail(err);
+            })
     });
 
     it('resolves with roomData', function(done){
-    	var that = this;
+        var that = this;
 
-    	this.createRoom.do('roomName', 'username')
-                .then(function(roomData){
-                    expect(roomData).toBe(that.roomData);
-                    done();
-                })
-                .catch(function(err){
-                    done.fail(err);
-                })
+        this.createRoom.do('roomName', 'username')
+            .then(function(roomData){
+                expect(roomData).toBe(that.roomData);
+                done();
+            })
+            .catch(function(err){
+                done.fail(err);
+            })
     });
 });

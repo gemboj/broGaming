@@ -28,7 +28,7 @@ function SequelizeDB(Sequelize){
             },
             name : Sequelize.STRING,
             is_deletable : Sequelize.BOOLEAN,
-            host
+            host: Sequelize.STRING
         },
         {
             underscored : true
@@ -46,6 +46,7 @@ function SequelizeDB(Sequelize){
 
     users.belongsToMany(rooms, {through : users_rooms, foreignKey : 'users_username'});
     rooms.belongsToMany(users, {through : users_rooms, foreignKey : 'rooms_id'});
+    rooms.belongsTo(users, {foreignKey : 'host'});
 
     var that = this;
     this.connect = function(){
@@ -142,7 +143,7 @@ function SequelizeDB(Sequelize){
     };
 
     this.insertRoom = function(room){
-        return rooms.build({id : room.id, name : room.name, is_deletable : room.deletable}).save();
+        return rooms.build({id : room.id, name : room.name, is_deletable : room.deletable, host : room.host}).save();
     };
 
     var roomId = 0;
@@ -175,7 +176,16 @@ function SequelizeDB(Sequelize){
                     users.push(new User(userDataValue.username, userDataValue.password, userDataValue.is_logged, userDataValue.is_active));
                 }
 
-                return new Room(dataValue.id, dataValue.name, dataValue.is_deletable, users);
+                var host = null;
+                if(dataValue.host !== ''){
+                    host = new User(dataValue.host, '', true, true);
+                    //var host = new User(hostData.username, hostData.password, hostData.is_logged, hostData.is_active);
+                }
+                else{
+                    host = new User(null, '', true, true);
+                }
+
+                return new Room(dataValue.id, dataValue.name, dataValue.is_deletable, users, host);
             });
     };
 

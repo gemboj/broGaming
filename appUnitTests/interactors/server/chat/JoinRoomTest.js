@@ -16,7 +16,7 @@ describe('JoinRoom', function(){
         };
 
         this.getRoomWithUsersById = function(roomId, t){
-            return Promise.resolve(new Room(roomId, that.roomName, 0, that.users));
+            return Promise.resolve(new Room(roomId, that.roomName, 0, that.users, new User('username', '', true, true)));
         };
 
         this.send = function(users){

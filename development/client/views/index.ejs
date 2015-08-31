@@ -13,7 +13,9 @@
 			<div class="flexContainerV" ng-controller="tabsController">
 				<nav class="navigation flexContainerH">
 						<span ng-class="{selected:tab.isSelected()}" ng-repeat="tab in tabs">
-							<input type="button" class="button" value="x" ng-show="tab.isDeletable()" ng-click="deleteTab(tab)"/><input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}"/>
+							<input type="button" class="button" value="x" ng-show="tab.isDeletable()" ng-click="deleteTab(tab)"/>
+							<input type="button" class="button" ng-click="changeTab(tab)" value="{{tab.title}}"/>
+							<input type="button" class="button" value=">" ng-show="isHost(tab)"/>
 						</span>
 				</nav>
 				<div class="content flexContainerH" ng-show="tab.isSelected()" ng-repeat="tab in tabs"

@@ -27,7 +27,7 @@ function RoomsService(scope, chatStaticData){
     };
 
     this.newRoom = function(data){
-        var room = new Room(data.id, data.name, data.usernames);
+        var room = new Room(data.id, data.name, data.usernames, data.host);
         that.rooms.push(room);
 
         that.switchRoom(room);
@@ -41,10 +41,11 @@ function RoomsService(scope, chatStaticData){
         });
     });
 
-    function Room(id, name, usernames){
+    function Room(id, name, usernames, host){
         this.id = id;
         this.name = name;
         this.users = [];
+        this.host = host;
         this.app = null;
 
         usernames.forEach(function(element){
