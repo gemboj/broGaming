@@ -1,4 +1,4 @@
-function DataChannel(socketio, address){
+function SocketAdapter(socketio, address){
     EventListener.call(this);
     var that = this;
     var socket = null;
@@ -38,8 +38,14 @@ function DataChannel(socketio, address){
     });
 
     that.registerOnConnected(function(){
-        that.send = function(type, _package, cb){
-            socket.emit(type, _package, cb);
+        that.send = function(type, _package){
+            return new Promise(function(resolve, reject){
+                socket.emit(type, _package, function(data, error){
+                    if(error === undefined){
+                        resolve(data);
+                    }
+                })
+            })
         }
     });
 
@@ -47,8 +53,6 @@ function DataChannel(socketio, address){
         action(function (listener) {
             listener(message);
         });
-
-        throw 'not connected';
     });
 
     var disconnectEvent = that.createEvent('disconnect', function (action, message) {
@@ -64,4 +68,4 @@ function DataChannel(socketio, address){
     };
 }
 
-DataChannel.prototype = Object.create(EventListener);
+SocketAdapter.prototype = Object.create(EventListener);

@@ -2,10 +2,6 @@ function ChatChannel(dataChannel){
     EventListener.call(this);
     var that = this;
 
-    var eventsNames = [
-        'privateMessage'
-    ];
-
     that.send = function(user, type, _data){
         var _package = {data: _data, eventType: type};
 
@@ -13,23 +9,6 @@ function ChatChannel(dataChannel){
     };
 
     var events = {};
-    eventsNames.forEach(function(event){
-        events[event] = that.createEvent(event, function (action, data) {
-            action(function (listener) {
-                var promise = listener(data);
-
-                if(promise !== undefined){
-                    promise
-                        .then(function(data){
-                            if(data !== undefined){
-                                cb(data);
-                            }
-                        })
-                }
-            });
-        });
-    });
-
     events['createRoom'] = that.createEvent('createRoom', function(action, data, cb){
         action(function(listener){
             var promise = listener(data.roomName, data._sendersUsername);
@@ -54,9 +33,9 @@ function ChatChannel(dataChannel){
         });
     });
 
-    events['sendRoomData'] = that.createEvent('sendRoomData', function(action, data, cb){
+    events['roomMessage'] = that.createEvent('sendRoomMessage', function(action, data, cb){
         action(function(listener){
-            var promise = listener(data.roomId, data._sendersUsername, data.data);
+            var promise = listener(data.roomId, data._sendersUsername, data.message);
 
             resolveCallback(promise, cb);
         });
@@ -69,6 +48,24 @@ function ChatChannel(dataChannel){
             resolveCallback(promise, cb);
         });
     });
+
+
+    events['roomInvite'] = that.createEvent('roomInvite', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data._sendersUsername, data.receiver, data.roomId, data.app);
+
+            resolveCallback(promise, cb);
+        });
+    });
+
+    events['privateMessage'] = that.createEvent('privateMessage', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data._sendersUsername, data.receiver, data.message);
+
+            resolveCallback(promise, cb);
+        });
+    });
+    
 
     function resolveCallback(promise, cb){
         if(promise !== undefined){

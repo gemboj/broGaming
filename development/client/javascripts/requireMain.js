@@ -22,8 +22,8 @@ require.config({
 });
 
 require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'chatInteractors'], function(jquery, controllers, services, dataChannels, angular, io, chatInteractors){
-    var dataChannel = new dataChannels.DataChannel(io);
-    var chatChannel = new dataChannels.ChatChannel(dataChannel);
+    var socketAdpter = new dataChannels.SocketAdapter(io);
+    var chatSocket = new dataChannels.ChatSocket(socketAdpter);
 
     var controllerProvider = null;
     var app = angular.module('broGaming', []).config(function($sceProvider, $controllerProvider){
@@ -43,7 +43,7 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
     });
 
     app.factory('appLoader', ['tabsService', 'roomsService', '$rootScope', function(tabsService, roomsService, $rootScope){
-        var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsService.newRoom);
+        var createRoom = new chatInteractors.CreateRoom(chatSocket.send, roomsService.newRoom);
         return new services.AppLoader($rootScope, $.ajax, require, createRoom.do, tabsService.newTab);
     }]);
 
@@ -61,7 +61,7 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
     }]);
 
     app.factory('tabsService', ['$rootScope', function($rootScope){
-        return new services.TabsService($rootScope, controllerProvider);
+        return new services.TabsService($rootScope, controllerProvider, dataChannels.WebRTCAdapter());
     }]);
 
     app.factory('roomsService', ['chatStaticData', '$rootScope', function(chatStaticData, $rootScope){
@@ -70,7 +70,9 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
 
 
 
-    var sendData = new chatInteractors.SendData(chatChannel.send);
+
+    var sendPrivateMessage = new chatInteractors.SendPrivateMessage(chatSocket.send);
+    var sendRoomMessage = new chatInteractors.SendRoomMessage(chatSocket.send);
 
     createAngularController(app, 'sendingMessagesController', function($scope){
         var sendingMessagesController = new controllers.SendingMessagesController($scope);
@@ -79,49 +81,47 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
             console.dir(data)
         });
 
-        var sendRoomData = new chatInteractors.SendRoomData(chatChannel.send);
-
-        sendingMessagesController.registerOnSendMessage(sendData.do);
-        sendingMessagesController.registerOnSendRoomMessage(sendRoomData.do);
+        sendingMessagesController.registerOnSendMessage(sendPrivateMessage.do);
+        sendingMessagesController.registerOnSendRoomMessage(sendRoomMessage.do);
     });
 
     createAngularController(app, 'receivingMessagesController', function($scope){
         var receivingMessagesController = new controllers.ReceivingMessagesController($scope);
 
-        dataChannel.registerOnConnected(receivingMessagesController.showLogin);
+        socketAdpter.registerOnConnected(receivingMessagesController.showLogin);
+        socketAdpter.registerOnError(receivingMessagesController.showError);
 
-        dataChannel.registerOnError(receivingMessagesController.showError);
-
-        chatChannel.registerOnError(receivingMessagesController.showError);
-        chatChannel.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
-        chatChannel.registerOnMessage(receivingMessagesController.showMessage);
+        chatSocket.registerOnError(receivingMessagesController.showError);
+        chatSocket.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
+        chatSocket.registerOnPrivateMessage(receivingMessagesController.showMessage);
     });
 
     createAngularController(app, 'connectionController', function($scope){
         var connectionController = new controllers.ConnectionController($scope);
 
-        connectionController.registerOnConnect(dataChannel.connect)
+        connectionController.registerOnConnect(socketAdpter.connect);
 
-        dataChannel.registerOnConnected(connectionController.saveCurrentUser);
+        socketAdpter.registerOnConnected(connectionController.saveCurrentUser);
     });
 
     app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', function($scope, roomsService, chatStaticData, appLoader){
         var roomsController = new controllers.RoomsController($scope, roomsService, chatStaticData);
 
-        var createRoom = new chatInteractors.CreateRoom(chatChannel.send, roomsController.newRoom);
-        var leaveRoom = new chatInteractors.LeaveRoom(chatChannel.send, roomsController.removeRoomById);
-        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatChannel.send, roomsController.newRoom, appLoader.createApp);
+        var createRoom = new chatInteractors.CreateRoom(chatSocket.send, roomsController.newRoom);
+        var leaveRoom = new chatInteractors.LeaveRoom(chatSocket.send, roomsController.removeRoomById);
+        var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatSocket.send, roomsController.newRoom, appLoader.createApp);
+        var sendRoomInvite = new chatInteractors.SendRoomInvite(chatSocket.send);
 
         roomsController.registerOnCreateRoom(createRoom.do);
         roomsController.registerOnLeaveRoom(leaveRoom.do);
-        roomsController.registerOnSendRoomInvite(sendData.do);
+        roomsController.registerOnSendRoomInvite(sendRoomInvite.do);
 
-        chatChannel.registerOnJoinedRoom(roomsController.newRoom);
-        chatChannel.registerOnSomeoneJoinedRoom(roomsController.addUser);
-        chatChannel.registerOnSomeoneLeftRoom(roomsController.removeUser);
-        chatChannel.registerOnRoomInvite(receiveRoomInvite.do);
+        chatSocket.registerOnJoinedRoom(roomsController.newRoom);
+        chatSocket.registerOnSomeoneJoinedRoom(roomsController.addUser);
+        chatSocket.registerOnSomeoneLeftRoom(roomsController.removeUser);
+        chatSocket.registerOnRoomInvite(receiveRoomInvite.do);
 
-        dataChannel.registerOnDisconnect(roomsController.deleteRooms);
+        socketAdpter.registerOnDisconnect(roomsController.deleteRooms);
     }]);
 
 

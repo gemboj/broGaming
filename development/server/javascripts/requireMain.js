@@ -12,70 +12,6 @@ module.exports = function(server){
 
     var util = require('util');
 
-
-    /*var db = new Sequelize('broGaming', 'root', '', {
-        host : "127.0.0.1",
-        dialect : 'mysql',
-        define : {
-            timestamps : false
-        }
-    });
-
-    var users = db.define('users', {
-        username : {
-            type : Sequelize.STRING,
-            primaryKey : true
-        },
-        password : Sequelize.STRING,
-        is_logged : Sequelize.BOOLEAN,
-        is_active : Sequelize.BOOLEAN
-    });
-
-    var rooms = db.define('rooms', {
-            id: {
-                type: Sequelize.INTEGER,
-                primaryKey: true
-            },
-            name: Sequelize.STRING,
-            is_deletable: Sequelize.BOOLEAN
-        },
-        {
-            underscored: true
-        }
-    );
-
-    var users_rooms = db.define('users_rooms', {
-            users_username: {
-                type: Sequelize.STRING
-            },
-            rooms_id: {
-                type: Sequelize.INTEGER
-            }
-        },
-        {
-            underscored: true
-        }
-    );
-
-    users.belongsToMany(rooms, {through: users_rooms, foreignKey: 'users_username'});
-    rooms.belongsToMany(users, {through: users_rooms, foreignKey: 'rooms_id'});
-
-    db.sync().then(function(){
-        users.findAll({
-            where: {
-                username: 'gemobj'
-            },
-            include:[
-                rooms
-            ]
-        })
-            .then(function(result){
-                console.log(util.inspect(result, false, null));
-            })
-    });
-    console.log('done');*/
-
-
     var db = new repositories.SequelizeDB(Sequelize);
 
     db.connect()
@@ -89,13 +25,12 @@ module.exports = function(server){
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
             var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
-            var sendRoomData = new chatInteractors.SendRoomData(sequelizeRepo.getRoomWithUsersById, chatChannel.send);
-            var sendData = new chatInteractors.SendData(sequelizeRepo.getUserByUsername, chatChannel.send);
+            var sendRoomMessage = new chatInteractors.SendRoomMessage(sequelizeRepo.getRoomWithUsersById, chatChannel.send);
+            var roomInvite = new chatInteractors.RoomInvite(chatChannel.send, sequelizeRepo.getRoomWithUsersById);
+            var privateMessage = new chatInteractors.PrivateMessage(chatChannel.send, sequelizeRepo.getUserByUsername);
 
             var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
-
-
 
             socketDataChannel.registerOnIncomingConnection(login.do);
             socketDataChannel.registerOnDisconnected(logout.do);
@@ -104,8 +39,9 @@ module.exports = function(server){
             chatChannel.registerOnCreateRoom(createRoom.do);
             chatChannel.registerOnJoinRoom(joinRoom.do);
             chatChannel.registerOnLeaveRoom(leaveRoom.do);
-            chatChannel.registerOnSendRoomData(sendRoomData.do);
-            chatChannel.registerOnSendData(sendData.do);
+            chatChannel.registerOnSendRoomMessage(sendRoomMessage.do);
+            chatChannel.registerOnPrivateMessage(privateMessage.do);
+            chatChannel.registerOnRoomInvite(roomInvite.do);
 
             return deleteTemporaryData.do()
                 .then(function(){

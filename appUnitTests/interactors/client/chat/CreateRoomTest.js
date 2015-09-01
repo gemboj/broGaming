@@ -1,6 +1,6 @@
 describe('CreateRoom', function(){
     beforeEach(function(){
-        this.room = {id: 0, name: 'roomName', users: []};
+        this.room = {id: 0, name: 'roomName', usernames: []};
         var that = this;
         this.send = function(){
             return Promise.resolve(that.room);
@@ -25,9 +25,9 @@ describe('CreateRoom', function(){
     it('calls callback with room data', function(done){
         var that = this;
 
-        this.createRoom.do()
+        this.createRoom.do('roomName')
             .then(function(){
-                expect(that.addRoom).toHaveBeenCalledWith(that.room);
+                expect(that.addRoom).toHaveBeenCalledWith(that.room.id, that.room.name, [], undefined);
 
                 done();
             })
@@ -41,7 +41,7 @@ describe('CreateRoom', function(){
 
         this.createRoom = new CreateRoom(this.send);
 
-    	this.createRoom.do()
+    	this.createRoom.do('roomName')
                 .then(function(){
                     done();
                 })
@@ -54,8 +54,8 @@ describe('CreateRoom', function(){
     	var that = this;
 
     	this.createRoom.do('roomName')
-                .then(function(room){
-                    expect(room.name).toBe('roomName');
+                .then(function(roomData){
+                    expect(roomData).toBe(that.room);
                     done();
                 })
                 .catch(function(err){

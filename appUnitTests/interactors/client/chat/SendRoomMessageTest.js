@@ -1,21 +1,22 @@
-describe('SendData', function(){
+describe('SendRoomMessage', function(){
     beforeEach(function(){
+        var that = this;
 
         this.send = function(){
             return Promise.resolve();
-        };
+        }
 
         spyOn(this, 'send').and.callThrough();
 
-        this.sendData = new SendData(this.send);
+        this.sendRoomMessage = new SendRoomMessage(this.send);
     })
 
-    it('sends formatted data', function(done){
+    it('sends room message', function(done){
     	var that = this;
 
-    	this.sendData.do('receiver', 'message', 'someMessage')
+    	this.sendRoomMessage.do(0, 'message')
                 .then(function(){
-                    expect(that.send).toHaveBeenCalledWith('sendData', {receiver: 'receiver', data: {type: 'message', data: 'someMessage'}});
+                    expect(that.send).toHaveBeenCalledWith('roomMessage', {roomId: 0, message: 'message'});
                     done();
                 })
                 .catch(function(err){

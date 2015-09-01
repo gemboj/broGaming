@@ -37,8 +37,8 @@ function RoomsController(scope, roomsService, chatStaticData){
         return rooms;
     };
 
-    this.newRoom = function(data){
-        var room = roomsService.newRoom(data);
+    this.newRoom = function(id, name, usernames, host){
+        var room = roomsService.newRoom(id, name, usernames, host);
 
         that.applyChanges();
 
@@ -84,26 +84,26 @@ function RoomsController(scope, roomsService, chatStaticData){
         chatStaticData.currentRoom = null;
     };
 
-    this.addUser = function(data){
+    this.addUser = function(username, roomId){
         var room = undefined;
         for(var i = 0; i < rooms.length; ++i){
-            if(rooms[i].id === data.roomId){
+            if(rooms[i].id === roomId){
                 room = rooms[i];
                 break;
             }
         }
 
         if(room !== undefined){
-            room.users.push(new that.User(data.username, false));
+            room.users.push(new that.User(username, false));
             that.applyChanges()
         }
     };
 
-    this.removeUser = function(data){
+    this.removeUser = function(username, roomId){
         var room = undefined;
 
         for(var i = 0; i < rooms.length; ++i){
-            if(rooms[i].id === data.roomId){
+            if(rooms[i].id === roomId){
                 room = rooms[i];
                 break;
             }
@@ -113,7 +113,7 @@ function RoomsController(scope, roomsService, chatStaticData){
             var index = -1;
             var user = null;
             for(var i = 0; i < room.users.length; ++i){
-                if(room.users[i].username === data.username){
+                if(room.users[i].username === username){
                     user = room.users[i];
                     index = i;
                     break;
@@ -138,12 +138,17 @@ function RoomsController(scope, roomsService, chatStaticData){
     this.removeRoomById = function(roomId){
         for(var i = 0; i < rooms.length; ++i){
             if(rooms[i].id === roomId){
+                var roomName = rooms[i].name;
 
-                if(chatStaticData.currentRoom.name === rooms[i].name){
+                rooms.splice(i, 1);
+
+                if(rooms.length === 0){
+                    chatStaticData.currentRoom = null;
+                }
+                else if(roomName === chatStaticData.currentRoom.name){
                     chatStaticData.currentRoom = rooms[0];
                 }
 
-                rooms.splice(i, 1);
                 break;
             }
         }
@@ -160,7 +165,7 @@ function RoomsController(scope, roomsService, chatStaticData){
         scope.enableInvites(false);
         action(function(listener){
             for(var i = 0; i < roomsService.selectedUsers.length; ++i){
-                listener(roomsService.selectedUsers[i].username, 'roomInvite', {roomId: room.id, roomName: room.name, sendersUsername: chatStaticData.currentUser.username, app: room.app});
+                listener(room.id, roomsService.selectedUsers[i].username, room.app);
             }
         });
     });

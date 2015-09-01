@@ -31,7 +31,7 @@ describe('ReceiveRoomInvite', function(){
     it('shows room invite', function(done){
     	var that = this;
     
-    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName', sendersUsername: 'sender'})
+    	this.receiveRoomInvite.do('sender', 'roomName', 0)
                 .then(function(){
                     expect(that.addRoomInviteResolve).toHaveBeenCalledWith("sender invites you to room: roomName");
                     done();
@@ -44,7 +44,7 @@ describe('ReceiveRoomInvite', function(){
     it('sends joinRoom when addInvite resolves ', function(done){
     	var that = this;
 
-    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName'})
+    	this.receiveRoomInvite.do('sender', 'roomName', 0)
                 .then(function(){
                     expect(that.send).toHaveBeenCalledWith('joinRoom', {roomId: 0});
                     done();
@@ -57,9 +57,9 @@ describe('ReceiveRoomInvite', function(){
     it('adds room when succesfully joined room', function(done){
     	var that = this;
     
-    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName'})
+    	this.receiveRoomInvite.do('sender', 'roomName', 0)
                 .then(function(){
-                    expect(that.addRoom).toHaveBeenCalledWith(that.data);
+                    expect(that.addRoom).toHaveBeenCalledWith(that.data.id, that.data.name, that.data.usernames, that.data.host);
                     done();
                 })
                 .catch(function(err){
@@ -70,7 +70,7 @@ describe('ReceiveRoomInvite', function(){
     it('creates app when join room data contains app name', function(done){
     	var that = this;
 
-    	this.receiveRoomInvite.do({roomId: 0, roomName: 'roomName', app: 'appName'})
+    	this.receiveRoomInvite.do('sender', 'roomName', 0, 'appName')
                 .then(function(){
                     expect(that.createApp).toHaveBeenCalledWith('appName', that.room);
                     done();

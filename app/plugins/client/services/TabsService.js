@@ -1,8 +1,9 @@
-function TabsService(scope, controllerProvider){
+function TabsService(scope, controllerProvider, WebRTCChannel){
     Service.call(this, scope);
     var that = this;
 
     var id = 0;
+
     function getUniqueId(){
         return id++;
     }
@@ -16,11 +17,12 @@ function TabsService(scope, controllerProvider){
         var controllerContent = '<div ng-controller="' + controllerName + '">' + htmlContent + '</div>';
 
         controllerProvider.register(controllerName, function($scope, $element){
-            app.client({id: id, $scope: $scope, $div: $element});
+            var webRTCChannel = new WebRTCChannel();
+            app.client({id: id, $scope: $scope, $div: $element, webRTCChannel: webRTCChannel});
         });
 
         var startServer = function(){
-            app.server();
+            app.server({usernames: room.users, WebRTCChannel: WebRTCChannel});
         };
 
         var tab = new that.Tab(name, id, controllerContent, room, startServer);

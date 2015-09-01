@@ -17,13 +17,13 @@ function SendingMessagesController(scope){
 
     var sendMessage = that.createEvent('sendMessage', function(action){
         action(function(listener){
-            listener(scope.receiverUsername, 'message', {message: scope.message, sender: scope._chatStaticData.currentUser.username});
+            listener(scope.receiverUsername, scope.message);
         });
     });
 
     var sendRoomMessage = that.createEvent('sendRoomMessage', function(action){
         action(function(listener){
-            listener(scope._chatStaticData.currentRoom.id, 'roomMessage', {roomName: scope._chatStaticData.currentRoom.name, message: scope.message, sender: scope._chatStaticData.currentUser.username});
+            listener(scope._chatStaticData.currentRoom.id, scope.message);
         });
     });
 }

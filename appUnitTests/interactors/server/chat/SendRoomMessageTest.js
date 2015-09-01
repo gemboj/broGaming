@@ -1,4 +1,4 @@
-describe('SendRoomData', function(){
+describe('SendRoomMessage', function(){
     beforeEach(function(){
         var that = this;
         this.sameRoomUsers = [new User('sender', 'a', 0, 1), new User('username2', 'a', 0, 1), new User('username3', 'a', 0, 1)];
@@ -22,13 +22,13 @@ describe('SendRoomData', function(){
         spyOn(this, 'getOtherRoomWithUsersById').and.callThrough();
         spyOn(this, 'send').and.callThrough();
 
-        this.sendRoomData = new SendRoomData(this.getRoomWithUsersById, this.send);
+        this.sendRoomMessage = new SendRoomMessage(this.getRoomWithUsersById, this.send);
     });
 
     it('gets users room', function(done){
     	var that = this;
 
-    	this.sendRoomData.do(0)
+    	this.sendRoomMessage.do(0, 'sender', 'message')
                 .then(function(){
                     expect(that.getRoomWithUsersById).toHaveBeenCalledWith(0);
                     done();
@@ -41,9 +41,9 @@ describe('SendRoomData', function(){
     it('sends error when user does not belong to room', function(done){
     	var that = this;
 
-        this.sendRoomData = new SendRoomData(this.getOtherRoomWithUsersById, this.send);
+        this.sendRoomMessage = new SendRoomMessage(this.getOtherRoomWithUsersById, this.send);
 
-    	this.sendRoomData.do(0, 'sender')
+    	this.sendRoomMessage.do(0, 'sender', 'message')
                 .then(function(){
                     expect(that.send).toHaveBeenCalledWith('sender',  'error', 'you can not send messages to that room');
                     done();
@@ -53,14 +53,14 @@ describe('SendRoomData', function(){
                 })
     });
 
-    it('sends data to room users with given type', function(done){
+    it('sends message to room users', function(done){
     	var that = this;
 
-    	this.sendRoomData.do(0, 'sender', {type: 'roomMessage', data: 'some message'})
+    	this.sendRoomMessage.do(0, 'sender', 'message')
                 .then(function(){
-                    expect(that.send).toHaveBeenCalledWith('sender', 'roomMessage', 'some message');
-                    expect(that.send).toHaveBeenCalledWith('username2', 'roomMessage', 'some message');
-                    expect(that.send).toHaveBeenCalledWith('username3', 'roomMessage', 'some message');
+                    expect(that.send).toHaveBeenCalledWith('sender', 'roomMessage', {message: 'message', roomName: 'Main', sender: 'sender'});
+                    expect(that.send).toHaveBeenCalledWith('username2', 'roomMessage', {message: 'message', roomName: 'Main', sender: 'sender'});
+                    expect(that.send).toHaveBeenCalledWith('username3', 'roomMessage', {message: 'message', roomName: 'Main', sender: 'sender'});
                     done();
                 })
                 .catch(function(err){

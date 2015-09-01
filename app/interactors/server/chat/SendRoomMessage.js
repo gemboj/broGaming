@@ -1,7 +1,7 @@
-function SendRoomData(getRoomWithUsersById, send){
+function SendRoomMessage(getRoomWithUsersById, send){
     var that = this;
 
-    this.do = function(roomId, sendersUsername, data){
+    this.do = function(roomId, sendersUsername, message){
         return getRoomWithUsersById(roomId)
             .then(function(room){
                 var users = room.users,
@@ -21,7 +21,7 @@ function SendRoomData(getRoomWithUsersById, send){
                 }
 
                 for(var i = 0; i < usersNicks.length; ++i){
-                    send(usersNicks[i], data.type, data.data);
+                    send(usersNicks[i], 'roomMessage', {message: message, roomName: room.name, sender: sendersUsername});
                 }
             })
     }

@@ -26,8 +26,8 @@ function RoomsService(scope, chatStaticData){
         chatStaticData.currentRoom = room;
     };
 
-    this.newRoom = function(data){
-        var room = new Room(data.id, data.name, data.usernames, data.host);
+    this.newRoom = function(id, name, usernames, host){
+        var room = new Room(id, name, usernames, host);
         that.rooms.push(room);
 
         that.switchRoom(room);

@@ -17,11 +17,11 @@ function ReceivingMessagesController(scope){
         showMessage('Error: ' + err);
     };
 
-    that.showRoomMessage = function(data){
-        showMessage(data.sender + " [" + data.roomName + "] :" + data.message);
+    that.showRoomMessage = function(sender, roomName, message){
+        showMessage(sender + " [" + roomName + "] :" + message);
     };
 
-    that.showMessage = function(data){
-        showMessage(data.sender + " :" + data.message);
+    that.showMessage = function(sender, message){
+        showMessage(sender + " :" + message);
     };
 }

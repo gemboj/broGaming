@@ -1,15 +1,15 @@
 function ReceiveRoomInvite(addInvite, send, newRoom, createApp){
     var that = this;
     
-    this.do = function(inviteData){
-        return addInvite(inviteData.sendersUsername + " invites you to room: " + inviteData.roomName)
+    this.do = function(sender, roomName, roomId, app){
+        return addInvite(sender + " invites you to room: " + roomName)
             .then(function(){
-                return send('joinRoom', {roomId: inviteData.roomId})
+                return send('joinRoom', {roomId: roomId})
                     .then(function(joinData){
-                        var room = newRoom(joinData)
+                        var room = newRoom(joinData.id, joinData.name, joinData.usernames, joinData.host)
 
-                        if(inviteData.app){
-                            createApp(inviteData.app, room);
+                        if(app){
+                            createApp(app, room);
                         }
                     })
             })

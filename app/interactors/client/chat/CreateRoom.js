@@ -3,8 +3,8 @@ function CreateRoom(send, cb){
 
     this.do = function(name){
         return send('createRoom', {roomName: name})
-            .then(function(room){
-                return cb(room)
+            .then(function(roomData){
+                return cb(roomData.id, roomData.name, roomData.usernames, roomData.host)
             })
             .catch(function(err){
                 throw err
