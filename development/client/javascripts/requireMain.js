@@ -5,7 +5,7 @@ require.config({
         controllers : 'plugins/controllers',
         services : 'plugins/services',
         io : 'vendors/socket.io',
-        dataChannel : 'plugins/dataChannel',
+        dataChannels : 'plugins/dataChannels',
         chatInteractors : 'interactors/chat',
     },
     shim : {
@@ -21,9 +21,18 @@ require.config({
     }
 });
 
-require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'chatInteractors'], function(jquery, controllers, services, dataChannels, angular, io, chatInteractors){
+require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', 'chatInteractors'], function(jquery, controllers, services, dataChannels, angular, io, chatInteractors){
     var socketAdpter = new dataChannels.SocketAdapter(io);
     var chatSocket = new dataChannels.ChatSocket(socketAdpter);
+    var webRTCSocket = new dataChannels.WebRTCSocket(socketAdpter);
+
+    var webRTCAdapter = new dataChannels.WebRTCAdapter(webRTCSocket.send, function(error){
+        console.dir(error);
+    });
+
+    webRTCSocket.registerOnOffer(webRTCAdapter.onOffer);
+    webRTCSocket.registerOnAnswer(webRTCAdapter.onAnswer);
+    webRTCSocket.registerOnIceCandidate(webRTCAdapter.onIceCandidate);
 
     var controllerProvider = null;
     var app = angular.module('broGaming', []).config(function($sceProvider, $controllerProvider){
@@ -61,7 +70,7 @@ require(['jquery', 'controllers', 'services', 'dataChannel', 'angular', 'io', 'c
     }]);
 
     app.factory('tabsService', ['$rootScope', function($rootScope){
-        return new services.TabsService($rootScope, controllerProvider, dataChannels.WebRTCAdapter());
+        return new services.TabsService($rootScope, controllerProvider, webRTCAdapter);
     }]);
 
     app.factory('roomsService', ['chatStaticData', '$rootScope', function(chatStaticData, $rootScope){
@@ -156,17 +165,17 @@ function createAngularController(app, name, cb){
 
 /*
  function registerChatEvents(chatChannel, chatController){
- chatController.registerOnSendMessage(dataChannel.chat.send);
- chatController.registerOnConnect(dataChannel.connect);
+ chatController.registerOnSendMessage(dataChannels.chat.send);
+ chatController.registerOnConnect(dataChannels.connect);
  }
 
- function registerGuiChatEvents(dataChannel, chatController){
- chatController.registerOnSendMessage(dataChannel.chat.send);
- chatController.registerOnConnect(dataChannel.connect);
+ function registerGuiChatEvents(dataChannels, chatController){
+ chatController.registerOnSendMessage(dataChannels.chat.send);
+ chatController.registerOnConnect(dataChannels.connect);
  }
 
- function registerDataChannelChatEvents(dataChannel, chatController){
- //dataChannel.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
- dataChannel.registerOnConnected(chatController.showLogin);
- dataChannel.registerOnError(chatController.showError);
+ function registerDataChannelChatEvents(dataChannels, chatController){
+ //dataChannels.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
+ dataChannels.registerOnConnected(chatController.showLogin);
+ dataChannels.registerOnError(chatController.showError);
  }*/

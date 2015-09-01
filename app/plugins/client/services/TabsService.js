@@ -1,4 +1,4 @@
-function TabsService(scope, controllerProvider, WebRTCChannel){
+function TabsService(scope, controllerProvider, webRTCAdapter){
     Service.call(this, scope);
     var that = this;
 
@@ -12,17 +12,21 @@ function TabsService(scope, controllerProvider, WebRTCChannel){
     var selectedTab = null;
 
     this.newTab = function(name, htmlContent, app, room){
-        var id = getUniqueId();
+        var id = room.id;
         var controllerName = 'controller' + id;
         var controllerContent = '<div ng-controller="' + controllerName + '">' + htmlContent + '</div>';
 
         controllerProvider.register(controllerName, function($scope, $element){
-            var webRTCChannel = new WebRTCChannel();
+            var webRTCChannel = webRTCAdapter.createDataChannelClient(id);
             app.client({id: id, $scope: $scope, $div: $element, webRTCChannel: webRTCChannel});
         });
 
         var startServer = function(){
-            app.server({usernames: room.users, WebRTCChannel: WebRTCChannel});
+            var usernames = [];
+            for(var i = 0; i < room.users.length; ++i){
+                usernames.push(room.users[i].username);
+            }
+            app.server({usernames: usernames, createDataChannel: webRTCAdapter.createDataChannelServer, id: id});
         };
 
         var tab = new that.Tab(name, id, controllerContent, room, startServer);

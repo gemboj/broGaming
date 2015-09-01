@@ -2,39 +2,33 @@ function WebRTCChannel(dataChannel){
     EventListener.call(this);
     var that = this;
 
-    var eventsNames = [
-        'privateMessage'
-    ];
-
     that.send = function(user, type, _data){
         var _package = {data: _data, eventType: type};
 
-        dataChannel.send(user, 'chat', _package);
+        dataChannel.send(user, 'webrtc', _package);
     };
 
     var events = {};
-    eventsNames.forEach(function(event){
-        events[event] = that.createEvent(event, function (action, data, cb) {
-            action(function (listener) {
-                var promise = listener(data);
 
-                if(promise !== undefined){
-                    promise
-                        .then(function(data){
-                            if(data !== undefined){
-                                cb(data);
-                            }
-                        })
-                }
-            });
+    events['offer'] = that.createEvent('offer', function(action, data, cb){
+        action(function(listener){
+            var promise = listener(data._sendersUsername, data.receiver, data.description, data.id, data.hostId);
+
+            resolveCallback(promise, cb);
         });
     });
 
-    events['sendData'] = that.createEvent('sendData', function(action, data, cb){
+    events['answer'] = that.createEvent('answer', function(action, data, cb){
         action(function(listener){
-            var promise = listener(data.receiver, data._sendersUsername, data.data);
+            var promise = listener(data.receiver, data.description, data.id, data.hostId);
 
             resolveCallback(promise, cb);
+        });
+    });
+
+    events['iceCandidate'] = that.createEvent('iceCandidate', function(action, data){
+        action(function(listener){
+            listener(data.receiver, data.iceCandidate, data.id, data.hostId);
         });
     });
 
@@ -52,7 +46,7 @@ function WebRTCChannel(dataChannel){
         }
     }
 
-    dataChannel.registerEvents('chat', events);
+    dataChannel.registerEvents('webrtc', events);
 }
 
 WebRTCChannel.prototype = Object.create(EventListener);

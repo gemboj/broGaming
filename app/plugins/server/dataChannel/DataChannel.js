@@ -28,16 +28,16 @@ function DataChannel(socketio){
         sockets[username] = socket;
 
         for(event in applications){
-            socket.on(event, function(_package, cb){
-                var data = _package.data;
-                data._sendersUsername = username;
-                applications[event][_package.eventType](data, cb);
-            });
+            registerEvent(event, socket, username);
         }
 
         socket.on('disconnect', function () {
             disconnectedEvent(username);
         });
+
+        socket.on('error', function(error){
+            console.trace(error);
+        })
 
         newConnectionEvent(username);
     });
@@ -69,6 +69,14 @@ function DataChannel(socketio){
             listener(data);
         });
     });
+
+    function registerEvent(event, socket, username){
+        socket.on(event, function(_package, cb){
+            var data = _package.data;
+            data._sendersUsername = username;
+            applications[event][_package.eventType](data, cb);
+        });
+    }
 
     that.send = function(username, application, _package){
         var socket = sockets[username];

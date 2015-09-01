@@ -11,9 +11,7 @@ function SocketAdapter(socketio, address){
             connected(credentials.username);
 
             for(app in applications){
-                socket.on(app, function(_package){
-                    applications[app][_package.eventType](_package.data);
-                });
+                registerEvent(app, socket)
             }
         });
 
@@ -60,6 +58,12 @@ function SocketAdapter(socketio, address){
             listener(message);
         });
     });
+
+    function registerEvent(name, socket){
+        socket.on(name, function(_package){
+            applications[name][_package.eventType](_package.data);
+        });
+    }
 
     that.registerApplication = function (name, events) {
         if(applications[name] !== undefined) throw name + 'event already exists!';

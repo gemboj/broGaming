@@ -2,6 +2,7 @@ module.exports = function(server){
     var chat = require('./interactors/chat'),
         authorizationInteractors = require('./interactors/authorization'),
         chatInteractors = require('./interactors/chat'),
+        webrtcInteractors = require('./interactors/webrtc'),
         dataChannel = require('./plugins/dataChannel'),
         socketio = require('socket.io')().listen(server),
         repositories = require('./plugins/repositories'),
@@ -18,6 +19,7 @@ module.exports = function(server){
         .then(function(sequelizeRepo){
             var socketDataChannel = new dataChannel.DataChannel(socketio);
             var chatChannel = new dataChannel.ChatChannel(socketDataChannel);
+            var webrtcChannel = new dataChannel.WebRTCChannel(socketDataChannel);
 
             var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var autoJoinRoom = new chatInteractors.AutoJoinRoom(joinRoom.do, chatChannel.send);
@@ -32,6 +34,10 @@ module.exports = function(server){
             var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
 
+            var offer = new webrtcInteractors.Offer(webrtcChannel.send);
+            var answer = new webrtcInteractors.Answer(webrtcChannel.send);
+            var iceCandidate = new webrtcInteractors.IceCandidate(webrtcChannel.send);
+
             socketDataChannel.registerOnIncomingConnection(login.do);
             socketDataChannel.registerOnDisconnected(logout.do);
             socketDataChannel.registerOnNewConnection(autoJoinRoom.do);
@@ -42,6 +48,10 @@ module.exports = function(server){
             chatChannel.registerOnSendRoomMessage(sendRoomMessage.do);
             chatChannel.registerOnPrivateMessage(privateMessage.do);
             chatChannel.registerOnRoomInvite(roomInvite.do);
+
+            webrtcChannel.registerOnOffer(offer.do);
+            webrtcChannel.registerOnAnswer(answer.do);
+            webrtcChannel.registerOnIceCandidate(iceCandidate.do);
 
             return deleteTemporaryData.do()
                 .then(function(){
