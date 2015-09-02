@@ -1,4 +1,4 @@
-function ReceivingMessagesController(scope){
+function MessageLogController(scope){
     Controller.call(this, scope);
     var that = this;
 
