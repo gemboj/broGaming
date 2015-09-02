@@ -1,4 +1,4 @@
-function SendingMessagesController(scope){
+function SendingMessagesController(scope, chatStaticData){
     Controller.call(this, scope);
     var that = this;
 
@@ -23,7 +23,7 @@ function SendingMessagesController(scope){
 
     var sendRoomMessage = that.createEvent('sendRoomMessage', function(action){
         action(function(listener){
-            listener(scope._chatStaticData.currentRoom.id, scope.message);
+            listener(chatStaticData.currentRoom.id, scope.message);
         });
     });
 }

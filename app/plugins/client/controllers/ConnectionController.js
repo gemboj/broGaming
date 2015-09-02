@@ -1,4 +1,4 @@
-function ConnectionController(scope){
+function ConnectionController(scope, chatStaticData){
     Controller.call(this, scope);
     var that = this;
 
@@ -17,17 +17,17 @@ function ConnectionController(scope){
     });
 
     this.saveCurrentUser = function(username){
-        scope._chatStaticData.currentUser = {username: username};
+        chatStaticData.currentUser = {username: username};
         scope.username = username;
         that.applyChanges();
     };
 
     this.isLogged = function(){
-        return scope._chatStaticData.currentUser != null;
+        return chatStaticData.currentUser != null;
     };
 
     scope.isConnected = function(){
-        return scope._chatStaticData.currentUser !== null;
+        return chatStaticData.currentUser !== null;
     };
 
 

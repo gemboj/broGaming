@@ -50,6 +50,10 @@ function TabsController(scope, tabsService, roomsService, chatStaticData){
         return (tab.room === undefined ? false : tab.room.host === chatStaticData.currentUser.username);
     };
 
+    scope.isStarted = function(tab){
+        return (tab.isStarted);
+    };
+
     scope.startServer = function(tab){
 
     }

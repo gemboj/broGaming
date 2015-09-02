@@ -38,12 +38,14 @@ function TabsService(scope, controllerProvider, webRTCAdapter){
     };
 
     this.Tab = function(title, id, content, room, startServer){
+        var that = this;
+
         this.title = title;
         this.id = id;
         this.content = content;
         this.room = room;
-        this.startServer = startServer;
 
+        this.isStarted = false;
         this.isSelected = function(){
             return this === selectedTab;
         };
@@ -51,6 +53,11 @@ function TabsService(scope, controllerProvider, webRTCAdapter){
         this.isDeletable = function(){
             return this.room !== undefined;
         }
+
+        this.startServer = function(){
+            startServer();
+            that.isStarted = true;
+        };
     }
 
     this.getSelectedTab = function(){

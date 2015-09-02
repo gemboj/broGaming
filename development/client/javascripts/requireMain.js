@@ -83,8 +83,8 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
     var sendPrivateMessage = new chatInteractors.SendPrivateMessage(chatSocket.send);
     var sendRoomMessage = new chatInteractors.SendRoomMessage(chatSocket.send);
 
-    createAngularController(app, 'sendingMessagesController', function($scope){
-        var sendingMessagesController = new controllers.SendingMessagesController($scope);
+    app.controller('sendingMessagesController', ['$scope', 'chatStaticData', function($scope, chatStaticData){
+        var sendingMessagesController = new controllers.SendingMessagesController($scope, chatStaticData);
 
         sendingMessagesController.registerOnSendMessage(function(data){
             console.dir(data)
@@ -92,9 +92,9 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
 
         sendingMessagesController.registerOnSendMessage(sendPrivateMessage.do);
         sendingMessagesController.registerOnSendRoomMessage(sendRoomMessage.do);
-    });
+    }]);
 
-    createAngularController(app, 'messageLogController', function($scope){
+    app.controller('messageLogController', ['$scope', function($scope){
         var receivingMessagesController = new controllers.MessageLogController($scope);
 
         socketAdpter.registerOnConnected(receivingMessagesController.showLogin);
@@ -103,15 +103,15 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         chatSocket.registerOnError(receivingMessagesController.showError);
         chatSocket.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
         chatSocket.registerOnPrivateMessage(receivingMessagesController.showMessage);
-    });
+    }]);
 
-    createAngularController(app, 'connectionController', function($scope){
-        var connectionController = new controllers.ConnectionController($scope);
+    app.controller('connectionController', ['$scope', 'chatStaticData', function($scope, chatStaticData){
+        var connectionController = new controllers.ConnectionController($scope, chatStaticData);
 
         connectionController.registerOnConnect(socketAdpter.connect);
 
         socketAdpter.registerOnConnected(connectionController.saveCurrentUser);
-    });
+    }]);
 
     app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', function($scope, roomsService, chatStaticData, appLoader){
         var roomsController = new controllers.RoomsController($scope, roomsService, chatStaticData);
@@ -133,11 +133,6 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         socketAdpter.registerOnDisconnect(roomsController.deleteRooms);
     }]);
 
-
-    createAngularController(app, 'canvasController', function($scope){
-        var canvasController = new controllers.CanvasController($scope);
-    });
-
     app.controller('appsController', ['$scope', 'appLoader', 'tabsService', 'roomsService', function($scope, appLoader){
         var appsController = controllers.AppsController($scope, appLoader.createApp);
     }]);
@@ -153,29 +148,3 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
 
     angular.bootstrap(document, ['broGaming']);
 });
-
-function createAngularController(app, name, cb){
-    app.controller(name, ['$scope', '$element', 'chatStaticData', function($scope, $element, chatStaticData){
-        $scope._element = $element;
-        $scope._chatStaticData = chatStaticData;
-        cb($scope);
-    }]);
-
-}
-
-/*
- function registerChatEvents(chatChannel, chatController){
- chatController.registerOnSendMessage(dataChannels.chat.send);
- chatController.registerOnConnect(dataChannels.connect);
- }
-
- function registerGuiChatEvents(dataChannels, chatController){
- chatController.registerOnSendMessage(dataChannels.chat.send);
- chatController.registerOnConnect(dataChannels.connect);
- }
-
- function registerDataChannelChatEvents(dataChannels, chatController){
- //dataChannels.chat.registerOnReceiveMessage((new events.ShowMessage(chatController)).do);
- dataChannels.registerOnConnected(chatController.showLogin);
- dataChannels.registerOnError(chatController.showError);
- }*/
