@@ -26,7 +26,8 @@ function SocketAdapter(socketio, address){
     };
 
     that.send = function(type, data, cb){
-        error('Not connected');
+        error('not connected');
+        return Promise.reject();
     };
 
     var connected = that.createEvent('connected', function (action, username) {

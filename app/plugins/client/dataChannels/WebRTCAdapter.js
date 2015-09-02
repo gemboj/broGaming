@@ -45,9 +45,8 @@ function WebRTCAdapter(send, error){
             };
 
             var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable : false});
-            dataChannel.onopen = function(){
-                console.log('host on open');
-            };
+            hookDataChannelEvents(dataChannel, webRTCChannel);
+
             //hookDataChannelEvents(dataChannel, webRTCChannel);
 
             if(connectionsHost[id] === undefined){
@@ -71,7 +70,7 @@ function WebRTCAdapter(send, error){
             return webRTCChannel;
         }
         else{
-            throw "Cannot create peer connection";
+            error("Cannot create peer connection");
         }
     };
 
@@ -85,16 +84,13 @@ function WebRTCAdapter(send, error){
 
             clientInfo.peerConnection.ondatachannel = function(event){
                 var channel = event.channel;
-                channel.onopen = function(){
-                    console.log('client on open');
-                };
-                console.log('client received data channel');
-            }
+                hookDataChannelEvents(channel, clientInfo.webRTCChannel);
+            };
 
             return clientInfo.webRTCChannel;
         }
         else{
-            //throw "Cannot create peer connection";
+            error("Cannot create peer connection");
         }
     }
 
@@ -103,15 +99,21 @@ function WebRTCAdapter(send, error){
     }
 
     function hookDataChannelEvents(dataChannel, webRTCChannel){
-        dataChannel.onmessage = function(data){
-            //that.onMessage.call(that.eventContext, data);
+        dataChannel.onmessage = function(event){
+            var data = JSON.parse(event.data);
+            webRTCChannel.message(data);
         };
-        dataChannel.onopen = function(evt){
-            //that.onOpen.call(that.eventContext);
+        dataChannel.onopen = function(event){
+            webRTCChannel.connect(event.data);
         };
-        dataChannel.onclose = function(evt){
-            //that.onClose.call(that.eventContext);
+        dataChannel.onclose = function(event){
+            webRTCChannel.disconnect(event.data);
         };
+
+        webRTCChannel.send = function(data){
+            var string = JSON.stringify(data);
+            dataChannel.send(string);
+        }
     }
 
     function createOffer(peerConnection, receiver, id, hostId){

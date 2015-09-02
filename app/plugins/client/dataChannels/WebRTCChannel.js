@@ -2,25 +2,23 @@ function WebRTCChannel(){
     EventListener.call(this);
     var that = this;
 
-    that.connected = that.createEvent('connected', function(action){
+    that.connect = that.createEvent('connect', function(action){
         action(function(listener){
             listener();
         });
     });
 
-    that.disconnected = that.createEvent('disconnected', function(action){
+    that.disconnect = that.createEvent('disconnect', function(action){
         action(function(listener){
             listener();
         });
     });
 
-    that.receivedMessage = that.createEvent('receivedMessage', function(action){
+    that.message = that.createEvent('message', function(action, data){
         action(function(listener){
-            listener();
+            listener(data);
         });
     });
 
-    this.send = function(){
-
-    }
+    this.send = null;
 }

@@ -94,8 +94,8 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         sendingMessagesController.registerOnSendRoomMessage(sendRoomMessage.do);
     });
 
-    createAngularController(app, 'receivingMessagesController', function($scope){
-        var receivingMessagesController = new controllers.ReceivingMessagesController($scope);
+    createAngularController(app, 'messageLogController', function($scope){
+        var receivingMessagesController = new controllers.MessageLogController($scope);
 
         socketAdpter.registerOnConnected(receivingMessagesController.showLogin);
         socketAdpter.registerOnError(receivingMessagesController.showError);
@@ -145,7 +145,7 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
     app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', function($scope, tabsService, roomsService, chatStaticData){
         var tabsController = new controllers.TabsController($scope, tabsService, roomsService, chatStaticData);
 
-        tabsController.addTab('apps', 0, '<div ng-controller="appsController"><p ng-click="newApp(\'test\')">ffgfghf</p></div>');
+        tabsController.addTab('apps', 0, '<div ng-controller="appsController"><p ng-click="newApp(\'test\')">test</p><p ng-click="newApp(\'drawBoard\')">drawBoard</p></div>');
 
         //var appLoader = new ajax.AppLoader($.ajax, tabsController.newTab);
         //appLoader.load('test');
