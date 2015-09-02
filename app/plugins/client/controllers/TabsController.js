@@ -16,6 +16,8 @@ function TabsController(scope, tabsService, roomsService, chatStaticData){
 
         tabsService.tabs.push(tab);
         tabsService.changeTab(tab);
+
+        that.applyChanges();
     };
 
     var Tab = tabsService.Tab;

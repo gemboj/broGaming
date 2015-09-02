@@ -137,10 +137,14 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         var appsController = controllers.AppsController($scope, appLoader.createApp);
     }]);
 
-    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', function($scope, tabsService, roomsService, chatStaticData){
+    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', 'appLoader', function($scope, tabsService, roomsService, chatStaticData, appLoader){
         var tabsController = new controllers.TabsController($scope, tabsService, roomsService, chatStaticData);
 
-        tabsController.addTab('apps', 0, '<div ng-controller="appsController"><p ng-click="newApp(\'test\')">test</p><p ng-click="newApp(\'drawBoard\')">drawBoard</p></div>');
+        appLoader.loadEjs('apps')
+            .then(function(html){
+                tabsController.addTab('apps', 0, html);
+            })
+
 
         //var appLoader = new ajax.AppLoader($.ajax, tabsController.newTab);
         //appLoader.load('test');

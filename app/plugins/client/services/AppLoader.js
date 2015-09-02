@@ -38,5 +38,14 @@ function AppLoader(scope, ajax, require, createRoom, newTab){
                     })
                 })
         });
+    };
+
+    this.loadEjs = function(name){
+        return new Promise(function(resolve, reject){
+            ajax({url: name})
+                .done(function(data){
+                    resolve(data);
+                })
+        });
     }
 }

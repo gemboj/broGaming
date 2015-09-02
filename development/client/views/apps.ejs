@@ -1,0 +1,5 @@
+<div ng-controller="appsController">
+	<% for(var i = 0; i < apps.length; i++){ %>
+    <span ng-click="newApp('<%= apps[i] %>')"><img src="<%= url + apps[i] + '/' + apps[i] + '.jpg' %>" /><p><%= apps[i] %></p></span>
+	<% } %>
+</div>
