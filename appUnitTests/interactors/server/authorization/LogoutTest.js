@@ -4,8 +4,6 @@ describe('Logout', function(){
             return Promise.resolve()
         };
 
-
-
         this.removeFromRoom = function(){
             return Promise.resolve();
         };

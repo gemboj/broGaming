@@ -14,14 +14,15 @@ describe('ValidateUser', function(){
 
     })
 
-    it('resolves without argument when user is valid', function(done){
+    it('resolves with user when user is valid', function(done){
         var that = this;
 
         this.validateUser = new ValidateUser(this.getUserByUsername);
 
         this.user = new User('username', 'password');
         this.validateUser.do(this.user)
-            .then(function(){
+            .then(function(user){
+                expect(user).toBe(that.user);
                 done();
             })
             .catch(function(err){

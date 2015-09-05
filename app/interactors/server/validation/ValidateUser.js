@@ -13,6 +13,8 @@ function ValidateUser(getUserByUsername){
                 if(_user && user.username === _user.username){
                     throw 'username already exists';
                 }
+
+                return user;
             })
     }
 }
