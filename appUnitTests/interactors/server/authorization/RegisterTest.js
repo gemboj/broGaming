@@ -10,7 +10,7 @@ describe('Register ', function(){
             return Promise.resolve(user);
         };
 
-        this.validateUserNotValid = function(user){
+        this.validateUserFail = function(user){
             return Promise.reject('user is not valid');
         };
 
@@ -38,10 +38,10 @@ describe('Register ', function(){
             })
     });
 
-    it('rejects with error when user is not valid', function(done){
+    it('rejects with validation error when validation fails', function(done){
         var that = this;
 
-        this.register = new Register(this.hash, this.validateUserNotValid, this.addUser);
+        this.register = new Register(this.hash, this.validateUserFail, this.addUser);
 
         this.register.do('username', 'password')
             .then(function(){
@@ -54,18 +54,18 @@ describe('Register ', function(){
             })
     });
 
-    it('rejects with error when username already exists', function(done){
+    it('rejects with db error when adding user fails', function(done){
     	var that = this;
 
         this.register = new Register(this.hash, this.validateUser, this.addUserError);
 
     	this.register.do('username', 'password')
-                .then(function(){
-                    done.fail();
-                })
-                .catch(function(err){
-                    expect(err).toBe('could not register. Try again later.');
-                    done();
-                })
+        	.then(function(){
+        	    done.fail();
+        	})
+        	.catch(function(err){
+                expect(err).toBe('registration failed. Please try again later.');
+        	    done();
+        	})
     });
 })

@@ -10,8 +10,8 @@ function Register(hash, validateUser, addUser){
             .then(function(user){
                 return addUser(user)
                     .catch(function(err){
-                        throw 'could not register. Try again later.';
-                    })
+                        throw 'registration failed. Please try again later.';
+                    });
             })
             .then(function(){
                 return 'registered'
