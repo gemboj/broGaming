@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : "/../entities",
+      "module" : "entities",
+      "class" : "UserValidation"
+    }
+  ]
+}
