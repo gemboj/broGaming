@@ -7,6 +7,8 @@ require.config({
         io : 'vendors/socket.io',
         dataChannels : 'plugins/dataChannels',
         chatInteractors : 'interactors/chat',
+        AJAX: 'plugins/AJAX',
+        validationInteractors: 'interactors/formValidation'
     },
     shim : {
         angular : {
@@ -21,7 +23,31 @@ require.config({
     }
 });
 
-require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', 'chatInteractors'], function(jquery, controllers, services, dataChannels, angular, io, chatInteractors){
+require([
+    'jquery',
+    'controllers',
+    'services',
+    'dataChannels',
+    'angular', 'io',
+    'chatInteractors',
+    'AJAX',
+    'validationInteractors'
+], function(
+    jquery,
+    controllers,
+    services,
+    dataChannels,
+    angular,
+    io,
+    chatInteractors,
+    AJAX,
+    validationInteractors
+){
+    var userLoginFormValidation = new validationInteractors.UserLoginForm();
+    var userRegisterFormValidation = new validationInteractors.UserRegistrationForm(userLoginFormValidation.do);
+
+    var $ajaxAdapted = new AJAX.JQAJAXAdapter($.ajax);
+
     var socketAdpter = new dataChannels.SocketAdapter(io);
     var chatSocket = new dataChannels.ChatSocket(socketAdpter);
     var webRTCSocket = new dataChannels.WebRTCSocket(socketAdpter);
@@ -69,12 +95,16 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         return o;
     }]);
 
-    app.factory('tabsService', ['$rootScope', function($rootScope){
-        return new services.TabsService($rootScope, controllerProvider, webRTCAdapter);
+    app.factory('tabsService', ['$rootScope', 'messageLogService', function($rootScope, messageLogService){
+        return new services.TabsService($rootScope, controllerProvider, webRTCAdapter, messageLogService);
     }]);
 
     app.factory('roomsService', ['chatStaticData', '$rootScope', function(chatStaticData, $rootScope){
         return new services.RoomsService($rootScope, chatStaticData);
+    }]);
+
+    app.factory('messageLogService', ['$rootScope', function($rootScope){
+        return new services.MessageLogService($rootScope);
     }]);
 
 
@@ -94,23 +124,39 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         sendingMessagesController.registerOnSendRoomMessage(sendRoomMessage.do);
     }]);
 
-    app.controller('messageLogController', ['$scope', function($scope){
-        var receivingMessagesController = new controllers.MessageLogController($scope);
+    app.controller('messageLogController', ['$scope', 'messageLogService', function($scope, messageLogService){
+        var receivingMessagesController = new controllers.MessageLogController($scope, messageLogService);
 
-        socketAdpter.registerOnConnected(receivingMessagesController.showLogin);
-        socketAdpter.registerOnError(receivingMessagesController.showError);
+        socketAdpter.registerOnConnected(messageLogService.showLogin);
+        socketAdpter.registerOnError(messageLogService.showError);
 
-        chatSocket.registerOnError(receivingMessagesController.showError);
-        chatSocket.registerOnRoomMessage(receivingMessagesController.showRoomMessage);
-        chatSocket.registerOnPrivateMessage(receivingMessagesController.showMessage);
+        chatSocket.registerOnError(messageLogService.showError);
+        chatSocket.registerOnRoomMessage(messageLogService.showRoomMessage);
+        chatSocket.registerOnPrivateMessage(messageLogService.showMessage);
     }]);
 
     app.controller('connectionController', ['$scope', 'chatStaticData', function($scope, chatStaticData){
-        var connectionController = new controllers.ConnectionController($scope, chatStaticData);
+        var connectionController = new controllers.ConnectionController($scope, chatStaticData, userLoginFormValidation.do, userRegisterFormValidation.do);
+
+        //var register = new chatInteractors.Register($ajaxAdapted.post, 'user', messageLogService.showInfo);
 
         connectionController.registerOnConnect(socketAdpter.connect);
+        //connectionController.registerOnRegister(register.do);
 
         socketAdpter.registerOnConnected(connectionController.saveCurrentUser);
+
+    }]);
+
+    app.controller('registerController', ['$scope', 'chatStaticData', 'messageLogService', function($scope, chatStaticData, messageLogService){
+        var registerController = new controllers.RegisterController($scope, userRegisterFormValidation.do);
+
+        var register = new chatInteractors.Register($ajaxAdapted.post, 'user', messageLogService.showInfo);
+
+        //connectionController.registerOnConnect(socketAdpter.connect);
+        registerController.registerOnRegister(register.do);
+
+        //socketAdpter.registerOnConnected(connectionController.saveCurrentUser);
+
     }]);
 
     app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', function($scope, roomsService, chatStaticData, appLoader){
@@ -137,17 +183,13 @@ require(['jquery', 'controllers', 'services', 'dataChannels', 'angular', 'io', '
         var appsController = controllers.AppsController($scope, appLoader.createApp);
     }]);
 
-    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', 'appLoader', function($scope, tabsService, roomsService, chatStaticData, appLoader){
+    app.controller('tabsController', ['$scope', 'tabsService', 'roomsService', 'chatStaticData', 'appLoader', 'messageLogService', function($scope, tabsService, roomsService, chatStaticData, appLoader){
         var tabsController = new controllers.TabsController($scope, tabsService, roomsService, chatStaticData);
 
         appLoader.loadEjs('apps')
             .then(function(html){
                 tabsController.addTab('apps', 0, html);
-            })
-
-
-        //var appLoader = new ajax.AppLoader($.ajax, tabsController.newTab);
-        //appLoader.load('test');
+            });
     }]);
 
     angular.bootstrap(document, ['broGaming']);

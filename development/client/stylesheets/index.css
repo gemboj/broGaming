@@ -42,6 +42,9 @@ html body div aside {
 html body div aside #connection {
   padding: 5px;
 }
+html body div aside #connection * {
+  margin: 2px 0px;
+}
 html body div aside #rooms #roomHeader {
   flex: 0 1 auto;
 }
@@ -118,11 +121,22 @@ html body footer form [type="text"]:nth-child(2) {
 html body footer form [type="submit"] {
   flex: 1 1 auto;
 }
+form.ng-invalid .ng-invalid {
+  background-color: #cc5555;
+}
+form.ng-invalid .ng-invalid + p {
+  color: #ffffff;
+  font-size: 12px;
+}
+form.ng-invalid input[type="submit"] {
+  background-color: #404040;
+}
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   list-style-type: none;
+  font-size: 16px;
 }
 .container {
   width: 100%;

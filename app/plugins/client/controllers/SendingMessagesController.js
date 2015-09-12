@@ -23,7 +23,7 @@ function SendingMessagesController(scope, chatStaticData){
 
     var sendRoomMessage = that.createEvent('sendRoomMessage', function(action){
         action(function(listener){
-            listener(chatStaticData.currentRoom.id, scope.message);
+            listener(chatStaticData.currentRoom === null ? null : chatStaticData.currentRoom.id, scope.message);
         });
     });
 }

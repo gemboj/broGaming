@@ -28,6 +28,12 @@ function WebRTCSocket(dataChannel){
         });
     });
 
+    that.events.error = that.createEvent('error', function(action, data){
+        action(function(listener){
+            listener(data.sender, data.error);
+        });
+    });
+
     dataChannel.registerApplication('webrtc', that.events);
 }
 

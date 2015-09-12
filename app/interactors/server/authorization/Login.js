@@ -1,4 +1,4 @@
-function Login(getUserByUsername, markAsLoggedUsername, hash){
+function Login(getUserByUsername, markAsLoggedUsername, compareHash){
     var that = this;
 
     that.alreadyLogged = 'User is already logged in.';
@@ -14,13 +14,19 @@ function Login(getUserByUsername, markAsLoggedUsername, hash){
 
                 user = _user;
 
-                return hash(credentials.password);
+                return compareHash(credentials.password, _user.password);
             })
-            .then(function(hashPassword){
-                if(hashPassword !== user.password){
+            .then(function(passwordMatch){
+                if(!passwordMatch){
                     throw that.invalidCredentials;
                 }
-
+            })
+            .then(function(){
+                if(!user.isActive){
+                    throw 'user ' + user.username + ' is not activated';
+                }
+            })
+            .then(function(){
                 return markAsLoggedUsername(credentials.username)
                     .catch(function(err){
                         if(that[err] !== undefined){

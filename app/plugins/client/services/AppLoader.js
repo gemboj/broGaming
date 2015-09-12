@@ -16,7 +16,7 @@ function AppLoader(scope, ajax, require, createRoom, newTab){
             })
             .catch(function(err){
                 //that.applyChanges();
-                console.log(err)
+                //console.log(err)
             });
     };
 

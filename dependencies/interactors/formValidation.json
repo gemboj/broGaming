@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : ".",
+      "module" : "formValidation",
+      "class" : "ValidateError"
+    }
+  ]
+}

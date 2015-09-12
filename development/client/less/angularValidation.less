@@ -1,0 +1,14 @@
+form.ng-invalid  {
+  .ng-invalid {
+    background-color: @errorBackgroundColor;
+
+    & + p {
+      color: @errorFontColorLight;
+      font-size: @fontSizeSmall;
+    }
+  }
+
+  input[type="submit"] {
+    background-color: @inactiveBackgroundColor;
+  }
+}

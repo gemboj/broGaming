@@ -1,6 +1,6 @@
 describe('Login', function(){
-    beforeEach(function () {
-        
+    beforeEach(function(){
+
         this.getUserByUsername = function(username){
             return Promise.resolve(new User('username', 'hashedPassword', false, true));
         };
@@ -12,7 +12,7 @@ describe('Login', function(){
         this.getUserByUsernameWrongUser = function(user){
             return Promise.resolve(new User('username', 'hashedPassword2', false, true));
         };
-        
+
         this.markUserAsLoggedResolve = function(){
             return Promise.resolve();
         };
@@ -21,8 +21,12 @@ describe('Login', function(){
             return Promise.reject('alreadyLogged');
         };
 
-        this.hash = function(password){
-            return Promise.resolve('hashedPassword');
+        this.compareHashTrue = function(password, hash){
+            return Promise.resolve(true);
+        };
+
+        this.compareHashFalse = function(password, hash){
+            return Promise.resolve(false);
         };
 
         spyOn(this, 'markUserAsLoggedResolve').and.callThrough();
@@ -31,31 +35,29 @@ describe('Login', function(){
 
     it('it resolves when given credentials matches that in db, user is not already logged and marks user as logged', function(done){
         var that = this,
-            login = new Login(this.getUserByUsername, this.markUserAsLoggedResolve, this.hash);
-
+            login = new Login(this.getUserByUsername, this.markUserAsLoggedResolve, this.compareHashTrue);
 
         login.do({username: 'username', password: 'password'})
-            .then(function () {
+            .then(function(){
                 expect(that.markUserAsLoggedResolve).toHaveBeenCalled();
 
                 done();
 
             })
-            .catch(function (err) {
+            .catch(function(err){
                 done.fail(err);
             });
     }, 2000);
 
     it('it rejects with message when user does not exists', function(done){
         var that = this,
-            login = new Login(this.getUserByUsernameNoUser, this.markUserAsLoggedResolve, this.hash);
-
+            login = new Login(this.getUserByUsernameNoUser, this.markUserAsLoggedResolve, this.compareHashTrue);
 
         login.do({username: 'username', password: 'password'})
-            .then(function () {
+            .then(function(){
                 done.fail();
             })
-            .catch(function (err) {
+            .catch(function(err){
                 expect(that.markUserAsLoggedResolve).not.toHaveBeenCalled();
 
                 expect(err).toBe(login.invalidCredentials);
@@ -65,14 +67,13 @@ describe('Login', function(){
 
     it('it rejects with message when user is already logged in', function(done){
         var that = this,
-            login = new Login(this.getUserByUsername, this.markUserAsLoggedReject, this.hash);
-
+            login = new Login(this.getUserByUsername, this.markUserAsLoggedReject, this.compareHashTrue);
 
         login.do({username: 'username', password: 'password'})
-            .then(function () {
+            .then(function(){
                 done.fail();
             })
-            .catch(function (err) {
+            .catch(function(err){
                 expect(that.markUserAsLoggedReject).toHaveBeenCalled();
 
                 expect(err).toBe(login.alreadyLogged);
@@ -81,16 +82,16 @@ describe('Login', function(){
     })
 
     it('reject with error message when password does not match', function(done){
-    	var that = this;
+        var that = this;
 
-        var login = new Login(this.getUserByUsernameWrongUser, this.markUserAsLoggedResolve, this.hash)
+        var login = new Login(this.getUserByUsernameWrongUser, this.markUserAsLoggedResolve, this.compareHashFalse)
 
-    	login.do({username: 'username', password: 'password'})
-        	.then(function(){
-        	    done.fail();
-        	})
-        	.catch(function(err){
-        	    done(login.invalidCredentials);
-        	})
+        login.do({username: 'username', password: 'password'})
+            .then(function(){
+                done.fail();
+            })
+            .catch(function(err){
+                done(login.invalidCredentials);
+            })
     });
 });

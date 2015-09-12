@@ -32,6 +32,12 @@ function WebRTCChannel(dataChannel){
         });
     });
 
+    events['error'] = that.createEvent('error', function(action, data){
+        action(function(listener){
+            listener(data.receiver, data._sendersUsername, data.error);
+        });
+    });
+
     function resolveCallback(promise, cb){
         if(promise !== undefined){
             promise

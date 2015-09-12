@@ -3,13 +3,19 @@ module.exports = function(server){
         authorizationInteractors = require('./interactors/authorization'),
         chatInteractors = require('./interactors/chat'),
         webrtcInteractors = require('./interactors/webrtc'),
+        validationInteractors = require('./interactors/validation'),
         dataChannel = require('./plugins/dataChannel'),
         socketio = require('socket.io')().listen(server),
         repositories = require('./plugins/repositories'),
         orm = require("orm"),
-    //entities = require('./entities/entities'),
+        security = require('./plugins/security'),
         loki = require('lokijs'),
-        Sequelize = require('sequelize');
+        Sequelize = require('sequelize'),
+        bcrypt = require('bcrypt'),
+        formValidationInteractors = require('./interactors/formValidation'),
+        email = require('./plugins/email'),
+        nodemailer = require('nodemailer'),
+        crypto = require('crypto');
 
     var util = require('util');
 
@@ -21,6 +27,14 @@ module.exports = function(server){
             var chatChannel = new dataChannel.ChatChannel(socketDataChannel);
             var webrtcChannel = new dataChannel.WebRTCChannel(socketDataChannel);
 
+            var bcryptAdapted = new security.BcryptAdapter(bcrypt);
+            var randomGenerator = new security.RandomGenerator(crypto);
+
+            var nodemailerAdapter = new email.NodemailerAdapter(nodemailer);
+
+            var userLoginFormValidation = new formValidationInteractors.UserLoginForm();
+            var userRegistrationFormValidation = new formValidationInteractors.UserRegistrationForm(userLoginFormValidation.do);
+
             var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var autoJoinRoom = new chatInteractors.AutoJoinRoom(joinRoom.do, chatChannel.send);
             var leaveRoom = new chatInteractors.LeaveRoom(sequelizeRepo.getRoomWithUsersById, chatChannel.send, sequelizeRepo.removeUsernameFromRoomid, sequelizeRepo.removeRoomById);
@@ -30,9 +44,12 @@ module.exports = function(server){
             var sendRoomMessage = new chatInteractors.SendRoomMessage(sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var roomInvite = new chatInteractors.RoomInvite(chatChannel.send, sequelizeRepo.getRoomWithUsersById);
             var privateMessage = new chatInteractors.PrivateMessage(chatChannel.send, sequelizeRepo.getUserByUsername);
+            var userRegistrationValidation = new validationInteractors.UserRegistration(sequelizeRepo.getUserByUsername, userRegistrationFormValidation.do);
 
-            var login = new authorizationInteractors.Login(sequelizeRepo.isAuthenticCredentials, sequelizeRepo.markAsLoggedUsername);
+            var login = new authorizationInteractors.Login(sequelizeRepo.getUserByUsername, sequelizeRepo.markAsLoggedUsername, bcryptAdapted.compare);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
+            var register = new authorizationInteractors.Register(bcryptAdapted.hash, userRegistrationValidation.do, sequelizeRepo.insertUser, nodemailerAdapter.send, sequelizeRepo.setActivationLinkForUsername, randomGenerator.generateBytes, global.staticData.address);
+            var activateAccount = new authorizationInteractors.ActivateAccount(sequelizeRepo.getUserByActivationLink, sequelizeRepo.markAsActiveUserByUsername);
 
             var offer = new webrtcInteractors.Offer(webrtcChannel.send);
             var answer = new webrtcInteractors.Answer(webrtcChannel.send);
@@ -52,6 +69,9 @@ module.exports = function(server){
             webrtcChannel.registerOnOffer(offer.do);
             webrtcChannel.registerOnAnswer(answer.do);
             webrtcChannel.registerOnIceCandidate(iceCandidate.do);
+
+            global.routing.user = register.do;
+            global.routing.activateAccount = activateAccount.do;
 
             return deleteTemporaryData.do()
                 .then(function(){

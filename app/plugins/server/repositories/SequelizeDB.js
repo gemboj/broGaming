@@ -1,52 +1,53 @@
 function SequelizeDB(Sequelize){
     var db = new Sequelize('broGaming', 'root', '', {
-        host : "127.0.0.1",
-        dialect : 'mysql',
-        define : {
-            timestamps : false
+        host: "127.0.0.1",
+        dialect: 'mysql',
+        define: {
+            timestamps: false
         }
         //logging: false
     });
 
     var users = db.define('users', {
-            username : {
-                type : Sequelize.STRING,
-                primaryKey : true
+            username: {
+                type: Sequelize.STRING,
+                primaryKey: true
             },
-            password : Sequelize.STRING,
-            is_logged : Sequelize.BOOLEAN,
-            is_active : Sequelize.BOOLEAN
+            password: Sequelize.STRING,
+            is_logged: Sequelize.BOOLEAN,
+            is_active: Sequelize.BOOLEAN,
+            activation_link: Sequelize.STRING
         },
         {
-            underscored : true
+            underscored: true
         });
 
     var rooms = db.define('rooms', {
-            id : {
-                type : Sequelize.INTEGER,
-                primaryKey : true
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true
             },
-            name : Sequelize.STRING,
-            is_deletable : Sequelize.BOOLEAN,
+            name: Sequelize.STRING,
+            is_deletable: Sequelize.BOOLEAN,
             host: Sequelize.STRING
         },
         {
-            underscored : true
+            underscored: true
         });
 
     var users_rooms = db.define('users_rooms', {
-            users_username : {
-                type : Sequelize.STRING,
+            users_username: {
+                type: Sequelize.STRING,
             },
-            rooms_id : {
-                type : Sequelize.INTEGER,
+            rooms_id: {
+                type: Sequelize.INTEGER,
             }
         },
-        {underscored : true});
+        {underscored: true});
 
-    users.belongsToMany(rooms, {through : users_rooms, foreignKey : 'users_username'});
-    rooms.belongsToMany(users, {through : users_rooms, foreignKey : 'rooms_id'});
-    rooms.belongsTo(users, {foreignKey : 'host'});
+    users.belongsToMany(rooms, {through: users_rooms, foreignKey: 'users_username'});
+    rooms.belongsToMany(users, {through: users_rooms, foreignKey: 'rooms_id'});
+    rooms.belongsTo(users, {foreignKey: 'host'});
 
     var that = this;
     this.connect = function(){
@@ -110,11 +111,11 @@ function SequelizeDB(Sequelize){
 
     this.markAsLoggedUsername = function(username){
         return users.update({
-            is_logged : true
+            is_logged: true
         }, {
-            where : {
-                username : username,
-                is_logged : false
+            where: {
+                username: username,
+                is_logged: false
             }
         })
             .then(function(arg){
@@ -126,24 +127,28 @@ function SequelizeDB(Sequelize){
 
     this.markAsNotLoggedUser = function(username){
         return users.update({
-            is_logged : false
+            is_logged: false
         }, {
-            where : {
-                username : username
+            where: {
+                username: username
             }
         });
     };
 
     this.removeUsernameFromAllRooms = function(username){
         return users_rooms.destroy({
-            where : {
-                users_username : username
+            where: {
+                users_username: username
             }
         });
     };
 
     this.insertRoom = function(room){
-        return rooms.build({id : room.id, name : room.name, is_deletable : room.deletable, host : room.host}).save();
+        return rooms.build({id: room.id, name: room.name, is_deletable: room.deletable, host: room.host}).save();
+    };
+
+    this.insertUser = function(user){
+        return users.build({username: user.username, password: user.password, is_logged: user.isLogged, is_active: user.isActive}).save();
     };
 
     var roomId = 0;
@@ -155,13 +160,13 @@ function SequelizeDB(Sequelize){
         var transaction = {};
         t !== undefined ? transaction.transaction = t : null;
 
-        return users_rooms.build({users_username : username, rooms_id : roomId}).save(transaction);
+        return users_rooms.build({users_username: username, rooms_id: roomId}).save(transaction);
     };
 
     this.getRoomWithUsersById = function(roomId, t){
         var transaction = {
-            where : {id : roomId},
-            include : [
+            where: {id: roomId},
+            include: [
                 users
             ]
         };
@@ -191,11 +196,11 @@ function SequelizeDB(Sequelize){
 
     this.deleteAllRooms = function(){
         return users_rooms.destroy({
-            where : {}
+            where: {}
         })
             .then(function(){
                 rooms.destroy({
-                    where : {}
+                    where: {}
                 })
             })
 
@@ -203,25 +208,25 @@ function SequelizeDB(Sequelize){
 
     this.logoutAllUsers = function(){
         return users.update({
-            is_logged : false
+            is_logged: false
         }, {
-            where : {}
+            where: {}
         });
     };
 
     this.removeUsernameFromRoomid = function(username, roomId){
         return users_rooms.destroy({
-            where : {
-                users_username : username,
-                rooms_id : roomId
+            where: {
+                users_username: username,
+                rooms_id: roomId
             }
         })
     };
 
     this.removeRoomById = function(roomId){
         return rooms.destroy({
-            where : {
-                id : roomId
+            where: {
+                id: roomId
             }
         })
             .catch(function(){
@@ -231,10 +236,10 @@ function SequelizeDB(Sequelize){
 
     this.getUsernameRooms = function(username){
         return users.findOne({
-            where : {
-                username : username
+            where: {
+                username: username
             },
-            include : [
+            include: [
                 rooms
             ]
         })
@@ -253,8 +258,8 @@ function SequelizeDB(Sequelize){
 
     this.getUserByUsername = function(username){
         return users.findOne({
-            where : {
-                username : username
+            where: {
+                username: username
             }
         })
             .then(function(userData){
@@ -266,5 +271,43 @@ function SequelizeDB(Sequelize){
 
                 return new User(dataValue.username, dataValue.password, dataValue.is_logged, dataValue.is_active);
             })
+    }
+
+    this.setActivationLinkForUsername = function(username, link){
+        return users.update({
+            activation_link: link
+        }, {
+            where: {
+                username: username
+            }
+        });
+    }
+
+    this.getUserByActivationLink = function(link){
+        return users.findOne({
+            where: {
+                activation_link: link
+            }
+        })
+            .then(function(userData){
+                if(userData === null){
+                    return null;
+                }
+
+                var dataValue = userData.dataValues;
+
+                return new User(dataValue.username, dataValue.password, dataValue.is_logged, dataValue.is_active);
+            })
+    }
+
+    this.markAsActiveUserByUsername = function(username){
+        return users.update({
+            activation_link: null,
+            is_active: true
+        }, {
+            where: {
+                username: username
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-function WebRTCAdapter(send, error){
+function WebRTCAdapter(send, showError){
     var that = this;
 
     var connectionsClient = {};
@@ -70,7 +70,7 @@ function WebRTCAdapter(send, error){
             return webRTCChannel;
         }
         else{
-            error("Cannot create peer connection");
+            showError("Cannot create peer connection");
         }
     };
 
@@ -90,7 +90,7 @@ function WebRTCAdapter(send, error){
             return clientInfo.webRTCChannel;
         }
         else{
-            error("Cannot create peer connection");
+            showError("Cannot create peer connection");
         }
     }
 

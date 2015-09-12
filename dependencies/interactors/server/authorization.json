@@ -3,7 +3,7 @@
     {
       "path" : "/../entities/entities",
       "module" : "entities",
-      "class" : "LoggedUser"
+      "class" : "User"
     }
   ]
 }

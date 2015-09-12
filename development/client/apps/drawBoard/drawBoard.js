@@ -1,7 +1,7 @@
 define([], function(){
     var o = {};
 
-    o.client = function(input){//id, $div, $scope, webRTCChannel
+    o.client = function(input){//id, $div, $scope, webRTCChannel, showInfo, showError
         var scope = input.$scope;
 
         var $canvas = input.$div.find('canvas'),
@@ -22,7 +22,7 @@ define([], function(){
 
         var webRTCChannel = input.webRTCChannel;
         webRTCChannel.registerOnConnect(function(){
-            console.log('client connected');
+            input.showInfo('connected with server');
             mouseMove = mouseMoveOnline;
         });
 
@@ -75,7 +75,7 @@ define([], function(){
         }
     };
 
-    o.server = function(input){//createDataChannel, usernames, id
+    o.server = function(input){//createDataChannel, usernames, id, showInfo, showError
         var channels = {};
 
         for(var i = 0; i < input.usernames.length; ++i){
@@ -89,7 +89,7 @@ define([], function(){
             channels[username] = channel;
 
             channel.registerOnConnect(function(){
-                console.log('server connected with ' + username);
+                input.showInfo('server connected with ' + username);
             });
 
             channel.registerOnMessage(function(data){
@@ -100,7 +100,7 @@ define([], function(){
 
             channel.registerOnDisconnect(function(){
                 delete channels[username];
-                console.log(username + ' disconnected');
+                input.showInfo(username + ' disconnected');
             });
         }
     }

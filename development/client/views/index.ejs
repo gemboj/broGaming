@@ -23,15 +23,38 @@
 				</div>
 			</div>
 
-			<textarea ng-controller="messageLogController" ng-model="messageLog" class="chatLog"></textarea>
+			<textarea ng-controller="messageLogController" ng-bind="getMessageLog()" class="chatLog"
+					<% if(locals.registerMessage !== undefined){ %>
+					  ng-init="showInfo('<%= registerMessage %>')"
+					<% } %>
+
+			></textarea>
 		</div>
 
 		<aside>
 			<div id="connection"  ng-controller="connectionController" ng-hide="isConnected()">
-				<form ng-submit="connect()" class="flexContainerV">
-					<input type="text" ng-model="username"/>
-					<input type="text" ng-model="password"/>
+				<form name="loginForm" ng-submit="connect()" class="flexContainerV">
+					<input type="text" placeholder="username" name="username" ng-model="username" ng-blur="validateLogin('username')"/>
+					<p ng-bind="usernameLoginError"></p>
+
+					<input type="password" ng-model="password" name="password" placeholder="password" ng-blur="validateLogin('password')"/>
+					<p ng-bind="passwordLoginError"></p>
+
 					<input type="submit" value="Connect" class="button"/>
+				</form>
+				<hr />
+				<form name="registerForm" class="flexContainerV" ng-submit="register()" ng-controller="registerController">
+					<input name="email" type="text" placeholder="email" ng-model="email" ng-blur="validateRegister('email')">
+					<p ng-bind="emailRegisterError"></p>
+
+					<input name="username" type="text" placeholder="username" ng-model="username" ng-blur="validateRegister('username')"/>
+					<p ng-bind="usernameRegisterError"></p>
+
+					<input name="password" type="password" placeholder="password" ng-model="password" ng-blur="validateRegister('password')"/>
+					<p ng-bind="passwordRegisterError"></p>
+
+					<input type="submit" value="Register" class="button"/>
+
 				</form>
 			</div>
 			<div id="rooms" ng-controller="roomsController" ng-show="isConnected()">
@@ -90,40 +113,5 @@
 	</footer>
 </div>
 
-
-<!--	<script type="text/ng-template" id="home">
-		<div id="chatCon" class="tab selected" >
-			<form ng-submit="connect()" class="flexContainerH">
-				<input type="text" ng-model="username"/>
-				<input type="text" ng-model="password"/>
-				<input type="submit" value="Connect" class="button"/>
-			</form>
-		</div>
-	</script>
-
-	<script type="text/ng-template" id="apps">
-		<div id="appsCon" class="tab">
-			apps
-		</div>
-	</script>-->
-
-
 </body>
 </html>
-
-
-<!--
-<body ng-controller="chatController">
-<h1>Welcome to BroGaming</h1>
-<form ng-submit="sendMessage()">
-	Message: <input type="text" name="message" ng-model="message" /><br>
-	<input type="submit" value="Send" />
-</form>
-<form ng-submit="connect()">
-	<input type="submit" value="Connect" />
-</form>
-<p ng-bind="login"></p>
-<p ng-bind="error"></p>
-<textarea ng-model="messageLog"></textarea>
-</body>
-</html>-->
