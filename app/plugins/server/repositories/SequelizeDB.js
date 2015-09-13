@@ -143,12 +143,18 @@ function SequelizeDB(Sequelize){
         });
     };
 
-    this.insertRoom = function(room){
-        return rooms.build({id: room.id, name: room.name, is_deletable: room.deletable, host: room.host}).save();
+    this.insertRoom = function(room, t){
+        var transaction = {};
+        t !== undefined ? transaction.transaction = t : null;
+
+        return rooms.build({id: room.id, name: room.name, is_deletable: room.deletable, host: room.host}).save(transaction);
     };
 
-    this.insertUser = function(user){
-        return users.build({username: user.username, password: user.password, is_logged: user.isLogged, is_active: user.isActive}).save();
+    this.insertUser = function(user, t){
+        var transaction = {};
+        t !== undefined ? transaction.transaction = t : null;
+
+        return users.build({username: user.username, password: user.password, is_logged: user.isLogged, is_active: user.isActive}).save(transaction);
     };
 
     var roomId = 0;
@@ -273,14 +279,17 @@ function SequelizeDB(Sequelize){
             })
     }
 
-    this.setActivationLinkForUsername = function(username, link){
-        return users.update({
-            activation_link: link
-        }, {
+    this.setActivationLinkForUsername = function(username, link, t){
+        var options = {
             where: {
                 username: username
             }
-        });
+        };
+        t !== undefined ? options.transaction = t : null;
+
+        return users.update({
+            activation_link: link
+        }, options);
     }
 
     this.getUserByActivationLink = function(link){

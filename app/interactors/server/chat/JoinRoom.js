@@ -1,17 +1,20 @@
-function JoinRoom(usernameJoinsRoomid, getRoomWithUsersById, send){
+function JoinRoom(usernameJoinsRoomid, getRoomWithUsersById, send, transaction){
     var that = this;
 
-    that.do = function(username, roomId){
+    that.do = function(username, roomId, t){
         roomId = roomId === undefined ? 0 : roomId;
 
-        return usernameJoinsRoomid(username, roomId)
-            .then(function(){
-                return getRoomWithUsersById(roomId);
-            })
-            .catch(function(err){
-                console.log(err);
-                throw 'could not join room';
-            })
+        return transaction(function(_t){
+            var transaction = t !== undefined ? t : _t;
+            return usernameJoinsRoomid(username, roomId, transaction)
+                .then(function(){
+                    return getRoomWithUsersById(roomId, transaction);
+                })
+                .catch(function(err){
+                    throw 'could not join room';
+                })
+        })
+
             .then(function(room){
                 var usersNicks = [];
 
@@ -21,18 +24,17 @@ function JoinRoom(usernameJoinsRoomid, getRoomWithUsersById, send){
                 }
 
                 var data = {
-                    id : roomId,
-                    name : room.name,
-                    usernames : usersNicks,
+                    id: roomId,
+                    name: room.name,
+                    usernames: usersNicks,
                     host: room.host.username
                 };
 
                 for(var i = 0; i < users.length; ++i){
                     if(users[i].username !== username){
-                        send(users[i].username, 'someoneJoinedRoom', {roomId : room.id, username : username});
+                        send(users[i].username, 'someoneJoinedRoom', {roomId: room.id, username: username});
                     }
                 }
-
 
                 return data;
             })

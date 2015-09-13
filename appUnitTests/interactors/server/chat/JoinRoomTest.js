@@ -23,6 +23,10 @@ describe('JoinRoom', function(){
 
         };
 
+        this.transaction = function(func){
+            return func('t');
+        }
+
 
 
         spyOn(this, 'usernameJoinsRoomid').and.callThrough();
@@ -32,27 +36,10 @@ describe('JoinRoom', function(){
 
     });
 
-    xit('calls db functions within the same transaction', function(done){
-        var that = this;
-
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
-
-        this.joinRoom.do('username', 2)
-            .then(function(){
-                expect(that.transaction).toHaveBeenCalled();
-                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 2, that.transactionObj);
-                expect(that.getRoomWithUsersById).toHaveBeenCalledWith(2, that.transactionObj);
-                done();
-            })
-            .catch(function(err){
-                done.fail(err);
-            });
-    });
-
     it('sends error when joinning fails', function(done){
         var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomidReject, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomidReject, this.getRoomWithUsersById, this.send, this.transaction);
 
         this.joinRoom.do('username')
             .then(function(){
@@ -69,11 +56,11 @@ describe('JoinRoom', function(){
     it('joins choosen room', function(done){
         var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send, this.transaction);
 
         this.joinRoom.do('username', 2)
             .then(function(){
-                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 2);
+                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 2, 't');
                 done();
             })
             .catch(function(err){
@@ -85,11 +72,11 @@ describe('JoinRoom', function(){
     it('joins room 0 when roomId is undefined', function(done){
         var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send, this.transaction);
 
         this.joinRoom.do('username')
             .then(function(){
-                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
+                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0, 't');
                 done();
             })
             .catch(function(err){
@@ -100,11 +87,11 @@ describe('JoinRoom', function(){
     it('gets users from joined room', function(done){
         var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send, this.transaction);
 
         this.joinRoom.do('username', 2)
             .then(function(){
-                expect(that.getRoomWithUsersById).toHaveBeenCalledWith(2);
+                expect(that.getRoomWithUsersById).toHaveBeenCalledWith(2, 't');
                 done();
             })
             .catch(function(err){
@@ -115,7 +102,7 @@ describe('JoinRoom', function(){
     it('returns usernames from joined room', function(done){
         var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send, this.transaction);
 
         this.joinRoom.do('username', 2)
             .then(function(data){
@@ -136,7 +123,7 @@ describe('JoinRoom', function(){
     it('broadcasts join to OTHER users in room', function(done){
     	var that = this;
 
-        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send);
+        this.joinRoom = new JoinRoom(this.usernameJoinsRoomid, this.getRoomWithUsersById, this.send, this.transaction);
 
     	this.joinRoom.do('username', 2)
                 .then(function(){

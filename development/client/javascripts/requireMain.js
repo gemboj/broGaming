@@ -159,10 +159,10 @@ require([
 
     }]);
 
-    app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', function($scope, roomsService, chatStaticData, appLoader){
+    app.controller('roomsController', ['$scope', 'roomsService', 'chatStaticData', 'appLoader', 'messageLogService', function($scope, roomsService, chatStaticData, appLoader, messageLogService){
         var roomsController = new controllers.RoomsController($scope, roomsService, chatStaticData);
 
-        var createRoom = new chatInteractors.CreateRoom(chatSocket.send, roomsController.newRoom);
+        var createRoom = new chatInteractors.CreateRoom(chatSocket.send, roomsController.newRoom, messageLogService.showError);
         var leaveRoom = new chatInteractors.LeaveRoom(chatSocket.send, roomsController.removeRoomById);
         var receiveRoomInvite = new chatInteractors.ReceiveRoomInvite(roomsController.addInvite, chatSocket.send, roomsController.newRoom, appLoader.createApp);
         var sendRoomInvite = new chatInteractors.SendRoomInvite(chatSocket.send);

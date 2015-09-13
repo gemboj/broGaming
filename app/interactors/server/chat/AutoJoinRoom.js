@@ -6,5 +6,8 @@ function AutoJoinRoom(usernameJoinsRoomid, send){
             .then(function(roomData){
                 send(username, 'joinedRoom', roomData)
             })
+            .catch(function(err){
+
+            })
     }
 }

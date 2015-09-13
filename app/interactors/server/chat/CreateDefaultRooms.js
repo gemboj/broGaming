@@ -23,9 +23,10 @@ function CreateDefaultRooms(insertRoom, getNextRoomid){
         for(var i = 0; i < roomNames.length; ++i){
             var _i = i;
             arr.push(
-                getNextRoomid().then(function(id){
-                    insertRoom(new Room(id, roomNames[_i], false));
-                })
+                getNextRoomid()
+                    .then(function(id){
+                        insertRoom(new Room(id, roomNames[_i], false));
+                    })
             );
         }
 

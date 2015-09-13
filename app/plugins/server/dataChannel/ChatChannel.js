@@ -75,8 +75,8 @@ function ChatChannel(dataChannel){
                         cb(data);
                     }
                 })
-                .catch(function(){
-                    //cb(null, 'no cb data');
+                .catch(function(err){
+                    cb(null, err);
                 })
         }
     }

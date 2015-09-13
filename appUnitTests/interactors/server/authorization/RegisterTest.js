@@ -37,16 +37,21 @@ describe('Register ', function(){
         this.generaeRandomBytes = function(){
             return Promise.resolve('123253436');
         }
+
+        this.transaction = function(func){
+            //return Promise.resolve('transaction');
+            return func('transaction');
+        }
     })
 
     it('resolves with message after successful register', function(done){
         var that = this;
 
-        this.register = new Register(this.hash, this.validateUser, this.addUser, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address');
+        this.register = new Register(this.hash, this.validateUser, this.addUser, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address', this.transaction);
 
         this.register.do('username', 'password', 'email')
             .then(function(message){
-                expect(message).toBe('registered');
+                expect(message).toBe('An activation mail has been sent. Please follow instructions in that email to complete your registration.');
                 done();
             })
             .catch(function(err){
@@ -57,7 +62,7 @@ describe('Register ', function(){
     it('rejects with validation error when validation fails', function(done){
         var that = this;
 
-        this.register = new Register(this.hash, this.validateUserFail, this.addUser, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address');
+        this.register = new Register(this.hash, this.validateUserFail, this.addUser, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address', this.transaction);
 
         this.register.do('username', 'password', 'email')
             .then(function(){
@@ -73,7 +78,7 @@ describe('Register ', function(){
     it('rejects with db error when adding user fails', function(done){
     	var that = this;
 
-        this.register = new Register(this.hash, this.validateUser, this.addUserError, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address');
+        this.register = new Register(this.hash, this.validateUser, this.addUserError, this.sendMail, this.setActivationLink, this.generaeRandomBytes, 'address', this.transaction);
 
     	this.register.do('username', 'password', 'email')
         	.then(function(){
@@ -88,7 +93,7 @@ describe('Register ', function(){
     it('rejects with email error when sending email fails', function(done){
         var that = this;
 
-        this.register = new Register(this.hash, this.validateUser, this.addUser, this.sendMailError, this.setActivationLink, this.generaeRandomBytes, 'address');
+        this.register = new Register(this.hash, this.validateUser, this.addUser, this.sendMailError, this.setActivationLink, this.generaeRandomBytes, 'address', this.transaction);
 
         this.register.do('username', 'password', 'email')
             .then(function(){

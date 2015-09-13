@@ -43,6 +43,9 @@ function SocketAdapter(socketio, address){
                     if(error === undefined){
                         resolve(data);
                     }
+                    else{
+                        reject(error);
+                    }
                 })
             })
         }

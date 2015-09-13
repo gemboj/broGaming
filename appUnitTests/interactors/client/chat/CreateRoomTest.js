@@ -10,10 +10,14 @@ describe('CreateRoom', function(){
             return that.room;
         };
 
+        this.showError = function(){
+
+        }
+
         spyOn(this, 'send').and.callThrough();
         spyOn(this, 'addRoom').and.callThrough();
 
-        this.createRoom = new CreateRoom(this.send, this.addRoom)
+        this.createRoom = new CreateRoom(this.send, this.addRoom, this.showError)
     });
 
     it('sends createRoom message', function(){
@@ -39,7 +43,7 @@ describe('CreateRoom', function(){
     xit('wont call callback when it is undefined', function(done){
     	var that = this;
 
-        this.createRoom = new CreateRoom(this.send);
+        this.createRoom = new CreateRoom(this.send, this.addRoom, this.showError);
 
     	this.createRoom.do('roomName')
                 .then(function(){

@@ -2,6 +2,10 @@ describe('CreateRoom', function(){
     beforeEach(function(){
         var that = this;
 
+        this.transaction = function(func){
+            return func('t');
+        };
+
         this.insertRoom = function(room){
             if((room.id == 0) && (room.name == 'roomName') && (room.deletable === true) && (room.host === 'username')){
                 return Promise.resolve();
@@ -28,7 +32,7 @@ describe('CreateRoom', function(){
         spyOn(this, 'getNextRoomId').and.callThrough();
         spyOn(this, 'usernameJoinsRoomid').and.callThrough();
 
-        this.createRoom = new CreateRoom(this.insertRoom, this.getNextRoomId, this.usernameJoinsRoomid);
+        this.createRoom = new CreateRoom(this.insertRoom, this.getNextRoomId, this.usernameJoinsRoomid, this.transaction);
     });
 
     it('gets next room id', function(done){
@@ -62,7 +66,7 @@ describe('CreateRoom', function(){
 
         this.createRoom.do('roomName', 'username')
             .then(function(){
-                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0);
+                expect(that.usernameJoinsRoomid).toHaveBeenCalledWith('username', 0, 't');
                 done();
             })
             .catch(function(err){

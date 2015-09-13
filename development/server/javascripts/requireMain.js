@@ -35,12 +35,12 @@ module.exports = function(server){
             var userLoginFormValidation = new formValidationInteractors.UserLoginForm();
             var userRegistrationFormValidation = new formValidationInteractors.UserRegistrationForm(userLoginFormValidation.do);
 
-            var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send);
+            var joinRoom = new chatInteractors.JoinRoom(sequelizeRepo.usernameJoinsRoomid, sequelizeRepo.getRoomWithUsersById, chatChannel.send, sequelizeRepo.transaction);
             var autoJoinRoom = new chatInteractors.AutoJoinRoom(joinRoom.do, chatChannel.send);
             var leaveRoom = new chatInteractors.LeaveRoom(sequelizeRepo.getRoomWithUsersById, chatChannel.send, sequelizeRepo.removeUsernameFromRoomid, sequelizeRepo.removeRoomById);
             var createDefaultRooms = new chatInteractors.CreateDefaultRooms(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid);
             var deleteTemporaryData = new chatInteractors.DeleteTemporaryData(sequelizeRepo.deleteAllRooms, sequelizeRepo.logoutAllUsers);
-            var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do);
+            var createRoom = new chatInteractors.CreateRoom(sequelizeRepo.insertRoom, sequelizeRepo.getNextRoomid, joinRoom.do, sequelizeRepo.transaction);
             var sendRoomMessage = new chatInteractors.SendRoomMessage(sequelizeRepo.getRoomWithUsersById, chatChannel.send);
             var roomInvite = new chatInteractors.RoomInvite(chatChannel.send, sequelizeRepo.getRoomWithUsersById);
             var privateMessage = new chatInteractors.PrivateMessage(chatChannel.send, sequelizeRepo.getUserByUsername);
@@ -48,7 +48,7 @@ module.exports = function(server){
 
             var login = new authorizationInteractors.Login(sequelizeRepo.getUserByUsername, sequelizeRepo.markAsLoggedUsername, bcryptAdapted.compare);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
-            var register = new authorizationInteractors.Register(bcryptAdapted.hash, userRegistrationValidation.do, sequelizeRepo.insertUser, nodemailerAdapter.send, sequelizeRepo.setActivationLinkForUsername, randomGenerator.generateBytes, global.staticData.address);
+            var register = new authorizationInteractors.Register(bcryptAdapted.hash, userRegistrationValidation.do, sequelizeRepo.insertUser, nodemailerAdapter.send, sequelizeRepo.setActivationLinkForUsername, randomGenerator.generateBytes, global.staticData.address, sequelizeRepo.transaction);
             var activateAccount = new authorizationInteractors.ActivateAccount(sequelizeRepo.getUserByActivationLink, sequelizeRepo.markAsActiveUserByUsername);
 
             var offer = new webrtcInteractors.Offer(webrtcChannel.send);

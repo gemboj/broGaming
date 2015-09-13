@@ -1,4 +1,4 @@
-function CreateRoom(send, cb){
+function CreateRoom(send, cb, showError){
     var that = this;
 
     this.do = function(name){
@@ -7,7 +7,7 @@ function CreateRoom(send, cb){
                 return cb(roomData.id, roomData.name, roomData.usernames, roomData.host)
             })
             .catch(function(err){
-                throw err
+                showError(err);
             })
     }
 }
