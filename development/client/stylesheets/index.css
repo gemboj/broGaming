@@ -107,6 +107,13 @@ html body div aside #rooms #options ul li p {
 html body div aside #rooms #invites {
   flex: 1 0 auto;
 }
+html body div aside #rooms #invites div {
+  background-color: #505050;
+  padding: 5px;
+}
+html body div aside #rooms #invites div input {
+  margin-top: 2px;
+}
 html body footer {
   flex: 0 0 50px !important;
   background: #303030;

@@ -94,10 +94,10 @@
 					</ul>
 				</div>
 				<div id="invites">
-					<div ng-repeat="invite in invites">
+					<div ng-repeat="invite in invites" class="flexContainerV">
 						<p>{{invite.info}}</p>
-						<input class="button" ng-click="invite.successCb()" value="yes"/>
-						<input class="button" ng-click="invite.failCb()" value="no"/>
+						<input class="button" ng-click="invite.successCb()" value="Accept"/>
+						<input class="button" ng-click="invite.failCb()" value="Reject"/>
 					</div>
 				</div>
 			</div>
