@@ -34,7 +34,7 @@ function WebRTCChannel(dataChannel){
 
     events['error'] = that.createEvent('error', function(action, data){
         action(function(listener){
-            listener(data.receiver, data._sendersUsername, data.error);
+            listener(data.receiver, data.id, data.hostId, data.error);
         });
     });
 

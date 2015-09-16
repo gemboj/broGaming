@@ -17,8 +17,25 @@ function TabsService(scope, controllerProvider, webRTCAdapter, messageLogService
         var controllerContent = '<div ng-controller="' + controllerName + '">' + htmlContent + '</div>';
 
         controllerProvider.register(controllerName, function($scope, $element){
-            var webRTCChannel = webRTCAdapter.createDataChannelClient(id);
-            app.client({id: id, $scope: $scope, $div: $element, webRTCChannel: webRTCChannel, showInfo: messageLogService.showInfo, showError: messageLogService.showError});
+            var webRTCChannel = null;
+            try{
+                webRTCChannel = webRTCAdapter.createDataChannelClient(id);
+            }
+            catch(e){
+                messageLogService.showError(e.error);
+                webRTCChannel = e.webRTCChannel;
+            }
+            finally{
+                app.client({
+                    id: id,
+                    $scope: $scope,
+                    $div: $element,
+                    webRTCChannel: webRTCChannel,
+                    showInfo: messageLogService.showInfo,
+                    showError: messageLogService.showError
+                });
+            }
+
         });
 
         var startServer = function(){

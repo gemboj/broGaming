@@ -30,7 +30,7 @@ function WebRTCSocket(dataChannel){
 
     that.events.error = that.createEvent('error', function(action, data){
         action(function(listener){
-            listener(data.sender, data.error);
+            listener(data.id, data.hostId, data.error);
         });
     });
 

@@ -4,21 +4,21 @@ function WebRTCAdapter(send, showError){
     var connectionsClient = {};
     var connectionsHost = {};
 
-    that.constraints = {'optional' : [{'DtlsSrtpKeyAgreement' : true}]};
+    that.constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
     if(navigator.mozGetUserMedia){
-        that.detectedBrowser = "firefox";
+        that.detectedBrowser = null;
         that.peerConnection = mozRTCPeerConnection;
         that.sessionDescription = mozRTCSessionDescription;
         that.iceCandidate = mozRTCIceCandidate;
-        that.config = {'iceServers' : [{'url' : 'stun:23.21.150.121'}]};
+        that.config = {'iceServers': [{'url': 'stun:23.21.150.121'}]};
     }
     else if(navigator.webkitGetUserMedia){
         that.detectedBrowser = "chrome";
         that.peerConnection = webkitRTCPeerConnection;
         that.sessionDescription = RTCSessionDescription;
         that.iceCandidate = RTCIceCandidate;
-        that.config = {'iceServers' : [{'url' : 'stun:stun.l.google.com:19302'}]};
+        that.config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
     }
     that.sdpConstraints = {};
 
@@ -36,15 +36,15 @@ function WebRTCAdapter(send, showError){
             peerConnection.onicecandidate = function(event){
                 if(event.candidate){
                     var iceCandidate = {
-                        label : event.candidate.sdpMLineIndex,
-                        id : event.candidate.sdpMid,
-                        candidate : event.candidate.candidate
+                        label: event.candidate.sdpMLineIndex,
+                        id: event.candidate.sdpMid,
+                        candidate: event.candidate.candidate
                     };
-                    send('iceCandidate', {iceCandidate : iceCandidate, id : id, receiver : receiver});
+                    send('iceCandidate', {iceCandidate: iceCandidate, id: id, receiver: receiver});
                 }
             };
 
-            var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable : false});
+            var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable: false});
             hookDataChannelEvents(dataChannel, webRTCChannel);
 
             //hookDataChannelEvents(dataChannel, webRTCChannel);
@@ -61,6 +61,7 @@ function WebRTCAdapter(send, showError){
             var clientInfo = {};
             clientInfo.peerConnection = peerConnection;
             clientInfo.dataChannel = dataChannel;
+            clientInfo.webRTCChannel = webRTCChannel;
 
             var internalId = connectionsHost[id].internalId++;
             connectionsHost[id].clients[internalId] = clientInfo;
@@ -90,7 +91,8 @@ function WebRTCAdapter(send, showError){
             return clientInfo.webRTCChannel;
         }
         else{
-            showError("Cannot create peer connection");
+            connectionsClient[id] = {error: 'Cannot create peer connection'};
+            throw {error: "Cannot create peer connection", webRTCChannel: new WebRTCChannel()};
         }
     }
 
@@ -119,24 +121,29 @@ function WebRTCAdapter(send, showError){
     function createOffer(peerConnection, receiver, id, hostId){
         peerConnection.createOffer(function(sessionDescription){
             peerConnection.setLocalDescription(new that.sessionDescription(sessionDescription));
-            send('offer', {receiver : receiver, description : sessionDescription, id : id, hostId : hostId});
+            send('offer', {receiver: receiver, description: sessionDescription, id: id, hostId: hostId});
         }, function(error){
-            error(error)
+            showError(error)
         }, that.sdpConstraints);
     }
 
     that.onOffer = function(id, hostId, sender, sessionDescription){
+        if(connectionsClient[id].error){
+            send('error', {id: id, hostId: hostId, receiver: sender});
+            return;
+        }
+
         var peerConnection = connectionsClient[id].peerConnection;
         peerConnection.setRemoteDescription(new that.sessionDescription(sessionDescription));
 
         peerConnection.onicecandidate = function(event){
             if(event.candidate){
                 var iceCandidate = {
-                    label : event.candidate.sdpMLineIndex,
-                    id : event.candidate.sdpMid,
-                    candidate : event.candidate.candidate
+                    label: event.candidate.sdpMLineIndex,
+                    id: event.candidate.sdpMid,
+                    candidate: event.candidate.candidate
                 };
-                send('iceCandidate', {iceCandidate : iceCandidate, id : id, hostId: hostId, receiver : sender});
+                send('iceCandidate', {iceCandidate: iceCandidate, id: id, hostId: hostId, receiver: sender});
             }
         }
 
@@ -146,9 +153,9 @@ function WebRTCAdapter(send, showError){
     function createAnswer(peerConnection, host, id, hostId){
         peerConnection.createAnswer(function(sessionDescription){
             peerConnection.setLocalDescription(new that.sessionDescription(sessionDescription));
-            send('answer', {receiver : host, description : sessionDescription, id : id, hostId : hostId});
+            send('answer', {receiver: host, description: sessionDescription, id: id, hostId: hostId});
         }, function(error){
-            error(error)
+            showError(error)
         }, that.sdpConstraints);
     }
 
@@ -158,16 +165,24 @@ function WebRTCAdapter(send, showError){
     }
 
     that.onIceCandidate = function(id, hostId, iceCandidate){
+
         var peerConnection = null;
 
         if(hostId){
             peerConnection = connectionsHost[id].clients[hostId].peerConnection;
         }
-        else {
+        else{
+            if(connectionsClient[id].error){
+                return;
+            }
             peerConnection = connectionsClient[id].peerConnection;
         }
 
-        var candidate = new that.iceCandidate({sdpMLineIndex : iceCandidate.label, candidate : iceCandidate.candidate});
+        var candidate = new that.iceCandidate({sdpMLineIndex: iceCandidate.label, candidate: iceCandidate.candidate});
         peerConnection.addIceCandidate(candidate);
+    }
+
+    that.onError = function(id, hostId, error){//errors are send only by client to host
+        connectionsHost[id].clients[hostId].webRTCChannel.error(error);
     }
 }

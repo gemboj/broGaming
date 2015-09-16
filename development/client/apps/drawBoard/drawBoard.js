@@ -3,6 +3,7 @@ define([], function(){
 
     o.client = function(input){//id, $div, $scope, webRTCChannel, showInfo, showError
         var scope = input.$scope;
+        scope.color = '#FF0000';
 
         var $canvas = input.$div.find('canvas'),
             canvas = $canvas[0],
@@ -38,14 +39,14 @@ define([], function(){
         var mouseMoveOffline = function(event){
             if(isMouseDown){
                 var coord = getXY(event);
-                drawPoint(coord.x, coord.y, 2, '#FF0000');
+                drawPoint(coord.x, coord.y, 2, scope.color);
             }
         };
 
         var mouseMoveOnline = function(event){
             if(isMouseDown){
                 var coord = getXY(event);
-                webRTCChannel.send({x: coord.x, y: coord.y, radius: 2, color: '#FF0000'});
+                webRTCChannel.send({x: coord.x, y: coord.y, radius: 2, color: scope.color});
             }
         };
 
@@ -102,6 +103,11 @@ define([], function(){
                 delete channels[username];
                 input.showInfo(username + ' disconnected');
             });
+
+            channel.registerOnError(function(){
+                delete channels[username];
+                input.showInfo('could not connect with ' + username);
+            })
         }
     }
 

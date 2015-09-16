@@ -54,6 +54,7 @@ module.exports = function(server){
             var offer = new webrtcInteractors.Offer(webrtcChannel.send);
             var answer = new webrtcInteractors.Answer(webrtcChannel.send);
             var iceCandidate = new webrtcInteractors.IceCandidate(webrtcChannel.send);
+            var webrtcError = new webrtcInteractors.Error(webrtcChannel.send);
 
             socketDataChannel.registerOnIncomingConnection(login.do);
             socketDataChannel.registerOnDisconnected(logout.do);
@@ -69,6 +70,7 @@ module.exports = function(server){
             webrtcChannel.registerOnOffer(offer.do);
             webrtcChannel.registerOnAnswer(answer.do);
             webrtcChannel.registerOnIceCandidate(iceCandidate.do);
+            webrtcChannel.registerOnError(webrtcError.do);
 
             global.routing.user = register.do;
             global.routing.activateAccount = activateAccount.do;

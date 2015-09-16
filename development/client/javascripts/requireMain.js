@@ -59,6 +59,7 @@ require([
     webRTCSocket.registerOnOffer(webRTCAdapter.onOffer);
     webRTCSocket.registerOnAnswer(webRTCAdapter.onAnswer);
     webRTCSocket.registerOnIceCandidate(webRTCAdapter.onIceCandidate);
+    webRTCSocket.registerOnError(webRTCAdapter.onError);
 
     var controllerProvider = null;
     var app = angular.module('broGaming', []).config(function($sceProvider, $controllerProvider){

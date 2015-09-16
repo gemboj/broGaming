@@ -19,6 +19,12 @@ function WebRTCChannel(){
             listener(data);
         });
     });
+    
+    that.error = that.createEvent('error', function(action, data){
+        action(function(listener){
+            listener(data);
+        });
+    });
 
     this.send = null;
 }
