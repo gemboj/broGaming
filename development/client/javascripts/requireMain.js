@@ -8,7 +8,8 @@ require.config({
         dataChannels : 'plugins/dataChannels',
         chatInteractors : 'interactors/chat',
         AJAX: 'plugins/AJAX',
-        validationInteractors: 'interactors/formValidation'
+        validationInteractors: 'interactors/formValidation',
+        threeJs: 'vendors/three'
     },
     shim : {
         angular : {
@@ -16,6 +17,9 @@ require.config({
         },
         jquery : {
             exports : 'jquery-2.1.4.min'
+        },
+        threeJs : {
+            exports : 'THREE'
         },
         io : {
             exports : 'io'
