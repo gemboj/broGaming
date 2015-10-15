@@ -104,13 +104,24 @@ define(['threeJs'], function(THREE){
         });
 
         var players = null,
-            playerNo = null;
+            playerNo = null,
+            noOfPlayers = null;
         webRTCChannel.registerOnMessage(function(data){
             if(data.start !== true && players){
-
+                for(var i = 0; i < noOfPlayers; ++i){
+                    players[i].position.x = data.scene[i].position.x;
+                    players[i].position.y = data.scene[i].position.y;
+                    players[i].position.z = data.scene[i].position.z;
+                }
             }
             else{
                 players = prepareClientScene(canvas, data.noOfPlayers);
+                noOfPlayers = data.noOfPlayers;
+                playerNo = data.playerNo;
+
+                setInterval(function(){
+                    webRTCChannel.send({delta: delta, playerNo: playerNo});
+                }, 100);
             }
         });
     };
@@ -132,13 +143,16 @@ define(['threeJs'], function(THREE){
                 }
             }
         }
+
+        return scene;
     }
 
-    function startGame(channels){
-        var scene = prepareServerScene(channels.length);
+    function startGame(channels, noOfPlayers){
+        var scene = prepareServerScene(noOfPlayers);
 
+        var playerNo = 0;
         for(var channel in channels){
-            channel.registerOnMessage(function(data){
+            channels[channel].registerOnMessage(function(data){
                 var playerNo = data.playerNo;
 
                 scene[playerNo].delta.x = data.delta.x;
@@ -146,7 +160,8 @@ define(['threeJs'], function(THREE){
                 scene[playerNo].delta.z = data.delta.z;
             });
 
-            channels[channel].send({start: true, noOfPlayers: channels.length, playerNo: channel});
+            channels[channel].send({start: true, noOfPlayers: noOfPlayers, playerNo: playerNo});
+            playerNo++;
         }
 
         setInterval(function(){
@@ -163,7 +178,9 @@ define(['threeJs'], function(THREE){
     }
 
     o.server = function(input){//createDataChannel, usernames, id
-        var channels = {};
+        var channels = {},
+            channelsLength = input.usernames.length;
+        var connected = 0;
 
         for(var i = 0; i < input.usernames.length; ++i){
             var _i = i;
@@ -174,14 +191,14 @@ define(['threeJs'], function(THREE){
 
         function registerChannel(channel, username){
             channels[username] = channel;
-            var connected = 0;
+
 
             channel.registerOnConnect(function(){
                 console.log('server connected with ' + username);
 
                 ++connected;
-                if(connected === channels.length){
-                    startGame(channels);
+                if(connected === channelsLength){
+                    startGame(channels, channelsLength);
                 }
             });
 
