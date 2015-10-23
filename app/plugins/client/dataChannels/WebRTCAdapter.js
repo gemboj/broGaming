@@ -42,6 +42,9 @@ function WebRTCAdapter(send, showError){
                     };
                     send('iceCandidate', {iceCandidate: iceCandidate, id: id, receiver: receiver});
                 }
+                else{
+                    showError('onincecandidate error');
+                }
             };
 
             var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable: false});
