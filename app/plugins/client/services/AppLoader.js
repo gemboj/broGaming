@@ -12,7 +12,7 @@ function AppLoader(scope, ajax, require, createRoom, newTab){
                 return that.load(name);
             })
             .then(function(data){
-                newTab(data.name, data.html, data.app, roomData);
+                newTab(data.name, data.html, data.client, app.server, roomData);
             })
             .catch(function(err){
                 //that.applyChanges();
@@ -31,10 +31,12 @@ function AppLoader(scope, ajax, require, createRoom, newTab){
 
     this.load = function(name){
         return new Promise(function(resolve, reject){
-            ajax({url: 'apps/' + name + '/' + name + '.html'})
+            ajax({url: 'apps/' + name + '/index.html'})
                 .done(function(data){
-                    require(['apps/' + name + '/' + name + '.js'], function(app){
-                        resolve({name: name, html: data, app: app});
+                    require(['apps/' + name + '/client.js'], function(client){
+                        require(['apps/' + name + '/server.js'], function(server){
+                            resolve({name: name, html: data, client: client, server: server});
+                        })
                     })
                 })
         });
