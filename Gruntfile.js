@@ -2,10 +2,10 @@ var grunt = require('grunt');
 
 grunt.registerTask('default', 'default task description', ['concatAppRequireJs', 'concatApps']);
 
-grunt.registerTask('concatAppRequireJs', 'merges javascript app files into one requireJs library', function(){
-    var resourcePath = './app/',
+grunt.registerTask('concatAppRequireJs', 'merges javascript src files into one requireJs library', function(){
+    var resourcePath = './src/',
         outputPath = './development/',
-        dependencyPath = './dependencies/app/';
+        dependencyPath = './dependencies/src/';
 
     var output = {};
     grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {

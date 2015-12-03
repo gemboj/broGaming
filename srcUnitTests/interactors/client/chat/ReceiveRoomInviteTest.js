@@ -67,7 +67,7 @@ describe('ReceiveRoomInvite', function(){
                 })
     });
 
-    it('creates app when join room data contains app name', function(done){
+    it('creates src when join room data contains src name', function(done){
     	var that = this;
 
     	this.receiveRoomInvite.do('sender', 'roomName', 0, 'appName')
