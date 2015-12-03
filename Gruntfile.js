@@ -1,11 +1,11 @@
 var grunt = require('grunt');
 
-grunt.registerTask('default', 'default task description', ['concatAppRequireJs']);
+grunt.registerTask('default', 'default task description', ['concatAppRequireJs', 'concatApps']);
 
 grunt.registerTask('concatAppRequireJs', 'merges javascript app files into one requireJs library', function(){
     var resourcePath = './app/',
         outputPath = './development/',
-        dependencyPath = './dependencies/';
+        dependencyPath = './dependencies/app/';
 
     var output = {};
     grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
@@ -67,6 +67,69 @@ grunt.registerTask('concatAppRequireJs', 'merges javascript app files into one r
     }
 });
 
+grunt.registerTask('concatApps', 'merges javascript apps files', function(){
+    var resourcePath = './apps/',
+        outputPath = './development/',
+        dependencyPath = './dependencies/apps/';
+
+    var output = {};
+    grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
+        var fileContent = grunt.file.read(abspath),
+            libName = /(\w+)\/$/.exec(subdir + '/')[1];
+
+
+
+
+        var platforms = ['client/'];
+
+        for(var i = 0; i < platforms.length; ++i) {
+            var platform = platforms[i],
+                pathDir = subdir.replace(platform, '');
+
+            if(filename.indexOf('.js') === -1){
+                grunt.file.write(outputPath + platform + 'apps/' + pathDir + '/' + filename, fileContent);
+
+                return;
+            }
+
+            var className = /function\s+(\w+)\(/.exec(fileContent)[1];
+            var newFileContent = fileContent.replace(/(function)\s+(\w+)\(/, "$2 = $1(");
+            newFileContent = newFileContent.replace(new RegExp('^' + className, 'gm'), libName + "." + className);
+
+            var index = subdir + platform;
+            output[index] = (output[index] === undefined ? {} : output[index]);
+
+            output[index].path = outputPath + platform + 'apps/' + pathDir + '.js';
+            output[index].dependenciesPath = dependencyPath + subdir + '.json';
+            output[index].content = (output[index].content === undefined ? '' : output[index].content) + '\n' + newFileContent;
+            output[index].libName = libName;
+        }
+    });
+
+    for(subDir in output){
+        var wrappedContent = '';
+
+        var dependenciesJSON = null;
+        try {
+            dependenciesJSON = grunt.file.readJSON(output[subDir].dependenciesPath);
+        }
+        catch(e){
+
+        }
+
+        var resolvedDependencies = resolveDependencies(dependenciesJSON, output[subDir]);
+
+        if(output[subDir].path.indexOf('client') > -1){
+            wrappedContent = wrapRequireJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
+        }
+        else{
+            wrappedContent = wrapNodeJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
+        }
+
+        grunt.file.write(output[subDir].path, wrappedContent);
+    }
+});
+
 grunt.registerTask('copyResources', 'copies all resources to main directory', function(){
     var resourcePublicPath = './development/client',
         resourceServerPath = './development/server',
@@ -92,7 +155,9 @@ function resolveDependencies(dependenciesJSON, output){
     if(dependenciesJSON !== null){
         var dependencies = dependenciesJSON.dependencies;
         for(var i = 0; i < dependencies.length; ++i){
-            output.content = output.content.replace(new RegExp('([\\s\\(])' + dependencies[i].class, 'g'), '$1' + dependencies[i].module + '.' + dependencies[i].class);
+            if(dependencies[i].class){
+                output.content = output.content.replace(new RegExp('([\\s\\(])' + dependencies[i].class, 'g'), '$1' + dependencies[i].module + '.' + dependencies[i].class);
+            }
 
             if(dependencies[i].path != '.'){
                 resolvedDependencies.paths.push('"' + dependencies[i].path + '"');

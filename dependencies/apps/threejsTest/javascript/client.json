@@ -1,0 +1,9 @@
+{
+  "dependencies" : [
+    {
+      "path" : "threeJs",
+      "module" : "THREE",
+      "class" : ""
+    }
+  ]
+}

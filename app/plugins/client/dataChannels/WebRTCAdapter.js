@@ -105,8 +105,7 @@ function WebRTCAdapter(send, showError){
 
     function hookDataChannelEvents(dataChannel, webRTCChannel){
         dataChannel.onmessage = function(event){
-            var data = JSON.parse(event.data);
-            webRTCChannel.message(data);
+            webRTCChannel.message(event.data);
         };
         dataChannel.onopen = function(event){
             webRTCChannel.connect(event.data);
@@ -115,10 +114,7 @@ function WebRTCAdapter(send, showError){
             webRTCChannel.disconnect(event.data);
         };
 
-        webRTCChannel.send = function(data){
-            var string = JSON.stringify(data);
-            dataChannel.send(string);
-        }
+        webRTCChannel.createSendFunction(dataChannel.send.bind(dataChannel));
     }
 
     function createOffer(peerConnection, receiver, id, hostId){

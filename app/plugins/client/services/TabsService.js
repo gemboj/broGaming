@@ -26,7 +26,7 @@ function TabsService(scope, controllerProvider, webRTCAdapter, messageLogService
                 webRTCChannel = e.webRTCChannel;
             }
             finally{
-                client({
+                client.main({
                     id: id,
                     $scope: $scope,
                     $div: $element,
@@ -43,7 +43,7 @@ function TabsService(scope, controllerProvider, webRTCAdapter, messageLogService
             for(var i = 0; i < room.users.length; ++i){
                 usernames.push(room.users[i].username);
             }
-            server({usernames: usernames, createDataChannel: webRTCAdapter.createDataChannelServer, id: id, showInfo: messageLogService.showInfo, showError: messageLogService.showError});
+            server.main({usernames: usernames, createDataChannel: webRTCAdapter.createDataChannelServer, id: id, showInfo: messageLogService.showInfo, showError: messageLogService.showError});
         };
 
         var tab = new that.Tab(name, id, controllerContent, room, startServer);

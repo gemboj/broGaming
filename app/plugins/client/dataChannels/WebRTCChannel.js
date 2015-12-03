@@ -14,8 +14,9 @@ function WebRTCChannel(){
         });
     });
 
-    that.message = that.createEvent('message', function(action, data){
+    that.message = that.createEvent('message', function(action, eventData){
         action(function(listener){
+            var data = JSON.parse(eventData);
             listener(data);
         });
     });
@@ -26,5 +27,14 @@ function WebRTCChannel(){
         });
     });
 
-    this.send = null;
+    that.createSendFunction = function(send){
+        that.send = function(data){
+            var string = JSON.stringify(data);
+            send(string);
+        };
+
+        delete that.createSendFunction;
+    };
+
+    that.send = null;
 }
