@@ -32,8 +32,6 @@ function WebRTCChannel(){
             var string = JSON.stringify(data);
             send(string);
         };
-
-        delete that.createSendFunction;
     };
 
     that.send = null;

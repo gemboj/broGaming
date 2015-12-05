@@ -1,6 +1,6 @@
 function main(input){
-    var channels = {},
-        channelsLength = input.usernames.length;
+    var channels = {};
+    var channelsLength = input.usernames.length;
     var connected = 0;
 
     for(var i = 0; i < input.usernames.length; ++i){

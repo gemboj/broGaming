@@ -2,9 +2,9 @@ define([], function (){
 var server = {};
 
 server.main = function(input){
-    var channels = {},
+    var channels = {};
         channelsLength = input.usernames.length;
-    var connected = 0;
+        var connected = 0;
 
     for(var i = 0; i < input.usernames.length; ++i){
         var _i = i;
