@@ -4,3 +4,4 @@ production
 development/**/javascripts
 !/development/**/requireMain.js
 !/development/**/vendors
+development/cliet/apps

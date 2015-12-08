@@ -1,14 +1,9 @@
 {
   "dependencies" : [
     {
-      "path" : "threeJs",
-      "module" : "THREE",
-      "class" : ""
-    },
-    {
       "path" : "/../../../javascripts/entities/apps.js",
       "module" : "apps",
-      "class" : "ClientBase"
+      "class" : "Server"
     }
   ]
 }

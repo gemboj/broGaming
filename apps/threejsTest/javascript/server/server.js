@@ -1,4 +1,4 @@
-function main(input){
+function Server(input){
     var channels = {};
     var channelsLength = input.usernames.length;
     var connected = 0;
@@ -71,7 +71,7 @@ function main(input){
                 scene[playerNo].delta.z = data.delta.z;
             });
 
-            channels[channel].send({start: true, noOfPlayers: noOfPlayers, playerNo: playerNo});
+            channels[channel].send({type: 'start', data: {start: true, noOfPlayers: noOfPlayers, playerNo: playerNo}});
             playerNo++;
         }
 
@@ -83,7 +83,7 @@ function main(input){
             }
 
             for(var channel in channels){
-                channels[channel].send({scene: scene});
+                channels[channel].send({type: 'update', data: scene});
             }
         }, 100);
     }

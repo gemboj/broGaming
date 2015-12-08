@@ -1,4 +1,4 @@
-function main(input){
+function Server(input){
     var channels = {};
 
     for(var i = 0; i < input.usernames.length; ++i){

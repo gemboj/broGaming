@@ -35,7 +35,7 @@ function AppLoader(scope, ajax, require, createRoom, newTab){
                 .done(function(data){
                     require(['apps/' + name + '/javascript/client.js'], function(client){
                         require(['apps/' + name + '/javascript/server.js'], function(server){
-                            resolve({name: name, html: data, client: client, server: server});
+                            resolve({name: name, html: data, client: client.Client, server: server.Server});
                         })
                     })
                 })

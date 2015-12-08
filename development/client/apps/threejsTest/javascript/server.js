@@ -1,10 +1,10 @@
-define([], function (){
+define(["/../../../javascripts/entities/apps.js"], function (apps){
 var server = {};
 
-server.main = function(input){
+server.Server = function(input){
     var channels = {};
-        channelsLength = input.usernames.length;
-        var connected = 0;
+    var channelsLength = input.usernames.length;
+    var connected = 0;
 
     for(var i = 0; i < input.usernames.length; ++i){
         var _i = i;
@@ -74,7 +74,7 @@ server.main = function(input){
                 scene[playerNo].delta.z = data.delta.z;
             });
 
-            channels[channel].send({start: true, noOfPlayers: noOfPlayers, playerNo: playerNo});
+            channels[channel].send({type: 'start', data: {start: true, noOfPlayers: noOfPlayers, playerNo: playerNo}});
             playerNo++;
         }
 
@@ -86,7 +86,7 @@ server.main = function(input){
             }
 
             for(var channel in channels){
-                channels[channel].send({scene: scene});
+                channels[channel].send({type: 'update', data: scene});
             }
         }, 100);
     }

@@ -1,4 +1,4 @@
-function main(input){
+function Client(input){
     var scope = input.$scope;
 
     scope.costam = 0;

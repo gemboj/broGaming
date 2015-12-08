@@ -1,7 +1,7 @@
 define([], function (){
 var client = {};
 
-client.main = function(input){
+client.Client = function(input){
     var scope = input.$scope;
     scope.color = '#FF0000';
 

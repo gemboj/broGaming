@@ -1,4 +1,4 @@
-function Client(dataChannel, showInfo){
+function ClientBase(dataChannel, showInfo){
     var that = this;
 
     this.isStarted = false;
@@ -16,15 +16,17 @@ function Client(dataChannel, showInfo){
 
     });
 
-    dataChannel.registerOnMessage(this.receive);
+    dataChannel.registerOnMessage(function(){
+        that.receive.apply(that, arguments);
+    });
 }
 
-Client.prototype.send = function(type, data){
+ClientBase.prototype.send = function(type, data){
     var packet = {type: type, data: data};
 
     this.dataChannels[username].send(packet);
 };
 
-Client.prototype.receive = function(packet){
+ClientBase.prototype.receive = function(packet){
     this[packet.type](packet.data);
 };

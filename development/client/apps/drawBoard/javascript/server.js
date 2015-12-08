@@ -1,7 +1,7 @@
 define([], function (){
 var server = {};
 
-server.main = function(input){
+server.Server = function(input){
     var channels = {};
 
     for(var i = 0; i < input.usernames.length; ++i){
