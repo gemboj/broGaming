@@ -4,49 +4,55 @@ function Client(input){
     var that = this;
     var scope = input.$scope;
 
-    var $canvas = input.$div.find('canvas');
-    this.canvas = $canvas[0];
+
+    input.$div.ready(function(){
+        var $canvas = input.$div.find('canvas');
+        that.canvas = $canvas[0];
+
+        that.canvas.onkeydown = function(e){
+            if ( e.keyCode == 87 ) {
+                that.delta.y = 1
+            }
+
+            if ( e.keyCode == 83 ) {
+                that.delta.y = -1
+            }
+
+            if ( e.keyCode == 65 ) {
+                that.delta.x = -1;
+            }
+
+            if ( e.keyCode == 68 ) {
+                that.delta.x = 1;
+            }
+        };
+
+        that.canvas.onkeyup = function(e){
+            if ( e.keyCode == 87 ) {
+                that.delta.y = 0;
+            }
+
+            if ( e.keyCode == 83 ) {
+                that.delta.y = 0
+            }
+
+            if ( e.keyCode == 65 ) {
+                that.delta.x = 0;
+            }
+
+            if ( e.keyCode == 68 ) {
+                that.delta.x = 0;
+            }
+        };
+    });
+
 
     this.delta = {
         x: 0,
         y: 0,
         z: 0
     };
-    $canvas.keydown(function(e){
-        if ( e.keyCode == 87 ) {
-            that.delta.y = 1
-        }
 
-        if ( e.keyCode == 83 ) {
-            that.delta.y = -1
-        }
-
-        if ( e.keyCode == 65 ) {
-            that.delta.x = -1;
-        }
-
-        if ( e.keyCode == 68 ) {
-            that.delta.x = 1;
-        }
-    });
-
-    $canvas.keyup(function(e){
-        if ( e.keyCode == 87 ) {
-            that.delta.y = 0;
-        }
-
-        if ( e.keyCode == 83 ) {
-            that.delta.y = 0
-        }
-
-        if ( e.keyCode == 65 ) {
-            that.delta.x = 0;
-        }
-
-        if ( e.keyCode == 68 ) {
-            that.delta.x = 0;
-        }
-    });
 
     this.webRTCChannel = input.webRTCChannel;
     this.webRTCChannel.registerOnConnect(function(){
@@ -73,16 +79,16 @@ Client.prototype.update = function(scene){
 Client.prototype.start = function(data){
     var that = this;
 
-    this.players = this.prepareClientScene(this.canvas, data.noOfPlayers);
+    this.players = this.prepareScene(this.canvas, data.noOfPlayers);
     this.noOfPlayers = data.noOfPlayers;
     this.playerNo = data.playerNo;
 
     setInterval(function(){
-        that.webRTCChannel.send({delta: that.delta, playerNo: that.playerNo});
+        that.send('updatePlayer', {delta: that.delta, playerNo: that.playerNo});
     }, 100);
 };
 
-Client.prototype.prepareClientScene = function(canvas, noOfPlayers){
+Client.prototype.prepareScene = function(canvas, noOfPlayers){
     var scene = new THREE.Scene();
     var players = {};
     for(var i = 0; i < noOfPlayers; ++i){

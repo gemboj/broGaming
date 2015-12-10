@@ -2,6 +2,6 @@
 node_modules
 production
 development/**/javascripts
+development/cliet/apps/**
 !/development/**/requireMain.js
 !/development/**/vendors
-development/cliet/apps

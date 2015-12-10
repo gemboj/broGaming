@@ -1,4 +1,4 @@
-function Server(id, usernames, createDataChannel){
+function ServerBase(id, usernames, createDataChannel){
     var that = this;
 
     this.dataChannels = {};
@@ -9,10 +9,10 @@ function Server(id, usernames, createDataChannel){
 
     for(var i = 0; i < usernames.length; i++){
         var username = usernames[i],
-            channel = createDataChannel(username, id);
+            dataChannel = createDataChannel(username, id);
 
         this.dataChannels[username] = dataChannel;
-        registerDataChannelEvents(channel, username);
+        registerDataChannelEvents(dataChannel, username);
     }
 
     function registerDataChannelEvents(dataChannel, username){
@@ -37,11 +37,13 @@ function Server(id, usernames, createDataChannel){
             that.connectedPlayers--;
         });
 
-        dataChannel.registerOnMessage(this.receive);
+        dataChannel.registerOnMessage(function(){
+            that.receive.apply(that, arguments);
+        });
     }
 }
 
-Server.prototype.broadcast = function(type, data){
+ServerBase.prototype.broadcast = function(type, data){
     var packet = {type: type, data: data};
 
     for(var username in this.dataChannels){
@@ -49,16 +51,16 @@ Server.prototype.broadcast = function(type, data){
     }
 };
 
-Server.prototype.send = function(username, type, data){
+ServerBase.prototype.send = function(username, type, data){
     var packet = {type: type, data: data};
 
     this.dataChannels[username].send(packet);
 };
 
-Server.prototype.receive = function(packet){
+ServerBase.prototype.receive = function(packet){
     this[packet.type](packet.data);
 };
 
-Server.prototype.start = function(){
+ServerBase.prototype.start = function(){
 
 };

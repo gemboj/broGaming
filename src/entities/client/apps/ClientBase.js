@@ -4,6 +4,8 @@ function ClientBase(dataChannel, showInfo){
     this.isStarted = false;
     this.playerNumber = null;
 
+    this.dataChannel = dataChannel;
+
     dataChannel.registerOnConnect(function(){
 
     });
@@ -24,7 +26,7 @@ function ClientBase(dataChannel, showInfo){
 ClientBase.prototype.send = function(type, data){
     var packet = {type: type, data: data};
 
-    this.dataChannels[username].send(packet);
+    this.dataChannel.send(packet);
 };
 
 ClientBase.prototype.receive = function(packet){
