@@ -4,12 +4,22 @@ var client = {};
 client.Client = function(input){
     apps.ClientBase.call(this, input.webRTCChannel);
 
+    this.webRTCChannel = input.webRTCChannel;
+
+    this.hookGuiEvents(input.$div);
+    this.initializeUserInput();
+    this.hookDataChannelEvents(input.showInfo);
+};
+
+client.Client.prototype = Object.create(apps.ClientBase.prototype);
+client.Client.prototype.constructor =
+client.Client;
+
+client.Client.prototype.hookGuiEvents = function($div){
     var that = this;
-    var scope = input.$scope;
 
-
-    input.$div.ready(function(){
-        var $canvas = input.$div.find('canvas');
+    $div.ready(function(){
+        var $canvas = $div.find('canvas');
         that.canvas = $canvas[0];
 
         that.canvas.onkeydown = function(e){
@@ -48,31 +58,24 @@ client.Client = function(input){
             }
         };
     });
+};
 
-
+client.Client.prototype.initializeUserInput = function(){
     this.delta = {
         x: 0,
         y: 0,
         z: 0
     };
-
-
-    this.webRTCChannel = input.webRTCChannel;
-    this.webRTCChannel.registerOnConnect(function(){
-        input.showInfo('connected with server');
-    });
-
-    this.players = null;
-    this.playerNo = null;
-    this.noOfPlayers = null;
 };
 
-client.Client.prototype = Object.create(apps.ClientBase.prototype);
-client.Client.prototype.constructor =
-client.Client;
+client.Client.prototype.hookDataChannelEvents = function(showInfo){
+    this.webRTCChannel.registerOnConnect(function(){
+        showInfo('connected with server');
+    });
+}
 
 client.Client.prototype.update = function(scene){
-    for(var i = 0; i < this.noOfPlayers; ++i){
+    for(var i = 0; i < this.playersCount; ++i){
         this.players[i].position.x = scene[i].position.x;
         this.players[i].position.y = scene[i].position.y;
         this.players[i].position.z = scene[i].position.z;
@@ -82,22 +85,26 @@ client.Client.prototype.update = function(scene){
 client.Client.prototype.start = function(data){
     var that = this;
 
-    this.players = this.prepareScene(this.canvas, data.noOfPlayers);
-    this.noOfPlayers = data.noOfPlayers;
-    this.playerNo = data.playerNo;
+    this.players = this.prepareScene(this.canvas, data.playersCount, data.sceneData);
+    this.playersCount = data.playersCount;
+    this.playerId = data.playerId;
 
     setInterval(function(){
-        that.send('updatePlayer', {delta: that.delta, playerNo: that.playerNo});
+        that.send('updatePlayer', {delta: that.delta, playerId: that.playerId});
     }, 100);
 };
 
-client.Client.prototype.prepareScene = function(canvas, noOfPlayers){
+client.Client.prototype.prepareScene = function(canvas, playersCount, sceneData){
     var scene = new THREE.Scene();
     var players = {};
-    for(var i = 0; i < noOfPlayers; ++i){
+    for(var i = 0; i < playersCount; ++i){
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        var material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+        var material = new THREE.MeshPhongMaterial( { color: "rgb(" + sceneData[i].color.r + "," + sceneData[i].color.g + "," + sceneData[i].color.b + ")" } );
         var cube = new THREE.Mesh( geometry, material );
+        cube.translateX(sceneData[i].position.x);
+        cube.translateY(sceneData[i].position.y);
+        cube.translateZ(sceneData[i].position.z);
+
         scene.add( cube );
         players[i] = cube;
     }
@@ -108,11 +115,6 @@ client.Client.prototype.prepareScene = function(canvas, noOfPlayers){
     var renderer = new THREE.WebGLRenderer({ canvas: canvas });
     renderer.setSize( 200, 200);
 
-    /*var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-     var material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
-     var cube = new THREE.Mesh( geometry, material );
-     scene.add( cube );*/
-
     camera.position.z = 5;
 
     var pointLight = new THREE.PointLight( 0xFFFFFF, 5, 10 );
@@ -122,15 +124,8 @@ client.Client.prototype.prepareScene = function(canvas, noOfPlayers){
     var light = new THREE.AmbientLight( 0x404040 );
     scene.add( light );
 
-    /*var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-     directionalLight.position.set( 0, 1, 1 );
-     scene.add( directionalLight );*/
-
     var render = function () {
         requestAnimationFrame( render );
-
-        /*cube.position.x += 0.02 * horizontal;
-         cube.position.y += 0.02 * vertical;*/
 
         renderer.render(scene, camera);
     };
@@ -138,7 +133,7 @@ client.Client.prototype.prepareScene = function(canvas, noOfPlayers){
     render();
 
     return players;
-}
+};
 
 return client;
 });

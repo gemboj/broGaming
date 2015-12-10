@@ -7,42 +7,6 @@ server.Server = function(input){
     var channels = {};
     var channelsLength = input.usernames.length;
     var connected = 0;
-
-    /*for(var i = 0; i < input.usernames.length; ++i){
-        var _i = i;
-        var channel = input.createDataChannel(input.usernames[_i], input.id);
-
-        registerChannel(channel, input.usernames[i]);
-    }*/
-
-    /*function registerChannel(channel, username){
-        channels[username] = channel;
-
-
-        channel.registerOnConnect(function(){
-            console.log('server connected with ' + username);
-
-            ++connected;
-            if(connected === channelsLength){
-                startGame(channels, channelsLength);
-            }
-        });
-
-
-
-        channel.registerOnDisconnect(function(){
-            delete channels[username];
-            --connected;
-            console.log(username + ' disconnected');
-        });
-
-        channel.registerOnError(function(){
-            delete channels[username];
-            console.log(username + ' error');
-        });
-    }*/
-
-
 };
 
 server.Server.prototype = Object.create(apps.ServerBase.prototype);
@@ -52,18 +16,25 @@ server.Server;
 server.Server.prototype.prepareScene = function(){
     var scene = {};
 
-    for(var i = 0; i < this.numberOfPlayers; ++i){
+    var userAngle = 2*Math.PI/this.playersCount;
+    for(var i = 0; i < this.playersCount; ++i){
+        var position = {z: 0};
+        position.x = Math.cos(userAngle * i);
+        position.y = Math.sin(userAngle * i);
+
+        var color = {};
+        color.r = ~~(Math.random()*255);
+        color.g = ~~(Math.random()*255);
+        color.b = ~~(Math.random()*255);
+
         scene[i] = {
-            position: {
-                x: 0,
-                y: 0,
-                z: 0
-            },
+            position: position,
             delta: {
                 x: 0,
                 y: 0,
                 z: 0
-            }
+            },
+            color: color
         }
     }
 
@@ -75,10 +46,10 @@ server.Server.prototype.start = function(){
 
     this.scene = this.prepareScene();
 
-    var playerNo = 0;
+    var playerId = 0;
     for(var username in that.dataChannels){
-        that.send(username, 'start', {noOfPlayers: that.numberOfPlayers, playerNo: playerNo});
-        playerNo++;
+        that.send(username, 'start', {playersCount: that.playersCount, playerId: playerId, sceneData: this.scene});
+        playerId++;
     }
 
     var updateScene = this.updateScene.bind(this);
@@ -99,12 +70,12 @@ server.Server.prototype.updateScene = function(){
 }
 
 server.Server.prototype.updatePlayer = function(data){
-    var playerNo = data.playerNo,
+    var playerId = data.playerId,
         scene = this.scene;
 
-    scene[playerNo].delta.x = data.delta.x;
-    scene[playerNo].delta.y = data.delta.y;
-    scene[playerNo].delta.z = data.delta.z;
+    scene[playerId].delta.x = data.delta.x;
+    scene[playerId].delta.y = data.delta.y;
+    scene[playerId].delta.z = data.delta.z;
 }
 
 return server;

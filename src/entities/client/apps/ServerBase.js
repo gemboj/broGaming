@@ -3,7 +3,7 @@ function ServerBase(id, usernames, createDataChannel){
 
     this.dataChannels = {};
     this.connectedPlayers = 0;
-    this.numberOfPlayers = usernames.length;
+    this.playersCount = usernames.length;
 
     this.isStarted = false;
 
@@ -18,7 +18,7 @@ function ServerBase(id, usernames, createDataChannel){
     function registerDataChannelEvents(dataChannel, username){
         dataChannel.registerOnConnect(function(){
             that.connectedPlayers++;
-            if(that.connectedPlayers === that.numberOfPlayers){
+            if(that.connectedPlayers === that.playersCount){
                 that.start();
             }
         });

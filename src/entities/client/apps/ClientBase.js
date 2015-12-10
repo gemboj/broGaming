@@ -6,7 +6,7 @@ function ClientBase(dataChannel, showInfo){
 
     this.dataChannel = dataChannel;
 
-    dataChannel.registerOnConnect(function(){
+    /*dataChannel.registerOnConnect(function(){
 
     });
 
@@ -16,7 +16,7 @@ function ClientBase(dataChannel, showInfo){
 
     dataChannel.registerOnError(function(){
 
-    });
+    });*/
 
     dataChannel.registerOnMessage(function(){
         that.receive.apply(that, arguments);
