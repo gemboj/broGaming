@@ -69,13 +69,11 @@ Client.prototype.hookDataChannelEvents = function(showInfo){
     this.webRTCChannel.registerOnConnect(function(){
         showInfo('connected with server');
     });
-}
+};
 
 Client.prototype.update = function(scene){
     for(var i = 0; i < this.playersCount; ++i){
-        this.players[i].position.x = scene[i].position.x;
-        this.players[i].position.y = scene[i].position.y;
-        this.players[i].position.z = scene[i].position.z;
+        this.players[i].update(scene[i].position);
     }
 };
 
@@ -103,7 +101,7 @@ Client.prototype.prepareScene = function(canvas, playersCount, sceneData){
         cube.translateZ(sceneData[i].position.z);
 
         scene.add( cube );
-        players[i] = cube;
+        players[i] = new Player({id: i,object3d: cube});
     }
 
     var camera = new THREE.PerspectiveCamera( 75, 200/200, 0.1, 1000 );

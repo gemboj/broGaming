@@ -72,13 +72,14 @@ client.Client.prototype.hookDataChannelEvents = function(showInfo){
     this.webRTCChannel.registerOnConnect(function(){
         showInfo('connected with server');
     });
-}
+};
 
 client.Client.prototype.update = function(scene){
     for(var i = 0; i < this.playersCount; ++i){
-        this.players[i].position.x = scene[i].position.x;
-        this.players[i].position.y = scene[i].position.y;
-        this.players[i].position.z = scene[i].position.z;
+        //this.players[i].position.x = scene[i].position.x;
+        //this.players[i].position.y = scene[i].position.y;
+        //this.players[i].position.z = scene[i].position.z;
+        this.players[i].update(scene[i].position);
     }
 };
 
@@ -106,7 +107,7 @@ client.Client.prototype.prepareScene = function(canvas, playersCount, sceneData)
         cube.translateZ(sceneData[i].position.z);
 
         scene.add( cube );
-        players[i] = cube;
+        players[i] = new client.Player({id: i,object3d: cube});
     }
 
     var camera = new THREE.PerspectiveCamera( 75, 200/200, 0.1, 1000 );
@@ -134,13 +135,19 @@ client.Client.prototype.prepareScene = function(canvas, playersCount, sceneData)
 
     return players;
 };
-client.Player = function(){
-
+client.Player = function(input){
+    apps.ClientPlayerBase.call(this, input);
 }
 
 client.Player.prototype = Object.create(apps.ClientPlayerBase.prototype);
 client.Player.prototype.constructor =
 client.Player;
+
+client.Player.prototype.update = function(position){
+    this.object3d.position.x = position.x;
+    this.object3d.position.y = position.y;
+    this.object3d.position.z = position.z;
+};
 
 return client;
 });

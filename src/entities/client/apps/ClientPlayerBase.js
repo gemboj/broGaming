@@ -4,5 +4,5 @@ function ClientPlayerBase(input){
 }
 
 ClientPlayerBase.prototype.update = function(){
-    throw "update method not implemented"
+    throw "update method not implemented";
 };
