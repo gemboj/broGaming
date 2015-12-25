@@ -170,9 +170,15 @@ function resolveDependencies(dependenciesJSON, output){
 }
 
 function wrapRequireJsModule(content, libName, resolvedDependencies){
+    /*for(var i = 0; i < resolvedDependencies.paths.length; i++){
+        if((i+1) < resolvedDependencies.paths.length && resolvedDependencies.paths[i+1] === resolvedDependencies.paths[i]){
+            resolvedDependencies.paths.splice(i, 1);
+            resolvedDependencies.args.splice(i, 1);
+        }
+    }*/
+
     var dependenciesDirs = resolvedDependencies.paths.toString();
     var dependenciesArgs = resolvedDependencies.args.toString();
-
 
     return "define([" + dependenciesDirs + "], function (" + dependenciesArgs + "){\n"
         + "var " + libName + " = {};\n"

@@ -62,5 +62,5 @@ ServerBase.prototype.receive = function(packet){
 };
 
 ServerBase.prototype.start = function(){
-
+    throw "start method not implemented";
 };

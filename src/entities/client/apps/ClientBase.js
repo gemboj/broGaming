@@ -32,3 +32,7 @@ ClientBase.prototype.send = function(type, data){
 ClientBase.prototype.receive = function(packet){
     this[packet.type](packet.data);
 };
+
+ClientBase.prototype.start = function(){
+    throw "start method not implemented";
+};

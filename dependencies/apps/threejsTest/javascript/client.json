@@ -9,6 +9,11 @@
       "path" : "/../../../javascripts/entities/apps.js",
       "module" : "apps",
       "class" : "ClientBase"
+    },
+    {
+      "path" : "/../../../javascripts/entities/apps.js",
+      "module" : "apps",
+      "class" : "ClientPlayerBase"
     }
   ]
 }

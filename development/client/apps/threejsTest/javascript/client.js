@@ -1,4 +1,4 @@
-define(["threeJs","/../../../javascripts/entities/apps.js"], function (THREE,apps){
+define(["threeJs","/../../../javascripts/entities/apps.js","/../../../javascripts/entities/apps.js"], function (THREE,apps,apps){
 var client = {};
 
 client.Client = function(input){
@@ -134,6 +134,13 @@ client.Client.prototype.prepareScene = function(canvas, playersCount, sceneData)
 
     return players;
 };
+client.Player = function(){
+
+}
+
+client.Player.prototype = Object.create(apps.ClientPlayerBase.prototype);
+client.Player.prototype.constructor =
+client.Player;
 
 return client;
 });
