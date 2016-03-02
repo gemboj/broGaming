@@ -76,9 +76,6 @@ client.Client.prototype.hookDataChannelEvents = function(showInfo){
 
 client.Client.prototype.update = function(scene){
     for(var i = 0; i < this.playersCount; ++i){
-        //this.players[i].position.x = scene[i].position.x;
-        //this.players[i].position.y = scene[i].position.y;
-        //this.players[i].position.z = scene[i].position.z;
         this.players[i].update(scene[i].position);
     }
 };

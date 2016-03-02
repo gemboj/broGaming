@@ -22,7 +22,9 @@ module.exports = function(server){
     var db = new repositories.SequelizeDB(Sequelize);
 
     console.log("TO DO:" +
-        "find some bcrypt replacement");
+        "find some bcrypt replacement" +
+        "check what is wrong with gmail logging (sending register emails does NOT work)"
+    );
 
     db.connect()
         .then(function(sequelizeRepo){

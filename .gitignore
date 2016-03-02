@@ -5,3 +5,4 @@ development/**/javascripts
 development/cliet/apps/**
 !/development/**/requireMain.js
 !/development/**/vendors
+!npm-debug.log
