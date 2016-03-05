@@ -26,7 +26,7 @@ if(app.get('env') === 'development'){
     app.set('views', path.join(__dirname, 'development/client/views'));
 
     global.staticData = {};
-    global.staticData.address = '127.0.0.1:3000';
+    global.staticData.address = '127.0.0.1:8080';
     /*requirejs(['requireMain'], function(requireMain){
         //only need to load module
     });*/

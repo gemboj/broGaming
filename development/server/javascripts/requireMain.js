@@ -11,7 +11,7 @@ module.exports = function(server){
         security = require('./plugins/security'),
         loki = require('lokijs'),
         Sequelize = require('sequelize'),
-        //bcrypt = require('bcrypt'),
+        bcryptNodejs = require('bcrypt-nodejs'),
         formValidationInteractors = require('./interactors/formValidation'),
         email = require('./plugins/email'),
         nodemailer = require('nodemailer'),
@@ -21,10 +21,7 @@ module.exports = function(server){
 
     var db = new repositories.SequelizeDB(Sequelize);
 
-    console.log("TO DO:" +
-        "find some bcrypt replacement" +
-        "check what is wrong with gmail logging (sending register emails does NOT work)"
-    );
+    //TODO: find some bcrypt replacement
 
     db.connect()
         .then(function(sequelizeRepo){
@@ -32,7 +29,7 @@ module.exports = function(server){
             var chatChannel = new dataChannel.ChatChannel(socketDataChannel);
             var webrtcChannel = new dataChannel.WebRTCChannel(socketDataChannel);
 
-            var bcryptAdapter = new security.BcryptAdapter(null);
+            var cryptoAdapter = new security.CryptoAdapter(crypto);
             var randomGenerator = new security.RandomGenerator(crypto);
 
             var nodemailerAdapter = new email.NodemailerAdapter(nodemailer);
@@ -51,9 +48,9 @@ module.exports = function(server){
             var privateMessage = new chatInteractors.PrivateMessage(chatChannel.send, sequelizeRepo.getUserByUsername);
             var userRegistrationValidation = new validationInteractors.UserRegistration(sequelizeRepo.getUserByUsername, userRegistrationFormValidation.do);
 
-            var login = new authorizationInteractors.Login(sequelizeRepo.getUserByUsername, sequelizeRepo.markAsLoggedUsername, bcryptAdapter.compare);
+            var login = new authorizationInteractors.Login(sequelizeRepo.getUserByUsername, sequelizeRepo.markAsLoggedUsername, cryptoAdapter.compare);
             var logout = new authorizationInteractors.Logout(sequelizeRepo.markAsNotLoggedUser, sequelizeRepo.getUsernameRooms, leaveRoom.do);
-            var register = new authorizationInteractors.Register(bcryptAdapter.hash, userRegistrationValidation.do, sequelizeRepo.insertUser, nodemailerAdapter.send, sequelizeRepo.setActivationLinkForUsername, randomGenerator.generateBytes, global.staticData.address, sequelizeRepo.transaction);
+            var register = new authorizationInteractors.Register(cryptoAdapter.hash, userRegistrationValidation.do, sequelizeRepo.insertUser, nodemailerAdapter.send, sequelizeRepo.setActivationLinkForUsername, randomGenerator.generateBytes, global.staticData.address, sequelizeRepo.transaction);
             var activateAccount = new authorizationInteractors.ActivateAccount(sequelizeRepo.getUserByActivationLink, sequelizeRepo.markAsActiveUserByUsername);
 
             var offer = new webrtcInteractors.Offer(webrtcChannel.send);

@@ -2,7 +2,7 @@ function ConnectionController(scope, chatStaticData, userLoginFormValidate, user
     Controller.call(this, scope);
     var that = this;
 
-    scope.username = 'gemboj';
+    scope.username = 'user';
     scope.password = 'password';
 
     scope.usernameLoginError = '';
