@@ -1,26 +1,26 @@
 module.exports = function(server){
-    var chat = require('./interactors/chat'),
-        authorizationInteractors = require('./interactors/authorization'),
-        chatInteractors = require('./interactors/chat'),
-        webrtcInteractors = require('./interactors/webrtc'),
-        validationInteractors = require('./interactors/validation'),
-        dataChannel = require('./plugins/dataChannel'),
+    var chat = require('./javascripts/interactors/chat'),
+        authorizationInteractors = require('./javascripts/interactors/authorization'),
+        chatInteractors = require('./javascripts/interactors/chat'),
+        webrtcInteractors = require('./javascripts/interactors/webrtc'),
+        validationInteractors = require('./javascripts/interactors/validation'),
+        dataChannel = require('./javascripts/plugins/dataChannel'),
         socketio = require('socket.io')().listen(server),
-        repositories = require('./plugins/repositories'),
+        repositories = require('./javascripts/plugins/repositories'),
         orm = require("orm"),
-        security = require('./plugins/security'),
+        security = require('./javascripts/plugins/security'),
         loki = require('lokijs'),
         Sequelize = require('sequelize'),
         bcryptNodejs = require('bcrypt-nodejs'),
-        formValidationInteractors = require('./interactors/formValidation'),
-        email = require('./plugins/email'),
+        formValidationInteractors = require('./javascripts/interactors/formValidation'),
+        email = require('./javascripts/plugins/email'),
         nodemailer = require('nodemailer'),
         crypto = require('crypto');
 
     var util = require('util');
 
     var db = new repositories.SequelizeDB(Sequelize);
-    
+
     db.connect()
         .then(function(sequelizeRepo){
             var socketDataChannel = new dataChannel.DataChannel(socketio);

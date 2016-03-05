@@ -1,6 +1,20 @@
 var grunt = require('grunt');
+grunt.loadNpmTasks('grunt-contrib-clean');
+
+grunt.initConfig({
+    clean : {
+        development : [
+            "development/server/javascripts/img/**/*.png~",
+            "build/img/**/*.gif~",
+            "build/img/**/*.jpg~"
+        ]
+    }
+});
 
 grunt.registerTask('default', 'default task description', ['concatAppRequireJs', 'concatApps']);
+grunt.registerTask('testConcat', 'clean way to concat you files into packages', function(){
+
+});
 
 grunt.registerTask('concatAppRequireJs', 'merges javascript src files into one requireJs library', function(){
     var resourcePath = './src/',

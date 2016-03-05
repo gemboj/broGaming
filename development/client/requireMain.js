@@ -2,13 +2,13 @@ require.config({
     paths : {
         jquery : 'vendors/jquery-2.1.4.min',
         angular : 'vendors/angular',
-        controllers : 'plugins/controllers',
-        services : 'plugins/services',
+        controllers : 'javascripts/plugins/controllers',
+        services : 'javascripts/plugins/services',
         io : 'vendors/socket.io',
-        dataChannels : 'plugins/dataChannels',
-        chatInteractors : 'interactors/chat',
-        AJAX: 'plugins/AJAX',
-        validationInteractors: 'interactors/formValidation',
+        dataChannels : 'javascripts/plugins/dataChannels',
+        chatInteractors : 'javascripts/interactors/chat',
+        AJAX: 'javascripts/plugins/AJAX',
+        validationInteractors: 'javascripts/interactors/formValidation',
         threeJs: 'vendors/three'
     },
     shim : {
