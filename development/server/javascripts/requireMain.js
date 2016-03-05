@@ -20,9 +20,7 @@ module.exports = function(server){
     var util = require('util');
 
     var db = new repositories.SequelizeDB(Sequelize);
-
-    //TODO: find some bcrypt replacement
-
+    
     db.connect()
         .then(function(sequelizeRepo){
             var socketDataChannel = new dataChannel.DataChannel(socketio);
