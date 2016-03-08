@@ -3,7 +3,7 @@
     {
       "path" : "/../entities",
       "module" : "entities",
-      "class" : "UserValidation"
+      "class" : "Room"
     }
   ]
 }

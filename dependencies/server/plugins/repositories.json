@@ -1,12 +1,12 @@
 {
   "dependencies" : [
     {
-      "path" : "/../entities/entities",
+      "path" : "/../entities",
       "module" : "entities",
       "class" : "User"
     },
     {
-      "path" : "/../entities/entities",
+      "path" : "/../entities",
       "module" : "entities",
       "class" : "Room"
     }
