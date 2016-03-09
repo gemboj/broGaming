@@ -3,7 +3,7 @@ grunt.loadNpmTasks('grunt-contrib-clean');
 
 grunt.initConfig({
     clean: [
-        "development/{server,client}/javascripts/*"
+        "development/{server,client}/javascripts/*", "development/client/apps/*"
     ],
     concat: {
         platforms: {
@@ -30,6 +30,16 @@ grunt.initConfig({
                     "Require",
                     "Node"
                 ]
+            },
+            apps: {
+                input: "apps",
+                dependency: "dependencies/apps/",
+                outputs: [
+                    "development/client/apps/"
+                ],
+                wrapping: [
+                    "Require"
+                ]
             }
         }
     }
@@ -54,6 +64,16 @@ grunt.registerTask('concat', function(){
             var fileContent = grunt.file.read(abspath),
                 moduleName = getModuleName(subdir),
                 outputIndex = subdir + platformIndex;
+
+            if(!isJavascriptFile(filename)){
+                for(var i = 0; i < outputPaths.length; i++){
+                    var path = outputPaths[i];
+
+                    grunt.file.copy(abspath, path + subdir + "/" + filename);
+                }
+
+                return;
+            }
 
             fileContent = changeClassNameNotation(fileContent, moduleName);
 
@@ -112,6 +132,10 @@ grunt.registerTask('concat', function(){
     }
 });
 
+function isJavascriptFile(filename){
+    return /\.js/.test(filename);
+}
+
 function changeClassNameNotation(fileContent, moduleName){
     var className = /function\s+(\w+)\(/.exec(fileContent)[1];
 
@@ -128,134 +152,6 @@ function getModuleName(subdir){
 function createOutputAttribute(output, index){
     output[index] = {};
 }
-
-grunt.registerTask('concatAppRequireJs', 'merges javascript src files into one requireJs library', function(){
-    var resourcePath = './src/',
-        outputPath = './development/',
-        dependencyPath = './dependencies/src/';
-
-    var output = {};
-    grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
-        var fileContent = grunt.file.read(abspath),
-            libName = /(\w+)\/$/.exec(subdir + '/')[1];
-        var platforms = [];
-
-        if(subdir.indexOf('server') > -1) {
-            platforms.push('server/');
-        }
-        if(subdir.indexOf('client') > -1){
-            platforms.push('client/');
-        }
-        if(platforms.length === 0){
-            platforms.push('client/');
-            platforms.push('server/');
-        }
-
-        for(var i = 0; i < platforms.length; ++i) {
-            var platform = platforms[i];
-
-            var pathDir = subdir.replace(platform, '');
-
-            var className = /function\s+(\w+)\(/.exec(fileContent)[1];
-            var newFileContent = fileContent.replace(/(function)\s+(\w+)\(/, "$2 = $1(");
-            newFileContent = newFileContent.replace(new RegExp('^' + className, 'gm'), libName + "." + className);
-
-            var index = subdir + platform;
-            output[index] = (output[index] === undefined ? {} : output[index]);
-
-            output[index].path = outputPath + platform + 'javascripts/' + pathDir + '.js';
-            output[index].dependenciesPath = dependencyPath + subdir + '.json';
-            output[index].content = (output[index].content === undefined ? '' : output[index].content) + '\n' + newFileContent;
-            output[index].libName = libName;
-        }
-    });
-
-    for(subDir in output){
-        var wrappedContent = '';
-
-        var dependenciesJSON = null;
-        try {
-            dependenciesJSON = grunt.file.readJSON(output[subDir].dependenciesPath);
-        }
-        catch(e){
-
-        }
-
-        var resolvedDependencies = resolveDependencies(dependenciesJSON, output[subDir]);
-
-        if(output[subDir].path.indexOf('client') > -1){
-            wrappedContent = wrapRequireJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
-        }
-        else{
-            wrappedContent = wrapNodeJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
-        }
-
-        grunt.file.write(output[subDir].path, wrappedContent);
-    }
-});
-
-grunt.registerTask('concatApps', 'merges javascript apps files', function(){
-    var resourcePath = './apps/',
-        outputPath = './development/',
-        dependencyPath = './dependencies/apps/';
-
-    var output = {};
-    grunt.file.recurse(resourcePath, function (abspath, rootdir, subdir, filename) {
-        var fileContent = grunt.file.read(abspath),
-            libName = /(\w+)\/$/.exec(subdir + '/')[1];
-
-
-
-
-        var platforms = ['client/'];
-
-        for(var i = 0; i < platforms.length; ++i) {
-            var platform = platforms[i],
-                pathDir = subdir.replace(platform, '');
-
-            if(filename.indexOf('.js') === -1){
-                grunt.file.write(outputPath + platform + 'apps/' + pathDir + '/' + filename, fileContent);
-
-                return;
-            }
-
-            var className = /function\s+(\w+)\(/.exec(fileContent)[1];
-            var newFileContent = fileContent.replace(/(function)\s+(\w+)\(/, "$2 = $1(");
-            newFileContent = newFileContent.replace(new RegExp('^' + className, 'gm'), libName + "." + className);
-
-            var index = subdir + platform;
-            output[index] = (output[index] === undefined ? {} : output[index]);
-
-            output[index].path = outputPath + platform + 'apps/' + pathDir + '.js';
-            output[index].dependenciesPath = dependencyPath + subdir + '.json';
-            output[index].content = (output[index].content === undefined ? '' : output[index].content) + '\n' + newFileContent;
-            output[index].libName = libName;
-        }
-    });
-
-    for(subDir in output){
-        var wrappedContent = '';
-
-        var dependenciesJSON = null;
-        try {
-            dependenciesJSON = grunt.file.readJSON(output[subDir].dependenciesPath);
-        }
-        catch(e){
-
-        }
-
-        var resolvedDependencies = resolveDependencies(dependenciesJSON, output[subDir]);
-
-        if(output[subDir].path.indexOf('client') > -1){
-            wrappedContent = wrapRequireJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
-        }
-        else{
-            wrappedContent = wrapNodeJsModule(output[subDir].content, output[subDir].libName, resolvedDependencies);
-        }
-
-        grunt.file.write(output[subDir].path, wrappedContent);
-    }
-});
 
 grunt.registerTask('copyResources', 'copies all resources to main directory', function(){
     var resourcePublicPath = './development/client',

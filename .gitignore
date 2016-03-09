@@ -2,7 +2,7 @@
 node_modules
 production
 development/**/javascripts
-development/cliet/apps/**
+development/client/apps/**
 !/development/**/requireMain.js
 !/development/**/vendors
 !npm-debug.log
