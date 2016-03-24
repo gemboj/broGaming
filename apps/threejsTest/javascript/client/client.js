@@ -1,16 +1,31 @@
 function Client(input){
-    ClientBase.call(this, input.webRTCChannel);
-
     this.webRTCChannel = input.webRTCChannel;
 
     this.hookGuiEvents(input.$div);
     this.initializeUserInput();
     this.hookDataChannelEvents(input.showInfo);
-};
 
-Client.prototype = Object.create(ClientBase.prototype);
-Client.prototype.constructor =
-Client;
+    var that = this;
+
+    this.isStarted = false;
+    this.playerNumber = null;
+
+    /*dataChannel.registerOnConnect(function(){
+
+     });
+
+     dataChannel.registerOnDisconnect(function(){
+
+     });
+
+     dataChannel.registerOnError(function(){
+
+     });*/
+
+    this.webRTCChannel.registerOnMessage(function(){
+        that.receive.apply(that, arguments);
+    });
+}
 
 Client.prototype.hookGuiEvents = function($div){
     var that = this;
@@ -128,4 +143,14 @@ Client.prototype.prepareScene = function(canvas, playersCount, sceneData){
     render();
 
     return players;
+};
+
+Client.prototype.send = function(type, data){
+    var packet = {type: type, data: data};
+
+    this.webRTCChannel.send(packet);
+};
+
+Client.prototype.receive = function(packet){
+    this[packet.type](packet.data);
 };

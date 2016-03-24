@@ -1,9 +1,0 @@
-{
-  "dependencies" : [
-    {
-      "path" : "/../../../javascripts/entities/apps.js",
-      "module" : "apps",
-      "class" : "Server"
-    }
-  ]
-}

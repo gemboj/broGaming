@@ -1,14 +1,51 @@
 function Server(input){
-    ServerBase.call(this, input.id, input.usernames, input.createDataChannel);
+    var that = this;
 
-    var channels = {};
-    var channelsLength = input.usernames.length;
-    var connected = 0;
-};
+    var usernames = input.usernames,
+        createDataChannel = input.createDataChannel,
+        id = input.id;
 
-Server.prototype = Object.create(ServerBase.prototype);
-Server.prototype.constructor =
-Server;
+    this.dataChannels = {};
+    this.connectedPlayers = 0;
+    this.playersCount = usernames.length;
+
+    this.isStarted = false;
+
+    for(var i = 0; i < usernames.length; i++){
+        var username = usernames[i],
+            dataChannel = createDataChannel(username, id);
+
+        this.dataChannels[username] = dataChannel;
+        registerDataChannelEvents(dataChannel, username);
+    }
+
+    function registerDataChannelEvents(dataChannel, username){
+        dataChannel.registerOnConnect(function(){
+            that.connectedPlayers++;
+            if(that.connectedPlayers === that.playersCount){
+                that.start();
+            }
+        });
+
+        dataChannel.registerOnDisconnect(function(){
+            delete that.dataChannels[username];
+            that.connectedPlayers--;
+
+            if(that.isStarted){
+
+            }
+        });
+
+        dataChannel.registerOnError(function(){
+            delete that.dataChannels[username];
+            that.connectedPlayers--;
+        });
+
+        dataChannel.registerOnMessage(function(){
+            that.receive.apply(that, arguments);
+        });
+    }
+}
 
 Server.prototype.prepareScene = function(){
     var scene = {};
@@ -74,3 +111,21 @@ Server.prototype.updatePlayer = function(data){
     scene[playerId].delta.y = data.delta.y;
     scene[playerId].delta.z = data.delta.z;
 }
+
+Server.prototype.broadcast = function(type, data){
+    var packet = {type: type, data: data};
+
+    for(var username in this.dataChannels){
+        this.dataChannels[username].send(packet);
+    }
+};
+
+Server.prototype.send = function(username, type, data){
+    var packet = {type: type, data: data};
+
+    this.dataChannels[username].send(packet);
+};
+
+Server.prototype.receive = function(packet){
+    this[packet.type](packet.data);
+};
