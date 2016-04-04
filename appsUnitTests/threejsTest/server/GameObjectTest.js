@@ -1,29 +1,10 @@
 describe('GameObject', function(){
     beforeEach(function(){
-        this.positionSpy = {add: function(){}, serialize: function(){return {x: 2, y: 0, z: 1}}, setPosition: function(){}};
+        this.positionSpy = {add: function(){}};
 
         spyOn(this.positionSpy, "add").and.callThrough();
-        spyOn(this.positionSpy, "setPosition");
 
-        this.gameObject = new GameObject(this.positionSpy);
-    });
-
-    it('can be moved', function(){
-        this.gameObject.move(1, 0, 0);
-
-        expect(this.positionSpy.add).toHaveBeenCalledWith(1, 0, 0);
-    });
-
-    it('its position can be set', function(){
-        this.gameObject.setPosition(1, 2, 0);
-
-        expect(this.positionSpy.setPosition).toHaveBeenCalledWith(1, 2, 0);
-    });
-
-    it('can return JSON position', function(){
-        var position = this.gameObject.getPosition();
-
-        expect(position).toEqual({x: 2, y: 0, z: 1});
+        this.gameObject = new GameObject("someId", this.positionSpy);
     });
 
     it('changes position every update based on time', function(){

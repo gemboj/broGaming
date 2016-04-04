@@ -1,13 +1,10 @@
-function GameObject(position){
+function GameObject(id, position){
     this.position = position;
+    this.id = id;
 }
 
-GameObject.prototype.move = function(x, y, z){
-    this.position.add(x, y, z)
-};
-
-GameObject.prototype.setPosition = function(x, y, z){
-    this.position.setPosition(x, y, z)
+GameObject.prototype.getID = function(){
+    return this.id;
 };
 
 GameObject.prototype.update = function(time){
@@ -15,5 +12,9 @@ GameObject.prototype.update = function(time){
 };
 
 GameObject.prototype.getPosition = function(){
-    return this.position.serialize();
+    return this.position;
+};
+
+GameObject.prototype.setPosition = function(position){
+    this.position = position;
 };

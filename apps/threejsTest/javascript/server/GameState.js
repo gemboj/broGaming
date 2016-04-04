@@ -3,7 +3,7 @@ function GameState(){
 }
 
 GameState.prototype.addObject = function(object){
-    this.objects.push(object);
+    this.objects[object.getId()] = object;
 };
 
 GameState.prototype.serialize = function(){
@@ -11,11 +11,11 @@ GameState.prototype.serialize = function(){
 
     for(var objectIndex in this.objects){
         var object = this.objects[objectIndex],
-            objectName = object.getName();
+            objectName = object.getId();
 
         currentGameState.objects[objectName] = {
-            name: objectName,
-            position: object.getPosition()
+            id: objectName,
+            position: object.getPosition().serialize()
         }
     }
 
@@ -23,5 +23,5 @@ GameState.prototype.serialize = function(){
 };
 
 GameState.prototype.updateObject = function(specification){
-    this.objects[specification.name].setPosition(specification.position);
+    this.objects[specification.id].setPosition(specification.position);
 };
