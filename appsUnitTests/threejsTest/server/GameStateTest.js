@@ -10,7 +10,8 @@ describe('GameState', function(){
                 };
 
             },
-            setPosition: function(){}
+            setPosition: function(){},
+            update: function(){}
         };
         this.objectSpy2 = {
             getId: function(){return "object2"},
@@ -19,10 +20,14 @@ describe('GameState', function(){
                     serialize: function(){return {x: 4, y: 2, z: 2}},
                 };
             },
-            setPosition: function(){}
+            setPosition: function(){},
+            update: function(){}
         };
 
         spyOn(this.objectSpy, "setPosition");
+
+        spyOn(this.objectSpy, "update");
+        spyOn(this.objectSpy2, "update");
 
         this.gameState.addObject(this.objectSpy);
         this.gameState.addObject(this.objectSpy2);
@@ -41,6 +46,13 @@ describe('GameState', function(){
     	this.gameState.updateObject({id: "object1", position: {}});
 
         expect(this.objectSpy.setPosition).toHaveBeenCalled();
+    });
+
+    it('can update all contained object', function(){
+        this.gameState.updateAllObjects();
+
+        expect(this.objectSpy.update).toHaveBeenCalled();
+        expect(this.objectSpy2.update).toHaveBeenCalled();
     });
 
 });

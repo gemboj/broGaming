@@ -1,5 +1,5 @@
 function GameState(){
-    this.objects = [];
+    this.objects = {};
 }
 
 GameState.prototype.addObject = function(object){
@@ -24,4 +24,10 @@ GameState.prototype.serialize = function(){
 
 GameState.prototype.updateObject = function(specification){
     this.objects[specification.id].setPosition(specification.position);
+};
+
+GameState.prototype.updateAllObjects = function(){
+    for(var objectIndex in this.objects){
+        this.objects[objectIndex].update();
+    }
 };
