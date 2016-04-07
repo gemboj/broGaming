@@ -11,7 +11,10 @@ describe('MainLoop', function(){
         spyOn(this.gameStateSpy, "serialize");
         spyOn(this, "broadcastSpy");
 
-        this.mainLoop = new MainLoop(this.gameStateSpy, this.broadcastSpy);
+        this.loopInterval = 20;
+        this.testDuration = 100;
+        this.loopCount = this.testDuration / this.loopInterval;
+        this.mainLoop = new MainLoop(this.gameStateSpy, this.broadcastSpy, this.loopInterval);
     });
 
     it('will update all objects on scene, serialize and broadcast result', function(done){
@@ -24,12 +27,12 @@ describe('MainLoop', function(){
 
 
             var callsCount = that.gameStateSpy.serialize.calls.count();
-            expect(callsCount).toBeGreaterThan(5);
+            expect(callsCount).toBeGreaterThan(that.loopCount - 1);
 
             setTimeout(function(){
                 expect(that.gameStateSpy.serialize.calls.count()).toEqual(callsCount);
                 done();
-            }, 100);
-        }, 100);
+            }, that.testDuration);
+        }, that.testDuration);
     })
 });

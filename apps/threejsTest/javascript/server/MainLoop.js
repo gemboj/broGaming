@@ -1,6 +1,8 @@
-function MainLoop(gameState, broadcast){
+function MainLoop(gameState, broadcastGameStateUpdate, loopInterval){
     this.gameState = gameState;
-    this.broadcast = broadcast;
+    this.broadcast = broadcastGameStateUpdate;
+
+    this.loopInterval = loopInterval == undefined ? 50 : loopInterval;
 
     this.loopHandle = null;
 }
@@ -11,7 +13,7 @@ MainLoop.prototype.start = function(){
         var gameStateData = that.gameState.serialize();
 
         that.broadcast(gameStateData);
-    }, 10);
+    }, this.loopInterval);
 };
 
 MainLoop.prototype.stop = function(){
