@@ -1,6 +1,6 @@
-function MainLoop(gameState, broadcastGameStateUpdate, loopInterval){
+function MainLoop(gameState, broadcast, loopInterval){
     this.gameState = gameState;
-    this.broadcast = broadcastGameStateUpdate;
+    this.broadcast = broadcast;
 
     this.loopInterval = loopInterval == undefined ? 50 : loopInterval;
 
