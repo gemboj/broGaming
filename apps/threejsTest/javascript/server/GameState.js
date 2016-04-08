@@ -13,55 +13,34 @@ GameState.prototype.addPlayer = function(player){
 
 GameState.prototype.serialize = function(){
     var currentGameState = {
-        objects: this.serializeObjects(),
-        players: this.serializePlayers()
+        objects: this.serializeObjectType("objects"),
+        players: this.serializeObjectType("players")
     };
 
     return currentGameState;
 };
 
-GameState.prototype.serializeObjects = function(){
-    var objects = {};
+GameState.prototype.serializeObjectType = function(type){
+    var objects = this[type],
+        serializedObjects = {};
 
-    for(var objectIndex in this.objects){
-        var object = this.objects[objectIndex],
-            objectId = object.getId();
-
-        objects[objectId] = {
-            id: objectId,
-            position: object.getPosition().serialize()
-        }
+    for(var objectId in objects){
+        serializedObjects[objectId] = objects[objectId].serialize();
     }
 
-    return objects;
+    return serializedObjects;
 };
 
-GameState.prototype.serializePlayers = function(){
-    var players = {};
-
-    for(var playerIndex in this.players){
-        var player = this.players[playerIndex],
-            playerId = player.getId();
-
-        players[playerId] = {
-            id: playerId,
-            position: player.getPosition().serialize()
-        }
-    }
-
-    return players;
+GameState.prototype.deserializeObject = function(objectId, specification){
+    this.objects[objectId].deserialize(specification);
 };
 
-GameState.prototype.updateObject = function(specification){
-    this.objects[specification.id].setPosition(specification.position);
+GameState.prototype.deserializePlayer = function(playerId, specification){
+    this.players[playerId].deserialize(specification);
 };
 
-GameState.prototype.updatePlayer = function(specification){
-    this.players[specification.id].setPosition(specification.position);
-};
-
-GameState.prototype.updateAll = function(){
+GameState.prototype.updateAll = function(deltaTime){
     for(var objectIndex in this.objects){
-        this.objects[objectIndex].update();
+        this.objects[objectIndex].update(deltaTime);
     }
 };

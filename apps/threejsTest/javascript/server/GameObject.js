@@ -18,3 +18,14 @@ GameObject.prototype.getPosition = function(){
 GameObject.prototype.setPosition = function(position){
     this.position = position;
 };
+
+GameObject.prototype.serialize = function(){
+    return {
+        id: this.id,
+        position: this.position.serialize()
+    }
+};
+
+GameObject.prototype.deserialize = function(){
+
+};

@@ -10,6 +10,8 @@ function MainLoop(gameState, broadcast, loopInterval){
 MainLoop.prototype.start = function(){
     var that = this;
     this.loopHandle = setInterval(function(){
+        //TODO call gamestate updateAll with delta time
+
         var gameStateData = that.gameState.serialize();
 
         that.broadcast("gameStateUpdate", gameStateData);
