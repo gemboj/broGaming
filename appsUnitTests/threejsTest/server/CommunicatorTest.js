@@ -2,20 +2,24 @@ describe('Communicator', function(){
     beforeEach(function(){
 
         this.dataChannel1 = {
-            send: function(){}
+            send: function(){},
+
+            messageHandler: null,
+            registerOnMessage: function(fun){
+                this.messageHandler = fun;
+            },
+            receiveMessage: function(package){
+                this.messageHandler(package)
+            }
         };
 
         this.dataChannel2 = {
-            send: function(){}
+            send: function(){},
+            registerOnMessage: function(fun){}
         };
 
         this.messageHandler = {
-            onConnect: function(){
-
-            },
-            onDisconnect: function(){
-
-            }
+            messageType: function(){}
         };
 
         var dataChannels = {
@@ -26,7 +30,9 @@ describe('Communicator', function(){
         spyOn(this.dataChannel1, "send");
         spyOn(this.dataChannel2, "send");
 
-        this.communicator = new Communicator(dataChannels);
+        spyOn(this.messageHandler, "messageType");
+
+        this.communicator = new Communicator(dataChannels, this.messageHandler);
     });
 
     it('can broadcast messages', function(){
@@ -46,5 +52,17 @@ describe('Communicator', function(){
 
         expect(this.dataChannel1.send).toHaveBeenCalledWith({data: {id: "receiverA"}, messageType: "messageType"});
         expect(this.dataChannel2.send).toHaveBeenCalledWith({data: {id: "receiverB"}, messageType: "messageType"});
+    });
+
+    it('calls messageHandler function based on received message type', function(){
+    	var that = this,
+            data = {};
+
+    	this.dataChannel1.receiveMessage({
+            messageType: "messageType",
+            data: data
+        })
+
+        expect(this.messageHandler.messageType).toHaveBeenCalledWith("receiverA", data);
     });
 });
