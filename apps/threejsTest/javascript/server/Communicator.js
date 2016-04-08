@@ -13,7 +13,7 @@ Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChan
     });
 };
 
-Communicator.prototype.broadcast = function(data, messageType){
+Communicator.prototype.broadcast = function(messageType, data){
     var receiverId;
     if(typeof data === 'function'){
         for(receiverId in this.dataChannels){

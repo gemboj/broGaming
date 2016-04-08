@@ -28,6 +28,7 @@ describe('MainLoop', function(){
 
             var callsCount = that.gameStateSpy.serialize.calls.count();
             expect(callsCount).toBeGreaterThan(that.loopCount - 1);
+            expect(that.broadcastSpy.calls.count()).toEqual(callsCount);
 
             setTimeout(function(){
                 expect(that.gameStateSpy.serialize.calls.count()).toEqual(callsCount);

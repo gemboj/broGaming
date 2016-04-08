@@ -37,7 +37,7 @@ describe('Communicator', function(){
 
     it('can broadcast messages', function(){
         var data = {};
-        this.communicator.broadcast(data, "messageType");
+        this.communicator.broadcast("messageType", data);
 
         expect(this.dataChannel1.send).toHaveBeenCalledWith({data: data, messageType: "messageType"});
         expect(this.dataChannel2.send).toHaveBeenCalledWith({data: data, messageType: "messageType"});
@@ -48,7 +48,7 @@ describe('Communicator', function(){
             return {id: receiver};
         };
 
-        this.communicator.broadcast(dataFunction, "messageType");
+        this.communicator.broadcast("messageType", dataFunction);
 
         expect(this.dataChannel1.send).toHaveBeenCalledWith({data: {id: "receiverA"}, messageType: "messageType"});
         expect(this.dataChannel2.send).toHaveBeenCalledWith({data: {id: "receiverB"}, messageType: "messageType"});

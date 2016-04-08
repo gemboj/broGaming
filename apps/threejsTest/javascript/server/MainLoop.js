@@ -12,7 +12,7 @@ MainLoop.prototype.start = function(){
     this.loopHandle = setInterval(function(){
         var gameStateData = that.gameState.serialize();
 
-        that.broadcast(gameStateData);
+        that.broadcast("gameStateUpdate", gameStateData);
     }, this.loopInterval);
 };
 
