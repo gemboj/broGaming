@@ -1,4 +1,4 @@
-function Server(input){
+/*function Server(input){
     var that = this;
 
     var usernames = input.usernames,
@@ -128,4 +128,4 @@ Server.prototype.send = function(username, type, data){
 
 Server.prototype.receive = function(packet){
     this[packet.type](packet.data);
-};
+};*/
