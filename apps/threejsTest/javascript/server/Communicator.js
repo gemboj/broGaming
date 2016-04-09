@@ -11,6 +11,18 @@ Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChan
     dataChannel.registerOnMessage(function(packet){
         messageHandler[packet.messageType](receiverId, packet.data);
     });
+
+    dataChannel.registerOnConnect(function(){
+        messageHandler["connected"](receiverId);
+    });
+
+    dataChannel.registerOnDisconnect(function(){
+        messageHandler["disconnected"](receiverId);
+    });
+
+    dataChannel.registerOnError(function(){
+        messageHandler["error"](receiverId);
+    });
 };
 
 Communicator.prototype.broadcast = function(messageType, data){

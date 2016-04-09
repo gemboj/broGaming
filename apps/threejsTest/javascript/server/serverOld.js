@@ -1,4 +1,5 @@
-/*function Server(input){
+/*
+function Server(input){
     var that = this;
 
     var usernames = input.usernames,
