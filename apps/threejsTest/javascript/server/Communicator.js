@@ -1,11 +1,19 @@
 function Communicator(dataChannels, messageHandler){
     this.dataChannels = dataChannels;
 
-    for(var receiverId in this.dataChannels){
+    /*for(var receiverId in this.dataChannels){
         var dataChannel = dataChannels[receiverId];
         this.registerDataChannelEvents(receiverId, dataChannel, messageHandler)
-    }
+    }*/
 }
+
+Communicator.prototype.registerMessageHandler = function(messageHandler){
+    for(var receiverId in this.dataChannels){
+        var dataChannel = this.dataChannels[receiverId];
+
+        this.registerDataChannelEvents(receiverId, dataChannel, messageHandler);
+    }
+};
 
 Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChannel, messageHandler){
     dataChannel.registerOnMessage(function(packet){

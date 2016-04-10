@@ -52,7 +52,7 @@ describe('Communicator', function(){
 
         spyOn(this.messageHandler, "messageType");
 
-        this.communicator = new Communicator(dataChannels, this.messageHandler);
+        this.communicator = new Communicator(dataChannels);
     });
 
     it('can broadcast messages', function(){
@@ -77,6 +77,8 @@ describe('Communicator', function(){
     it('calls messageHandler function based on received message type', function(){
     	var that = this,
             data = {};
+
+        this.communicator.registerMessageHandler(this.messageHandler);
 
     	this.dataChannel1.receiveMessage({
             messageType: "messageType",

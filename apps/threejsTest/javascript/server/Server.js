@@ -15,6 +15,8 @@ function Server(input){
     this.communicator = new Communicator(dataChannels, {});
 
     this.gameState = new GameState();
+
+    this.mainLoop = new MainLoop()
 }
 
 Server.prototype.createDataChannels = function(usernames, id, createDataChannel){
