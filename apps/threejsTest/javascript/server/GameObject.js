@@ -1,14 +1,18 @@
 function GameObject(id, position){
-    this.position = position;
+    this.position = {
+        x: position[0],
+        y: position[1],
+        z: position[2]
+    };
     this.id = id;
 }
 
-GameObject.prototype.getID = function(){
+GameObject.prototype.getId = function(){
     return this.id;
 };
 
 GameObject.prototype.update = function(time){
-    this.position.add(0.0001 * time, 0, 0)
+
 };
 
 GameObject.prototype.getPosition = function(){
@@ -22,10 +26,10 @@ GameObject.prototype.setPosition = function(position){
 GameObject.prototype.serialize = function(){
     return {
         id: this.id,
-        position: this.position.serialize()
+        position: this.position
     }
 };
 
-GameObject.prototype.deserialize = function(){
+GameObject.prototype.deserialize = function(data){
 
 };

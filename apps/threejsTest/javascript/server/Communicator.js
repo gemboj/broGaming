@@ -17,7 +17,7 @@ Communicator.prototype.registerMessageHandler = function(messageHandler){
 
 Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChannel, messageHandler){
     dataChannel.registerOnMessage(function(packet){
-        messageHandler[packet.messageType](receiverId, packet.data);
+        messageHandler[packet.type](receiverId, packet.data);
     });
 
     dataChannel.registerOnConnect(function(){
@@ -35,10 +35,11 @@ Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChan
 
 Communicator.prototype.broadcast = function(messageType, data){
     var receiverId;
+
     if(typeof data === 'function'){
         for(receiverId in this.dataChannels){
             this.dataChannels[receiverId].send({
-                messageType: messageType,
+                type: messageType,
                 data: data(receiverId)
             });
         }
@@ -46,7 +47,7 @@ Communicator.prototype.broadcast = function(messageType, data){
     else{
         for(receiverId in this.dataChannels){
             this.dataChannels[receiverId].send({
-                messageType: messageType,
+                type: messageType,
                 data: data
             });
         }

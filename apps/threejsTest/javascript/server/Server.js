@@ -13,7 +13,12 @@ function Server(input){
     this.communicator = new Communicator(dataChannels);
 
     this.scene = new Scene();
-    this.mainLoop = new MainLoop(communicator, this.scene)
+
+    for(var i = 0; i < usernames.length; i++){
+        this.scene.addPlayer(new ServerPlayer(usernames[i], [0, 0, 0]));
+    }
+
+    this.mainLoop = new MainLoop(this.scene, this.communicator.broadcast.bind(this.communicator), 50);
 
 
     this.gameState = new GameState(usernames, this.communicator, this.mainLoop, this.scene);

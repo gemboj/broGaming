@@ -87,7 +87,7 @@ Client.prototype.hookDataChannelEvents = function(showInfo){
 };
 
 Client.prototype.update = function(scene){
-    for(var i = 0; i < this.playersCount; ++i){
+    for(var i in this.players){
         this.players[i].update(scene[i].position);
     }
 };
@@ -107,7 +107,7 @@ Client.prototype.start = function(data){
 Client.prototype.prepareScene = function(canvas, playersCount, sceneData){
     var scene = new THREE.Scene();
     var players = {};
-    for(var i = 0; i < playersCount; ++i){
+    for(var i in sceneData){
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
         var material = new THREE.MeshPhongMaterial( { color: "rgb(" + sceneData[i].color.r + "," + sceneData[i].color.g + "," + sceneData[i].color.b + ")" } );
         var cube = new THREE.Mesh( geometry, material );

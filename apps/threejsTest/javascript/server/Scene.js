@@ -39,4 +39,8 @@ Scene.prototype.update = function(deltaTime){
     for(var objectIndex in this.objects){
         this.objects[objectIndex].update(deltaTime);
     }
+
+    for(var playerIndex in this.players){
+        this.players[playerIndex].update(deltaTime);
+    }
 };

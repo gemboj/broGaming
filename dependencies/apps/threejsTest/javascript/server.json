@@ -1,0 +1,34 @@
+{
+  "dependencies" : [
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "Communicator"
+    },
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "Scene"
+    },
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "ServerPlayer"
+    },
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "MainLoop"
+    },
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "GameObject"
+    },
+    {
+      "path" : ".",
+      "module" : "server",
+      "class" : "GameState"
+    }
+  ]
+}

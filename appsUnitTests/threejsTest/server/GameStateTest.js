@@ -4,7 +4,8 @@ describe('GameState', function(){
             messageHandler: null,
             registerMessageHandler: function(handler){
                 this.messageHandler = handler
-            }
+            },
+            broadcast: function(){}
         };
 
         this.mainLoopSpy = {

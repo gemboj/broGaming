@@ -129,4 +129,5 @@ Server.prototype.send = function(username, type, data){
 
 Server.prototype.receive = function(packet){
     this[packet.type](packet.data);
-};*/
+};
+*/
