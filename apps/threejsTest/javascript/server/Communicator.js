@@ -13,15 +13,15 @@ Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChan
     });
 
     dataChannel.registerOnConnect(function(){
-        messageHandler["connected"](receiverId);
+        messageHandler.playerConnected(receiverId);
     });
 
     dataChannel.registerOnDisconnect(function(){
-        messageHandler["disconnected"](receiverId);
+        messageHandler.playerDisconnected(receiverId);
     });
 
     dataChannel.registerOnError(function(){
-        messageHandler["error"](receiverId);
+        messageHandler.communicationError(receiverId);
     });
 };
 
