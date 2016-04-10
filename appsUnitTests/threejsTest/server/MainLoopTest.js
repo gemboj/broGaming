@@ -1,7 +1,7 @@
 describe('MainLoop', function(){
     beforeEach(function(){
         this.gameStateSpy = {
-            updateAll: function(){},
+            update: function(){},
             serialize: function(){}
         };
 
@@ -10,7 +10,7 @@ describe('MainLoop', function(){
         };
 
         spyOn(this.gameStateSpy, "serialize");
-        spyOn(this.gameStateSpy, "updateAll");
+        spyOn(this.gameStateSpy, "update");
         spyOn(this, "broadcastSpy");
 
         this.loopInterval = 20;
@@ -32,7 +32,7 @@ describe('MainLoop', function(){
             expect(callsCount).toBeGreaterThan(that.loopCount - 1);
             expect(that.broadcastSpy.calls.count()).toEqual(callsCount);
 
-            var updateTime = that.gameStateSpy.updateAll.calls.argsFor(that.gameStateSpy.updateAll.calls.count() - 1);
+            var updateTime = that.gameStateSpy.update.calls.argsFor(that.gameStateSpy.update.calls.count() - 1);
             expect(updateTime).toBeGreaterThan(that.loopInterval - 10);
             expect(updateTime).toBeLessThan(that.loopInterval + 10);
 

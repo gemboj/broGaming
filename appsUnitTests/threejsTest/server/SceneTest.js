@@ -5,13 +5,11 @@ describe('Scene', function(){
         this.objectSpy1 = {
             getId: function(){return "object1"},
             serialize: function(){return {}},
-            deserialize: function(){},
             update: function(){}
         };
         this.objectSpy2 = {
             getId: function(){return "object2"},
             serialize: function(){return {}},
-            deserialize: function(){},
             update: function(){}
         };
 
@@ -29,7 +27,6 @@ describe('Scene', function(){
             update: function(){}
         };
 
-        spyOn(this.objectSpy1, "deserialize");
         spyOn(this.playerSpy1, "deserialize");
 
         spyOn(this.objectSpy1, "update");
@@ -63,15 +60,13 @@ describe('Scene', function(){
     });
 
     it('updates object and player based on given specification', function(){
-    	this.scene.deserializeObject("object1", {position: {}});
-    	this.scene.deserializePlayer("player1", {position: {}});
+    	this.scene.updatePlayer("player1", {position: {}});
 
-        expect(this.objectSpy1.deserialize).toHaveBeenCalled();
         expect(this.playerSpy1.deserialize).toHaveBeenCalled();
     });
 
     it('can update all contained object', function(){
-        this.scene.updateAll(100);
+        this.scene.update(100);
 
         expect(this.objectSpy1.update).toHaveBeenCalledWith(100);
         expect(this.objectSpy2.update).toHaveBeenCalledWith(100);

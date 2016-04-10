@@ -31,15 +31,11 @@ Scene.prototype.serializeObjectType = function(type){
     return serializedObjects;
 };
 
-Scene.prototype.deserializeObject = function(objectId, specification){
-    this.objects[objectId].deserialize(specification);
-};
-
-Scene.prototype.deserializePlayer = function(playerId, specification){
+Scene.prototype.updatePlayer = function(playerId, specification){
     this.players[playerId].deserialize(specification);
 };
 
-Scene.prototype.updateAll = function(deltaTime){
+Scene.prototype.update = function(deltaTime){
     for(var objectIndex in this.objects){
         this.objects[objectIndex].update(deltaTime);
     }

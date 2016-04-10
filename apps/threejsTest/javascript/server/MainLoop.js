@@ -29,7 +29,7 @@ MainLoop.prototype.start = function(){
     this.timer.getDelta();
 
     this.loopHandle = setInterval(function(){
-        that.scene.updateAll(that.timer.getDelta());
+        that.scene.update(that.timer.getDelta());
 
         var gameStateData = that.scene.serialize();
 
