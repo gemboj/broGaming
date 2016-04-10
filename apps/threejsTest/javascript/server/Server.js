@@ -5,18 +5,18 @@ function Server(input){
         createDataChannel = input.createDataChannel,
         id = input.id;
 
-    this.connectedPlayers = 0;
-    this.playersCount = usernames.length;
-
-    this.isStarted = false;
+    //this.connectedPlayers = 0;
+    //this.playersCount = usernames.length;
 
     var dataChannels = this.createDataChannels(usernames, id, createDataChannel);
 
-    this.communicator = new Communicator(dataChannels, {});
+    this.communicator = new Communicator(dataChannels);
 
-    this.gameState = new GameState();
+    this.scene = new Scene();
+    this.mainLoop = new MainLoop(communicator, this.scene)
 
-    this.mainLoop = new MainLoop()
+
+    this.gameState = new GameState(usernames, this.communicator, this.mainLoop, this.scene);
 }
 
 Server.prototype.createDataChannels = function(usernames, id, createDataChannel){
