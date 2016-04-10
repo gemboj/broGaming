@@ -1,5 +1,5 @@
-function MainLoop(gameState, broadcast, loopInterval){
-    this.gameState = gameState;
+function MainLoop(scene, broadcast, loopInterval){
+    this.scene = scene;
     this.broadcast = broadcast;
 
     this.loopInterval = loopInterval == undefined ? 50 : loopInterval;
@@ -29,9 +29,9 @@ MainLoop.prototype.start = function(){
     this.timer.getDelta();
 
     this.loopHandle = setInterval(function(){
-        that.gameState.updateAll(that.timer.getDelta());
+        that.scene.updateAll(that.timer.getDelta());
 
-        var gameStateData = that.gameState.serialize();
+        var gameStateData = that.scene.serialize();
 
         that.broadcast("gameStateUpdate", gameStateData);
     }, this.loopInterval);

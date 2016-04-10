@@ -1,17 +1,17 @@
-function GameState(){
+function Scene(){
     this.objects = {};
     this.players = {};
 }
 
-GameState.prototype.addObject = function(object){
+Scene.prototype.addObject = function(object){
     this.objects[object.getId()] = object;
 };
 
-GameState.prototype.addPlayer = function(player){
+Scene.prototype.addPlayer = function(player){
     this.players[player.getId()] = player;
 };
 
-GameState.prototype.serialize = function(){
+Scene.prototype.serialize = function(){
     var currentGameState = {
         objects: this.serializeObjectType("objects"),
         players: this.serializeObjectType("players")
@@ -20,7 +20,7 @@ GameState.prototype.serialize = function(){
     return currentGameState;
 };
 
-GameState.prototype.serializeObjectType = function(type){
+Scene.prototype.serializeObjectType = function(type){
     var objects = this[type],
         serializedObjects = {};
 
@@ -31,15 +31,15 @@ GameState.prototype.serializeObjectType = function(type){
     return serializedObjects;
 };
 
-GameState.prototype.deserializeObject = function(objectId, specification){
+Scene.prototype.deserializeObject = function(objectId, specification){
     this.objects[objectId].deserialize(specification);
 };
 
-GameState.prototype.deserializePlayer = function(playerId, specification){
+Scene.prototype.deserializePlayer = function(playerId, specification){
     this.players[playerId].deserialize(specification);
 };
 
-GameState.prototype.updateAll = function(deltaTime){
+Scene.prototype.updateAll = function(deltaTime){
     for(var objectIndex in this.objects){
         this.objects[objectIndex].update(deltaTime);
     }

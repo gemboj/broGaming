@@ -7,13 +7,13 @@ MessageHandler.prototype.playerUpdate = function(sender, data){
 };
 
 MessageHandler.prototype.connected = function(sender){
-    this.gameState.deserializePlayer(sender, data);
+    this.gameState.playerConnected(sender);
 };
 
 MessageHandler.prototype.disconnected = function(sender){
-    this.gameState.deserializePlayer(sender, data);
+    this.gameState.playerDisconnected(sender);
 };
 
 MessageHandler.prototype.error = function(sender){
-    this.gameState.deserializePlayer(sender, data);
+    this.gameState.communicationError(sender);
 };
