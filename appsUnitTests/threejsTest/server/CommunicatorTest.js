@@ -8,6 +8,15 @@ describe('Communicator', function(){
             registerOnMessage: function(fun){
                 this.messageHandler = fun;
             },
+            registerOnConnect: function(fun){
+
+            },
+            registerOnDisconnect: function(fun){
+
+            },
+            registerOnError: function(fun){
+
+            },
             receiveMessage: function(package){
                 this.messageHandler(package)
             }
@@ -15,7 +24,18 @@ describe('Communicator', function(){
 
         this.dataChannel2 = {
             send: function(){},
-            registerOnMessage: function(fun){}
+            registerOnMessage: function(fun){
+                //this.messageHandler = fun;
+            },
+            registerOnConnect: function(fun){
+
+            },
+            registerOnDisconnect: function(fun){
+
+            },
+            registerOnError: function(fun){
+
+            }
         };
 
         this.messageHandler = {
