@@ -59,8 +59,8 @@ describe('Communicator', function(){
         var data = {};
         this.communicator.broadcast("messageType", data);
 
-        expect(this.dataChannel1.send).toHaveBeenCalledWith({data: data, messageType: "messageType"});
-        expect(this.dataChannel2.send).toHaveBeenCalledWith({data: data, messageType: "messageType"});
+        expect(this.dataChannel1.send).toHaveBeenCalledWith({data: data, type: "messageType"});
+        expect(this.dataChannel2.send).toHaveBeenCalledWith({data: data, type: "messageType"});
     });
 
     it('can broadcast messages with different data depending on receiver', function(){
@@ -70,8 +70,8 @@ describe('Communicator', function(){
 
         this.communicator.broadcast("messageType", dataFunction);
 
-        expect(this.dataChannel1.send).toHaveBeenCalledWith({data: {id: "receiverA"}, messageType: "messageType"});
-        expect(this.dataChannel2.send).toHaveBeenCalledWith({data: {id: "receiverB"}, messageType: "messageType"});
+        expect(this.dataChannel1.send).toHaveBeenCalledWith({data: {id: "receiverA"}, type: "messageType"});
+        expect(this.dataChannel2.send).toHaveBeenCalledWith({data: {id: "receiverB"}, type: "messageType"});
     });
 
     it('calls messageHandler function based on received message type', function(){
@@ -81,7 +81,7 @@ describe('Communicator', function(){
         this.communicator.registerMessageHandler(this.messageHandler);
 
     	this.dataChannel1.receiveMessage({
-            messageType: "messageType",
+            type: "messageType",
             data: data
         })
 

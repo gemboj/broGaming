@@ -86,9 +86,9 @@ Client.prototype.hookDataChannelEvents = function(showInfo){
     });
 };
 
-Client.prototype.update = function(scene){
+Client.prototype.updateScene = function(scene){
     for(var i in this.players){
-        this.players[i].update(scene[i].position);
+        this.players[i].update(scene.players[i].position);
     }
 };
 

@@ -33,9 +33,7 @@ MainLoop.prototype.start = function(){
 
         var gameStateData = that.scene.serialize();
 
-        //TODO change update to updateScene or something like that
-        //TODO send whole gameStateData
-        that.broadcast("update", gameStateData.players);
+        that.broadcast("updateScene", gameStateData);
     }, this.loopInterval);
 };
 
