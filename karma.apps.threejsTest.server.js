@@ -13,8 +13,8 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'apps/**/*.js',
-            'appsUnitTests/**/*.js'
+            'apps/threejsTest/javascript/server/**/*.js',
+            'appsUnitTests/threejsTest/server/**/*.js'
         ],
 
         // list of files to exclude

@@ -1,4 +1,4 @@
-function Communicator(dataChannels, messageHandler){
+function Communicator(dataChannels){
     this.dataChannels = dataChannels;
 
     /*for(var receiverId in this.dataChannels){
