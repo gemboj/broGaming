@@ -23267,7 +23267,7 @@ THREE.LensFlare.prototype.copy = function ( source ) {
 
 };
 
-// File:src/scenes/Scene.js
+// File:src/scenes/ThreejsSceneAdapter.js
 
 /**
  * @author mrdoob / http://mrdoob.com/

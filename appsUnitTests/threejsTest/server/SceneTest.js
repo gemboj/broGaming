@@ -44,7 +44,7 @@ describe('Scene', function(){
         this.scene.addPlayer(this.playerSpy2);
     });
 
-    it('can serialize objects and players names and positions', function(){
+    it('can serialize objects and players', function(){
         var currentGameState = this.scene.serialize();
 
         expect(this.objectSpy1.serialize).toHaveBeenCalled();

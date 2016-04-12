@@ -30,7 +30,7 @@ describe('GameState', function(){
         expect(this.mainLoopSpy.start).toHaveBeenCalled();
     });
 
-    it('removes player from state when connection error occures', function(){
+    it('removes gameObject from state when connection error occures', function(){
         this.communicator.messageHandler.connectionError("playerA");
         expect(this.mainLoopSpy.start).not.toHaveBeenCalled();
 
@@ -38,7 +38,7 @@ describe('GameState', function(){
         expect(this.mainLoopSpy.start).toHaveBeenCalled();
     });
 
-    it('updates player on scene when receiving player update', function(){
+    it('updates gameObject on scene when receiving gameObject update', function(){
     	var that = this,
             updateData = {};
 
