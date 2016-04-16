@@ -1,14 +1,18 @@
-function SceneGenerator(){
+function ThreejsSceneGenerator(canvas){
     this.render = null;
+    this.canvas = canvas;
 }
 
-SceneGenerator.prototype.generate = function(specification, canvas){
+ThreejsSceneGenerator.prototype.generate = function(specification){
     var threeScene = new THREE.Scene(),
-        threejsSceneAdapter = new ThreejsSceneAdapter(threeScene);
+        threejsSceneAdapter = new ThreejsSceneAdapter(threeScene),
+        scene = new Scene(threejsSceneAdapter),
+        objects = specification.sceneData,
+        canvas = this.canvas;
 
     var players = {};
-    for(var objectId in specification){
-        var object = specification[objectId]
+    for(var objectId in objects){
+        var object = objects[objectId];
 
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
         var material = new THREE.MeshPhongMaterial( { color: "rgb(" + object.color.r + "," + object.color.g + "," + object.color.b + ")" } );
@@ -17,6 +21,7 @@ SceneGenerator.prototype.generate = function(specification, canvas){
         cube.translateY(object.position.y);
         cube.translateZ(object.position.z);
 
+        cube.name = objectId;
         threeScene.add( cube );
     }
 
@@ -35,8 +40,12 @@ SceneGenerator.prototype.generate = function(specification, canvas){
     var light = new THREE.AmbientLight( 0x404040 );
     threeScene.add( light );
 
-    this.render = renderer.render.bind(renderer, scene, camera);
+    this.render = renderer.render.bind(renderer, threeScene, camera);
+    this.render();
 
-
-    return threejsSceneAdapter;
+    return scene;
 };
+
+ThreejsSceneGenerator.prototype.getRenderFunction = function(){
+    return this.render;
+}

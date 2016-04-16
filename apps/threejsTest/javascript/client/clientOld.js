@@ -1,3 +1,4 @@
+/*
 function Client(input){
     this.webRTCChannel = input.webRTCChannel;
 
@@ -10,17 +11,11 @@ function Client(input){
     this.isStarted = false;
     this.playerNumber = null;
 
-    /*dataChannel.registerOnConnect(function(){
+     //dataChannel.registerOnConnect(function(){});
 
-     });
+     //dataChannel.registerOnDisconnect(function(){});
 
-     dataChannel.registerOnDisconnect(function(){
-
-     });
-
-     dataChannel.registerOnError(function(){
-
-     });*/
+     //dataChannel.registerOnError(function(){});
 
     this.webRTCChannel.registerOnMessage(function(){
         that.receive.apply(that, arguments);
@@ -154,3 +149,4 @@ Client.prototype.send = function(type, data){
 Client.prototype.receive = function(packet){
     this[packet.type](packet.data);
 };
+*/

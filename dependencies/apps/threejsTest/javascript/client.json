@@ -8,7 +8,52 @@
     {
       "path" : ".",
       "module" : "client",
-      "class" : "Player"
+      "class" : "ClientState"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "ClientStateSendLoop"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "Communicator"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "GameState"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "InputAdapter"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "InputReader"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "RenderLoop"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "Scene"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "ThreejsSceneAdapter"
+    },
+    {
+      "path" : ".",
+      "module" : "client",
+      "class" : "ThreejsSceneGenerator"
     }
   ]
 }

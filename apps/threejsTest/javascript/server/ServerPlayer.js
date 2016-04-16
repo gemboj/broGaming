@@ -36,7 +36,26 @@ ServerPlayer.prototype.serialize = function(){
 
 
 ServerPlayer.prototype.deserialize = function(data){
-    this.delta = data.delta;
+    var movingDirection = data.movingDirection;
 
-    console.log(this.delta);
+    if(movingDirection.up){
+        this.delta.y = 1;
+    }
+    else if(movingDirection.down){
+        this.delta.y = -1;
+    }
+    else{
+        this.delta.y = 0;
+    }
+
+
+    if(movingDirection.left){
+        this.delta.x = -1;
+    }
+    else if(movingDirection.right){
+        this.delta.x = 1;
+    }
+    else{
+        this.delta.x = 0;
+    }
 };
