@@ -5,9 +5,6 @@ function Server(input){
         createDataChannel = input.createDataChannel,
         id = input.id;
 
-    //this.connectedPlayers = 0;
-    //this.playersCount = usernames.length;
-
     var dataChannels = this.createDataChannels(usernames, id, createDataChannel);
 
     this.communicator = new Communicator(dataChannels);

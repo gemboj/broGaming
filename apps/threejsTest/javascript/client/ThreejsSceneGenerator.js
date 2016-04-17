@@ -7,12 +7,26 @@ ThreejsSceneGenerator.prototype.generate = function(specification){
     var threeScene = new THREE.Scene(),
         threejsSceneAdapter = new ThreejsSceneAdapter(threeScene),
         scene = new Scene(threejsSceneAdapter),
-        objects = specification.sceneData,
+        sceneObjects = specification.sceneData,
         canvas = this.canvas;
 
     var players = {};
-    for(var objectId in objects){
-        var object = objects[objectId];
+    for(var playerId in sceneObjects.players){
+        var object = sceneObjects.players[playerId];
+
+        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        var material = new THREE.MeshPhongMaterial( { color: "rgb(" + object.color.r + "," + object.color.g + "," + object.color.b + ")" } );
+        var cube = new THREE.Mesh( geometry, material );
+        cube.translateX(object.position.x);
+        cube.translateY(object.position.y);
+        cube.translateZ(object.position.z);
+
+        cube.name = playerId;
+        threeScene.add( cube );
+    }
+
+    for(var objectId in sceneObjects.objects){
+        var object = sceneObjects.objects[objectId];
 
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
         var material = new THREE.MeshPhongMaterial( { color: "rgb(" + object.color.r + "," + object.color.g + "," + object.color.b + ")" } );

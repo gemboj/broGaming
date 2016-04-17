@@ -3,9 +3,11 @@ function Scene(visualSceneAdapter){
 }
 
 Scene.prototype.update = function(specification){
-    //TODO update all objects
+    for(var playerId in specification.players){
+        this.visualSceneAdapter.updateObject(playerId, specification.players[playerId]);
+    }
 
-    for(var objectId in specification.players){
+    for(var objectId in specification.objects){
         this.visualSceneAdapter.updateObject(objectId, specification.players[objectId]);
     }
 };

@@ -18,10 +18,9 @@ GameState.prototype.playerConnected = function(connectedPlayerId){
 
     if(this.numberOfConnectedPlayers == this.playersId.length){
         this.mainLoop.start();
-        //TODO send all serialized data instead of only players
-        //this.communicator.broadcast('start', )
+
         this.communicator.broadcast('start', function(currentPlayerId){
-            return {playersCount: that.playersId.length, playerId: currentPlayerId, sceneData: that.scene.serialize().players}
+            return {playersCount: that.playersId.length, playerId: currentPlayerId, sceneData: that.scene.serialize()}
         })
     }
 };

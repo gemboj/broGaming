@@ -5,7 +5,6 @@ function InputAdapter(inputReader, clientState){
 }
 
 InputAdapter.prototype.keyPress = function(char, isPressed){
-    console.log(char);
     switch(char.toLowerCase()){
         case 'a':
             this.clientState.move("left", isPressed);
