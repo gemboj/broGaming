@@ -15,6 +15,8 @@ function Server(input){
         this.scene.addPlayer(new ServerPlayer(usernames[i], [0, 0, 0]));
     }
 
+    this.scene.addObject(new GameObject("object1", [1, 1, -1]));
+
     this.mainLoop = new MainLoop(this.scene, this.communicator.broadcast.bind(this.communicator), 50);
 
 

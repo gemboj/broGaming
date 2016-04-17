@@ -8,6 +8,6 @@ Scene.prototype.update = function(specification){
     }
 
     for(var objectId in specification.objects){
-        this.visualSceneAdapter.updateObject(objectId, specification.players[objectId]);
+        this.visualSceneAdapter.updateObject(objectId, specification.objects[objectId]);
     }
 };

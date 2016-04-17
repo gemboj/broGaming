@@ -29,7 +29,7 @@ ThreejsSceneGenerator.prototype.generate = function(specification){
         var object = sceneObjects.objects[objectId];
 
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        var material = new THREE.MeshPhongMaterial( { color: "rgb(" + object.color.r + "," + object.color.g + "," + object.color.b + ")" } );
+        var material = new THREE.MeshPhongMaterial( { color: "rgb(200, 100, 80)" } );
         var cube = new THREE.Mesh( geometry, material );
         cube.translateX(object.position.x);
         cube.translateY(object.position.y);
