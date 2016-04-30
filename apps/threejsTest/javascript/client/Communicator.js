@@ -11,12 +11,20 @@ Communicator.prototype.registerMessageHandler = function(messageHandler){
     var that = this;
 
     this.dataChannel.registerOnMessage(function(packet){
-        if(packet.ack && !that.receivedAckMessages[packet.id]){
+        if(packet.ack){
+            if(that.receivedAckMessages[packet.id] == undefined){
+                messageHandler[packet.type](packet.data);
+            }
+
             that.receivedAckMessages[packet.id] = true;
             that.sendAck(packet.type);
+
+
+        }
+        else{
+            messageHandler[packet.type](packet.data);
         }
 
-        messageHandler[packet.type](packet.data);
     });
 
     this.dataChannel.registerOnConnect(function(){

@@ -17,11 +17,21 @@ GameState.prototype.playerConnected = function(connectedPlayerId){
     this.numberOfConnectedPlayers++;
 
     if(this.numberOfConnectedPlayers == this.playersId.length){
-        this.mainLoop.start();
-
-        this.communicator.broadcast('start', function(currentPlayerId){
+        this.communicator.broadcastWithDeliverPromise('start', function(currentPlayerId){
             return {playersCount: that.playersId.length, playerId: currentPlayerId, sceneData: that.scene.serialize()}
         })
+            .then(function(){
+                setTimeout(function(){that.mainLoop.start();}, 2000);
+
+            });
+
+
+
+
+
+        /*this.communicator.broadcast('start', function(currentPlayerId){
+            return {playersCount: that.playersId.length, playerId: currentPlayerId, sceneData: that.scene.serialize()}
+        })*/
     }
 };
 

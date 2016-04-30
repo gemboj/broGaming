@@ -92,12 +92,11 @@ Communicator.prototype.broadcastWithDeliverPromise = function(messageType, data)
                 packet = {
                     type: messageType,
                     ack: true,
-                    data: receiverData
+                    data: receiverData,
+                    id: ackData.id
                 };
 
-            ackData.receiverSend[receiverId] = function(){
-                dataChannel.send(packet);
-            };
+            ackData.receiverSend[receiverId] = that.createSendFunction(dataChannel, packet);
         }
 
         ackData.intervalHandle = setInterval(function(){
@@ -108,4 +107,10 @@ Communicator.prototype.broadcastWithDeliverPromise = function(messageType, data)
 
         that.ackAwaitingMessages[messageType] = ackData;
     });
+};
+
+Communicator.prototype.createSendFunction = function(dataChannel, packet){
+    return function(){
+        dataChannel.send(packet);
+    }
 };
