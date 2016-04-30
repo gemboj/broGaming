@@ -1,6 +1,8 @@
 function WebRTCChannel(){
     EventListener.call(this);
     var that = this;
+    var lastReceivedMessage = -1;
+    var currentMessageId = 0;
 
     that.connect = that.createEvent('connect', function(action){
         action(function(listener){
@@ -14,23 +16,31 @@ function WebRTCChannel(){
         });
     });
 
-    that.message = that.createEvent('message', function(action, eventData){
-        action(function(listener){
-            var data = JSON.parse(eventData);
-            listener(data);
-        });
-    });
-    
     that.error = that.createEvent('error', function(action, data){
         action(function(listener){
             listener(data);
         });
     });
 
+    that.message = that.createEvent('message', function(action, eventData){
+        action(function(listener){
+            var frame = JSON.parse(eventData);
+            if(frame.id > lastReceivedMessage){
+                lastReceivedMessage = frame.id;
+                listener(frame.data);
+            }
+        });
+    });
+
     that.createSendFunction = function(send){
         that.send = function(data){
-            var string = JSON.stringify(data);
-            send(string);
+            var frame = {
+                id: currentMessageId++,
+                data: data
+            };
+
+            var jsonFrame = JSON.stringify(frame);
+            send(jsonFrame);
         };
     };
 
