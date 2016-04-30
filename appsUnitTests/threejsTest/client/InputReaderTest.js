@@ -6,12 +6,12 @@ describe('InputReader', function(){
         };
 
         this.keyboardInputHandler = {
-            pressedKey: function(char){
+            keyPress: function(char, pressed){
 
             }
         };
 
-        spyOn(this.keyboardInputHandler, "pressedKey");
+        spyOn(this.keyboardInputHandler, "keyPress");
 
 
         this.inputReader = new InputReader(this.element);
@@ -19,9 +19,9 @@ describe('InputReader', function(){
     });
 
     it('passes char corresponding to pressed key code to keyboardInputHandler', function(){
-        this.element.onkeydown(66);
+        this.element.onkeydown({keyCode: 66});
 
-        expect(this.keyboardInputHandler.pressedKey).toHaveBeenCalledWith("B");
+        expect(this.keyboardInputHandler.keyPress).toHaveBeenCalledWith("B", true);
 
     })
 });

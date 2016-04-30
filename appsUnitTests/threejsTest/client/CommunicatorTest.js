@@ -78,6 +78,22 @@ describe('Communicator', function(){
         expect(this.messageHandler.onConnect).toHaveBeenCalledWith();
         expect(this.messageHandler.onDisconnect).toHaveBeenCalledWith();
         expect(this.messageHandler.onError).toHaveBeenCalledWith();
-
     })
+
+    it('responds with ack when needed before delivering message', function(){
+        var data = {},
+            packet = {
+                type: "messageType",
+                data: data,
+                ack: true,
+                id: 0
+            };
+
+        this.dataChannel.receiveMessage(packet);
+        this.dataChannel.receiveMessage(packet);
+        expect(this.messageHandler.messageType).toHaveBeenCalledWith(data);
+        expect(this.dataChannel.send).toHaveBeenCalledWith({type: "ack", ackType: "messageType"});
+        expect(this.dataChannel.send.calls.count()).toBe(1);
+    })
+
 });

@@ -24,8 +24,10 @@ describe('Communicator', function(){
 
         this.dataChannel2 = {
             send: function(){},
+
+            messageHandler: null,
             registerOnMessage: function(fun){
-                //this.messageHandler = fun;
+                this.messageHandler = fun;
             },
             registerOnConnect: function(fun){
 
@@ -35,6 +37,9 @@ describe('Communicator', function(){
             },
             registerOnError: function(fun){
 
+            },
+            receiveMessage: function(package){
+                this.messageHandler(package)
             }
         };
 
@@ -83,8 +88,33 @@ describe('Communicator', function(){
     	this.dataChannel1.receiveMessage({
             type: "messageType",
             data: data
-        })
+        });
 
         expect(this.messageHandler.messageType).toHaveBeenCalledWith("receiverA", data);
+    });
+    
+    it('can broadcast data returning promise of it being delivered', function(done){
+    	var that = this,
+            data = {};
+
+        this.communicator.registerMessageHandler(this.messageHandler);
+
+        this.communicator.broadcastWithDeliverPromise("messageType", data)
+            .then(function(){
+                done();
+            })
+            .catch(function(err){
+                done.fail(err);
+            });
+
+        this.dataChannel1.receiveMessage({
+            type: "ack",
+            ackType: "messageType",
+        });
+
+        this.dataChannel2.receiveMessage({
+            type: "ack",
+            ackType: "messageType",
+        });
     });
 });
