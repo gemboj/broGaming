@@ -43,3 +43,7 @@ Communicator.prototype.send = function(type, data){
 Communicator.prototype.sendAck = function(type){
     this.dataChannel.send({type: "ack", ackType: type});
 };
+
+Communicator.prototype.close = function(){
+    this.dataChannel.close();
+};

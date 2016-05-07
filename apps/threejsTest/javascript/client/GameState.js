@@ -32,6 +32,12 @@ GameState.prototype.pause = function(message){
     this.showInfo("Game is paused until player will not reconnect");
 };
 
+GameState.prototype.close = function(){
+    this.communicator.close();
+    this.clientStateSendLoop.stop();
+    this.renderLoop.stop();
+};
+
 GameState.prototype.onConnect = function(){};
 GameState.prototype.onDisconnect = function(){};
 GameState.prototype.onError = function(){};
