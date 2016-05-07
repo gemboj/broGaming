@@ -18,6 +18,7 @@ function Client(input){
         mouseUp(event);
     };
 
+    this.webRTCChannel = input.webRTCChannel;
     var webRTCChannel = input.webRTCChannel;
     webRTCChannel.registerOnConnect(function(){
         input.showInfo('connected with server');
@@ -27,6 +28,10 @@ function Client(input){
     var isMouseDown = false;
     webRTCChannel.registerOnMessage(function(data){
         drawPoint(data.x, data.y, data.radius, data.color);
+    });
+
+    webRTCChannel.registerOnDisconnect(function(){
+        mouseMove = mouseMoveOffline;
     });
 
     var mouseDownOffline = function(event){
@@ -71,4 +76,8 @@ function Client(input){
 
         return {x: x, y: y};
     }
+};
+
+Client.prototype.close = function(){
+    this.webRTCChannel.close();
 };

@@ -29,7 +29,21 @@ function TabsController(scope, tabsService, roomsService, chatStaticData){
     scope.deleteTab = function(tab){
         for(var i = 0; i < scope.tabs.length; ++i){
             if(scope.tabs[i] === tab){
-                scope.tabs.splice(i, 1);
+                var removedTab = scope.tabs.splice(i, 1),
+                    client = removedTab[0].room.client,
+                    server = removedTab[0].room.server;
+
+                if(client){
+                    client.close();
+
+                    delete removedTab[0].room.client;
+                }
+
+                if(server){
+                    server.close();
+                    
+                    delete removedTab[0].room.server;
+                }
 
                 if(tab.room !== undefined){
                     roomsService.leaveRoom(tab.room.id);

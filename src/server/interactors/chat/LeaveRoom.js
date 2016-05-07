@@ -12,7 +12,10 @@ function LeaveRoom(getRoomWithUsersById, send, removeUsernameFromRoomid, removeR
 
                 return removeUsernameFromRoomid(username, roomId)
                     .then(function(){
-                        if(room.deletable && rooms.users.length == 0){
+                        return getRoomWithUsersById(roomId);
+                    })
+                    .then(function(room){
+                        if(room.deletable && room.users.length == 0){
                             return removeRoomById(roomId);
                         }
                     });
@@ -20,6 +23,9 @@ function LeaveRoom(getRoomWithUsersById, send, removeUsernameFromRoomid, removeR
             })
             .then(function(arg){
                 return roomId;
+            })
+            .catch(function(err){
+                var a = 5;
             })
     }
 }

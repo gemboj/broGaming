@@ -20,7 +20,7 @@ Server.prototype.registerChannel = function(channel, username){
     this.channels[username] = channel;
 
     channel.registerOnConnect(function(){
-        this.showInfo('server connected with ' + username);
+        that.showInfo('server connected with ' + username);
     });
 
     channel.registerOnMessage(function(data){
@@ -31,15 +31,25 @@ Server.prototype.registerChannel = function(channel, username){
 
     channel.registerOnDisconnect(function(){
         delete that.channels[username];
-        this.showInfo(username + ' disconnected');
+        //that.showInfo(username + ' disconnected');
     });
 
     channel.registerOnError(function(){
         delete that.channels[username];
-        this.showInfo('could not connect with ' + username);
+        that.showInfo('could not connect with ' + username);
     })
 };
 
 Server.prototype.userJoined = function(username){
     this.registerChannel(this.createDataChannel(username, this.id), username);
+};
+
+Server.prototype.close = function(){
+    for(var channelIndex in this.channels){
+        var channel = this.channels[channelIndex];
+
+        channel.close();
+
+        delete this.channels[channelIndex];
+    }
 };

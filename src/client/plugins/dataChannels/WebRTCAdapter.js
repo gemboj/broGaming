@@ -9,7 +9,7 @@ function WebRTCAdapter(send, showError){
     that.constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
     if(navigator.mozGetUserMedia){
-        that.detectedBrowser = null;
+        that.detectedBrowser = "mozilla";
         that.peerConnection = mozRTCPeerConnection;
         that.sessionDescription = mozRTCSessionDescription;
         that.iceCandidate = mozRTCIceCandidate;
@@ -50,7 +50,7 @@ function WebRTCAdapter(send, showError){
             };
 
             var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable: false});
-            hookDataChannelEvents(dataChannel, webRTCChannel, id);
+            hookDataChannelEvents(dataChannel, webRTCChannel, id, peerConnection);
 
             //hookDataChannelEvents(dataChannel, webRTCChannel);
 
@@ -90,7 +90,7 @@ function WebRTCAdapter(send, showError){
 
             clientInfo.peerConnection.ondatachannel = function(event){
                 var channel = event.channel;
-                hookDataChannelEvents(channel, clientInfo.webRTCChannel, id);
+                hookDataChannelEvents(channel, clientInfo.webRTCChannel, id, clientInfo.peerConnection);
             };
 
             var events = awaitingClientConnection[id];
@@ -114,7 +114,7 @@ function WebRTCAdapter(send, showError){
 
     }
 
-    function hookDataChannelEvents(dataChannel, webRTCChannel, id){
+    function hookDataChannelEvents(dataChannel, webRTCChannel, id, peerConnection){
         dataChannel.onmessage = function(event){
             webRTCChannel.message(event.data);
         };
@@ -122,11 +122,35 @@ function WebRTCAdapter(send, showError){
             webRTCChannel.connect(event.data);
         };
         dataChannel.onclose = function(event){
-            delete connectionsClient[id];
+            if(connectionsClient[id]){
+                if(peerConnection.signalingState != "closed"){
+                    peerConnection.close();
+                }
+                delete connectionsClient[id];
+            }
+            if(connectionsHost[id]){
+                for(var clientIndex in connectionsHost[id].clients){
+                    var clientInfo = connectionsHost[id].clients[clientIndex];
+
+                    if(clientInfo.webRTCChannel == webRTCChannel && clientInfo.peerConnection.signalingState != "closed"){
+                        clientInfo.peerConnection.close();
+                        delete connectionsHost[id].clients[clientIndex];
+
+                        break;
+                    }
+                }
+
+                delete connectionsClient[id];
+            }
             webRTCChannel.disconnect(event.data);
         };
 
         webRTCChannel.createSendFunction(dataChannel.send.bind(dataChannel));
+        webRTCChannel.createCloseFunction(function(){
+            if(peerConnection.signalingState != "closed"){
+                peerConnection.close();
+            }
+        });
     }
 
     function createOffer(peerConnection, receiver, id, hostId){

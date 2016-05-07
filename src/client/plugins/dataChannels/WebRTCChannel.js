@@ -44,5 +44,10 @@ function WebRTCChannel(){
         };
     };
 
+    that.createCloseFunction = function(close){
+        that.close = close;
+    };
+
     that.send = null;
+    that.close = function(){};
 }

@@ -26,7 +26,7 @@ function TabsService(scope, controllerProvider, webRTCAdapter, messageLogService
                 webRTCChannel = e.webRTCChannel;
             }
             finally{
-                new Client({
+                room.client = new Client({
                     id: id,
                     $scope: $scope,
                     $div: $element,
