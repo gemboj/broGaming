@@ -126,3 +126,13 @@ Communicator.prototype.createSendFunction = function(dataChannel, packet){
         dataChannel.send(packet);
     }
 };
+
+Communicator.prototype.close = function(){
+    for(var channelIndex in this.dataChannels){
+        var channel = this.dataChannels[channelIndex];
+
+        channel.close();
+
+        delete this.dataChannels[channelIndex];
+    }
+};

@@ -1,7 +1,8 @@
-function Communicator(dataChannel){
+function Communicator(dataChannel, showInfo){
     this.dataChannel = dataChannel;
     this.messageHandler = {};
 
+    this.showInfo = showInfo;
     this.receivedAckMessages = {};
 }
 
@@ -28,6 +29,8 @@ Communicator.prototype.registerMessageHandler = function(messageHandler){
     });
 
     this.dataChannel.registerOnDisconnect(function(){
+        that.showInfo("Connection with server has been closed");
+        that.send = function(){};
         messageHandler.onDisconnect();
     });
 
@@ -46,4 +49,5 @@ Communicator.prototype.sendAck = function(type){
 
 Communicator.prototype.close = function(){
     this.dataChannel.close();
+    this.send = function(){};
 };

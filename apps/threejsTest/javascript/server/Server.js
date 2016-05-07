@@ -45,3 +45,7 @@ Server.prototype.userJoined = function(username){
         this.communicator.addDataChannel(username, dataChannel);
     }
 };
+
+Server.prototype.close = function(){
+    this.gameState.close();
+};

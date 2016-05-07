@@ -17,8 +17,6 @@ function GameState(playersId, communicator, mainLoop, scene, showInfo){
 }
 
 GameState.prototype.playerConnected = function(connectedPlayerId){
-    var that = this;
-
     var playerIndex = this.disconnectedPlayers.indexOf(connectedPlayerId);
 
     if(playerIndex != -1){
@@ -45,7 +43,6 @@ GameState.prototype.playerReconnected = function(playerIndex){
     }
 };
 
-
 GameState.prototype.sendStartMessage = function(){
     var that = this;
 
@@ -56,16 +53,6 @@ GameState.prototype.sendStartMessage = function(){
             that.mainLoop.start();
             that.isActive = true;
         })
-}
-
-GameState.prototype.newUserJoined = function(playerId){
-    var that = this;
-
-    var playerIndex = this.disconnectedPlayers.indexOf(playerId);
-
-    if(playerIndex != -1){
-
-    }
 };
 
 GameState.prototype.playerDisconnected = function(playerId){
@@ -97,6 +84,11 @@ GameState.prototype.hasPlayerDisconnected = function(playerId){
 
     return playerIndex != -1;
 
+};
+
+GameState.prototype.close = function(){
+    this.communicator.close();
+    this.mainLoop.stop();
 };
 /*GameState.prototype.playerReadyToStart = function(playerId){
     this.numberOfReadyToStartPlayers++;

@@ -5,7 +5,7 @@ function Client(input){
 
         var $canvas = input.$div.find('canvas');
 
-        that.communicator = new Communicator(input.webRTCChannel);
+        that.communicator = new Communicator(input.webRTCChannel, input.showInfo);
         var inputReader = new InputReader($canvas[0]);
 
 
