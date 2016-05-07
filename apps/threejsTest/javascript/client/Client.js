@@ -13,10 +13,11 @@ function Client(input){
         inputReader.registerKeyboardInputHandler(inputAdapter);
 
         var clientStateSendLoop = new ClientStateSendLoop(clientState, communicator);
+        var renderLoop = new RenderLoop();
 
         var sceneGenerator = new ThreejsSceneGenerator($canvas[0]);
 
-        var gameState = new GameState(communicator, sceneGenerator, clientStateSendLoop);
+        var gameState = new GameState(communicator, sceneGenerator, clientStateSendLoop, renderLoop, input.showInfo);
         communicator.registerMessageHandler(gameState);
     });
 }

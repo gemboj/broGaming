@@ -3,6 +3,9 @@ function RoomInvite(send, getRoomWithUsersById){
 
     this.do = function(sendersUsername, receiverUsername, roomId, appName){
         return getRoomWithUsersById(roomId)
+            .catch(function(err){
+                throw "Error sending invite";
+            })
             .then(function(room){
                 var users = room.users,
                     isInRoom = false;

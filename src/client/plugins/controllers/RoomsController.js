@@ -95,6 +95,11 @@ function RoomsController(scope, roomsService, chatStaticData){
 
         if(room !== undefined){
             room.users.push(new that.User(username, false));
+
+            if(room.server !== undefined){
+                room.server.userJoined(username);
+            }
+
             that.applyChanges()
         }
     };

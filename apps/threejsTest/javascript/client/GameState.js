@@ -1,27 +1,35 @@
-function GameState(communicator, sceneGenerator, clientStateSendLoop){
+function GameState(communicator, sceneGenerator, clientStateSendLoop, renderLoop, showInfo){
 
 
     this.communicator = communicator;
     this.sceneGenerator = sceneGenerator;
 
     this.clientStateSendLoop = clientStateSendLoop;
+    this.renderLoop = renderLoop;
+
+    this.showInfo = showInfo;
 
     this.scene = null;
-    this.renderLoop = null;
 }
 
 GameState.prototype.updateScene = function(specification){
-    console.log("got updateScene message");
     this.scene.update(specification);
 };
 
 GameState.prototype.start = function(gameSpecification){
-    console.log("got start message");
-    this.scene = this.sceneGenerator.generate(gameSpecification);
-    this.renderLoop = new RenderLoop(this.sceneGenerator.getRenderFunction());
+    if(this.scene == null){
+        this.scene = this.sceneGenerator.generate(gameSpecification);
+        //this.renderLoop = new RenderLoop(this.sceneGenerator.getRenderFunction());
+        this.renderLoop.setRenderFunction(this.sceneGenerator.getRenderFunction());
 
-    this.renderLoop.start();
-    this.clientStateSendLoop.start();
+        this.renderLoop.start();
+        this.clientStateSendLoop.start();
+    }
+};
+
+GameState.prototype.pause = function(message){
+    this.showInfo(message);
+    this.showInfo("Game is paused until player will not reconnect");
 };
 
 GameState.prototype.onConnect = function(){};

@@ -43,7 +43,7 @@ function TabsService(scope, controllerProvider, webRTCAdapter, messageLogService
             for(var i = 0; i < room.users.length; ++i){
                 usernames.push(room.users[i].username);
             }
-            new Server({usernames: usernames, createDataChannel: webRTCAdapter.createDataChannelServer, id: id, showInfo: messageLogService.showInfo, showError: messageLogService.showError});
+            room.server = new Server({usernames: usernames, createDataChannel: webRTCAdapter.createDataChannelServer, id: id, showInfo: messageLogService.showInfo, showError: messageLogService.showError});
         };
 
         var tab = new that.Tab(name, id, controllerContent, room, startServer);

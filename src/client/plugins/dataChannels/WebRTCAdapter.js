@@ -2,6 +2,8 @@ function WebRTCAdapter(send, showError){
     var that = this;
 
     var connectionsClient = {};
+    var awaitingClientConnection = {};
+
     var connectionsHost = {};
 
     that.constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
@@ -48,7 +50,7 @@ function WebRTCAdapter(send, showError){
             };
 
             var dataChannel = peerConnection.createDataChannel("sendDataChannel", {reliable: false});
-            hookDataChannelEvents(dataChannel, webRTCChannel);
+            hookDataChannelEvents(dataChannel, webRTCChannel, id);
 
             //hookDataChannelEvents(dataChannel, webRTCChannel);
 
@@ -88,8 +90,17 @@ function WebRTCAdapter(send, showError){
 
             clientInfo.peerConnection.ondatachannel = function(event){
                 var channel = event.channel;
-                hookDataChannelEvents(channel, clientInfo.webRTCChannel);
+                hookDataChannelEvents(channel, clientInfo.webRTCChannel, id);
             };
+
+            var events = awaitingClientConnection[id];
+            if(events != undefined){
+                for(var i = 0; i < events.length; i++){
+                    events[i]();
+                }
+
+                delete awaitingClientConnection[id];
+            }
 
             return clientInfo.webRTCChannel;
         }
@@ -103,7 +114,7 @@ function WebRTCAdapter(send, showError){
 
     }
 
-    function hookDataChannelEvents(dataChannel, webRTCChannel){
+    function hookDataChannelEvents(dataChannel, webRTCChannel, id){
         dataChannel.onmessage = function(event){
             webRTCChannel.message(event.data);
         };
@@ -111,6 +122,7 @@ function WebRTCAdapter(send, showError){
             webRTCChannel.connect(event.data);
         };
         dataChannel.onclose = function(event){
+            delete connectionsClient[id];
             webRTCChannel.disconnect(event.data);
         };
 
@@ -127,6 +139,15 @@ function WebRTCAdapter(send, showError){
     }
 
     that.onOffer = function(id, hostId, sender, sessionDescription){
+        if(connectionsClient[id] == undefined){
+            if(awaitingClientConnection[id] == undefined){
+                awaitingClientConnection[id] = [];
+            }
+
+            awaitingClientConnection[id].push(that.onOffer.bind(that, id, hostId, sender, sessionDescription));
+            return;
+        }
+
         if(connectionsClient[id].error){
             send('error', {id: id, hostId: hostId, receiver: sender});
             return;
@@ -164,6 +185,14 @@ function WebRTCAdapter(send, showError){
     }
 
     that.onIceCandidate = function(id, hostId, iceCandidate){
+        if(connectionsClient[id] == undefined){
+            if(awaitingClientConnection[id] == undefined){
+                awaitingClientConnection[id] = [];
+            }
+
+            awaitingClientConnection[id].push(that.onIceCandidate.bind(that, id, hostId, iceCandidate));
+            return;
+        }
 
         var peerConnection = null;
 

@@ -1,11 +1,13 @@
 function Server(input){
     var that = this;
 
-    var usernames = input.usernames,
-        createDataChannel = input.createDataChannel,
-        id = input.id;
+    var usernames = input.usernames;
 
-    var dataChannels = this.createDataChannels(usernames, id, createDataChannel);
+    this.id = input.id;
+    this.createDataChannel = input.createDataChannel;
+    this.showInfo = input.showInfo;
+
+    var dataChannels = this.createDataChannels(usernames);
 
     this.communicator = new Communicator(dataChannels);
 
@@ -22,17 +24,24 @@ function Server(input){
     this.mainLoop = new MainLoop(this.scene, this.communicator.broadcast.bind(this.communicator), 50);
 
 
-    this.gameState = new GameState(usernames, this.communicator, this.mainLoop, this.scene);
+    this.gameState = new GameState(usernames, this.communicator, this.mainLoop, this.scene, this.showInfo);
 }
 
-Server.prototype.createDataChannels = function(usernames, id, createDataChannel){
+Server.prototype.createDataChannels = function(usernames){
     var dataChannels = {};
     for(var i = 0; i < usernames.length; i++){
         var username = usernames[i],
-            dataChannel = createDataChannel(username, id);
+            dataChannel = this.createDataChannel(username, this.id);
 
         dataChannels[username] = dataChannel;
     }
 
     return dataChannels;
-}
+};
+
+Server.prototype.userJoined = function(username){
+    if(this.gameState.hasPlayerDisconnected(username)){
+        var dataChannel = this.createDataChannel(username, this.id);
+        this.communicator.addDataChannel(username, dataChannel);
+    }
+};

@@ -4,17 +4,22 @@ function Communicator(dataChannels){
     this.ackId = 0;
     this.ackAwaitingMessages = {};
 
+    this.messageHandler = undefined;
 }
 
+
+
 Communicator.prototype.registerMessageHandler = function(messageHandler){
+    this.messageHandler = messageHandler;
+
     for(var receiverId in this.dataChannels){
         var dataChannel = this.dataChannels[receiverId];
 
-        this.registerDataChannelEvents(receiverId, dataChannel, messageHandler);
+        this.registerDataChannelEvents(receiverId, dataChannel);
     }
 };
 
-Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChannel, messageHandler){
+Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChannel){
     var that = this;
 
     dataChannel.registerOnMessage(function(packet){
@@ -34,22 +39,29 @@ Communicator.prototype.registerDataChannelEvents = function(receiverId, dataChan
             }
         }
         else{
-            messageHandler[packet.type](receiverId, packet.data);
+            that.messageHandler[packet.type](receiverId, packet.data);
         }
     });
 
     dataChannel.registerOnConnect(function(){
-        messageHandler.playerConnected(receiverId);
+        that.messageHandler.playerConnected(receiverId);
     });
 
     dataChannel.registerOnDisconnect(function(){
-        messageHandler.playerDisconnected(receiverId);
+        delete that.dataChannels[receiverId];
+        that.messageHandler.playerDisconnected(receiverId);
     });
 
     dataChannel.registerOnError(function(){
-        messageHandler.communicationError(receiverId);
+        that.messageHandler.communicationError(receiverId);
     });
 };
+
+Communicator.prototype.addDataChannel = function(receiverId, dataChannel){
+    this.dataChannels[receiverId] = dataChannel;
+
+    this.registerDataChannelEvents(receiverId, dataChannel);
+}
 
 Communicator.prototype.broadcast = function(messageType, data){
     var receiverId;

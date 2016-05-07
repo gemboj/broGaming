@@ -2,9 +2,7 @@ function Communicator(dataChannel){
     this.dataChannel = dataChannel;
     this.messageHandler = {};
 
-    this.receivedAckMessages = {
-
-    };
+    this.receivedAckMessages = {};
 }
 
 Communicator.prototype.registerMessageHandler = function(messageHandler){
@@ -18,8 +16,6 @@ Communicator.prototype.registerMessageHandler = function(messageHandler){
 
             that.receivedAckMessages[packet.id] = true;
             that.sendAck(packet.type);
-
-
         }
         else{
             messageHandler[packet.type](packet.data);

@@ -12,7 +12,7 @@ function LeaveRoom(getRoomWithUsersById, send, removeUsernameFromRoomid, removeR
 
                 return removeUsernameFromRoomid(username, roomId)
                     .then(function(){
-                        if(room.deletable){
+                        if(room.deletable && rooms.users.length == 0){
                             return removeRoomById(roomId);
                         }
                     });

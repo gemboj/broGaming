@@ -1,7 +1,11 @@
-function RenderLoop(render){
-    this.render = render;
+function RenderLoop(){
+    this.render = function(){};
     this.loopHandle = null;
 }
+
+RenderLoop.prototype.setRenderFunction = function(render){
+    this.render = render;
+};
 
 RenderLoop.prototype.start = function(){
     var that = this,
